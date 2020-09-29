@@ -102,4 +102,4 @@ async def startChallenge():
 #             return
 
 
-client.run('NzQ5ODM2MjYzOTU1MTAzNzc0.X0xxcA.q8atdZF3o9QCiTmZYtWUlUEWrys')
+client.run('NzQ5ODM2MjYzOTU1MTAzNzc0.X0xxcA.wrZ-tylfYU5k721t7kk3OI4LVRE')
