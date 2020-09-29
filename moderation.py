@@ -56,20 +56,22 @@ async def clear(ctx,amount=5):
 
 @commands.command()
 async def kick(ctx, member : discord.Member, *, reason=None):
-    await member.kick(reason=reason)
-    await ctx.channel.purge (limit=1)
-    print (f'{member} was kicked from the server')
+    await ctx.channel.send("This command hasnt been coded yet")
+#    await member.kick(reason=reason)
+#    await ctx.channel.purge (limit=1)
+#    print (f'{member} was kicked from the server')
 
 @commands.command()
 async def ban(ctx, member : discord.Member, *, reason=None):
-    await member.ban(reason=reason)
-    await ctx.channel.purge (limit=1)
-    print (f'{member} was banned from the server')
+    await ctx.channel.send("This command hasnt been coded yet")
+#    await member.ban(reason=reason)
+#    await ctx.channel.purge (limit=1)
+#    print (f'{member} was banned from the server')
 
 
 @commands.command()
 async def lynch(ctx, member : discord.Member):
-    pass
+    await ctx.channel.send("This command hasnt been coded yet")
 
 
 async def getMemberLevel(member):
