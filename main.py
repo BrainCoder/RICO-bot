@@ -1,7 +1,6 @@
 from utils import *
 from streak import *
 from moderation import *
-
 client=commands.Bot(command_prefix='!')
 #client.add_command(reset)
 client.add_command(relapse)
@@ -16,7 +15,7 @@ client.add_listener(on_member_ban)
 
 #channels = {'botlog': 743056752446275596,
 #            'botlab': 744145383592296588,
-#            'streak': 745452658545918042}
+#            'streak': 745452658545918042}!update
 
 
 

@@ -33,14 +33,14 @@ def getStreakString(total_streak_length):
     hoursStr = f'{hours} hour{"s" if hours != 1 else ""}' if hours > 0 else ''
     return [daysStr, middleStr, hoursStr]
 
-@commands.command(checks=[is_in_channel('streak')])
+@commands.command(checks=[is_in_channel()])
 async def reset(ctx, *args):
     query = (userdata
     .delete()
     .where(userdata.c.id == ctx.author.id))
     conn.execute(query)
 
-@commands.command(checks=[is_in_channel('streak')])
+@commands.command(checks=[is_in_channel()])
 async def relapse(ctx, *args):
     maxDays = 365 * 10
     n_days = 0
@@ -97,7 +97,7 @@ async def relapse(ctx, *args):
         await ctx.channel.send('Streak set successfully.')
 
 
-@commands.command(checks=[is_in_channel('streak')])
+@commands.command(checks=[is_in_channel()])
 async def update(ctx):
     query = userdata.select().where(userdata.c.id == ctx.author.id)
     rows = conn.execute(query).fetchall()
@@ -108,7 +108,7 @@ async def update(ctx):
         await updateStreakRole(ctx.author, last_starting_date)
         await ctx.channel.send(f'Your streak was {daysStr}{middleStr}{hoursStr} long.')
     else:
-        await ctx.channel.send("No data about you available.")
+        await ctx.channel.send("No data about you available do !relapse .")
 
 def getOwnedStreakRole(member):
     for role in idData[member.guild.id]['streakRoles']:
@@ -117,7 +117,7 @@ def getOwnedStreakRole(member):
                 return idData[member.guild.id]['streakRoles'][role]
     return None
 
-def getDeservedStreakRole(days, serverId):
+def getDeservedStreakRole(days, serverID):
     for role in idData[serverID]['streakRoles']:
         if days < int(role) or int(role) == -1:
             return idData[serverID]['streakRoles'][role]

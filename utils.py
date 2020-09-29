@@ -9,6 +9,7 @@ import asyncio
 import functools
 import time
 import sqlite3
+
 from sqlalchemy import create_engine, MetaData, Table, Column, Integer, String, Text
 from sqlalchemy.dialects.mysql import insert
 from os import listdir
@@ -26,9 +27,10 @@ async def waitThenRun(seconds, fn):
     await fn()
 
 # Check function to find out if the message came from a permitted channel:
-def is_in_channel(channelName):
+def is_in_channel():
     def inside_fn(ctx):
-        if ctx.channel.id == idData['channels'][channelName]:
+        #channelName = 760244981838512158
+        if ctx.channel.id == 760427949421363230:
             return True
         return False
     return inside_fn
