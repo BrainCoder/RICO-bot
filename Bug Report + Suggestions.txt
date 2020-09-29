@@ -3,7 +3,6 @@
 1) !joinedat reports last time someone joined the server, rather than when they originally joined
 2) When some is striked they can still talk in VC
 3) Bot auto deltes messages from bots with links
-4) I think it's better for the bot to say "ur streak is ... long" instead of "ur streak was ... long" when we are doing !update. But if we do !relapse then the bot should use was instead of is. Pls change this!
 
 
 ## Ideas
