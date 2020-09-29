@@ -1,0 +1,202 @@
+ case 'update':
+          if(args.length === 0){
+            let user_id = member.id;
+            queryString = `SELECT starting_date FROM streak WHERE user_id = '${user_id}';`;
+            queryResult = await query(queryString);
+            if(queryResult.rowCount !== null && queryResult.rowCount !== 0 && queryResult.rows[0]['starting_date'] !== null){
+              let days = moment().diff(moment(queryResult.rows[0]['starting_date']), 'days');
+              let hoursAll = moment().diff(moment(queryResult.rows[0]['starting_date']), 'hours');
+              await updateStreakRole(member, days);
+              let time = moment.duration(moment().diff(moment(queryResult.rows[0]['starting_date'])));
+              let s = time.years() !== 1? 's' : '';
+              let years = time.years() !== 0? time.years() + ` year${s}, ` :'';
+              s = time.months() !== 1? 's' : '';
+              let months = time.months() !== 0? time.months() + ` month${s}, `:'';
+              s = time.days() !== 1? 's' : '';
+              let daysStr = time.days() !== 0? time.days() + ` day${s} and `:'';
+              s = time.hours() !== 1? 's' : '';
+              let hours = time.hours() + ` hour${s}`;
+              let likelihood = 2.718**(-(hoursAll*1.385/(7*24))*0.5) - 2.718**(-((hoursAll+24)*1.385/(7*24))*0.5); //cumulative density function of exponential distribution
+
+
+
+              let rankIndex = streakLengthData.findIndex(function(value, index){
+                if(value["userId"] === member.id) return index;
+              });
+              if(rankIndex < 0 && days < 365 * 6){
+                  streakLengthData.push({"userId":member.id, "startingDate":moment(queryResult.rows[0]['starting_date'])});
+                  streakLengthData.sort(function(a, b){
+                    if(a["startingDate"] < b["startingDate"]) return -1;
+                    if(a["startingDate"] > b["startingDate"]) return 1;
+                    return 0;
+                  });
+                  rankIndex = streakLengthData.findIndex(function(value, index){
+                    if(value["userId"] === member.id) return index;
+                  });
+              }
+              let rank;
+              if (days >= 365 * 6) {
+                  rank = "";
+              }else{
+                  rank = `Your rank is ${rankIndex+1}/${streakLengthData.length}. You're in the top ${((rankIndex+1)*100/streakLengthData.length).toPrecision(3)}%.`;
+              }
+
+              message.channel.send(`${member.toString()} Your streak started ${years}${months}${daysStr}${hours} ago. ${rank}`); //The statistical likelihood of success in the next 24 hours is ${((1-likelihood) * 100).toPrecision(4)}%
+            }else{
+              message.channel.send(`${member.toString()} You need to set a streak first. See ${streakGuideToStr} for more information.`);
+            }
+          }else{
+            message.channel.send(`${member.toString()} Arguments for \`!update\` not valid. There need to be no parameters. See ${streakGuideToStr} for more information.`);
+          }
+          break;
+          case 'relapse':
+          let days = 0;
+          let n_hours = 0;
+          if(args.length > 0 && !isNaN(args[0]) && parseInt(args[0]) >= 0){
+            days = parseInt(args[0]);
+            if(args.length === 2 && !isNaN(args[1]) && parseInt(args[1]) >= 0 && parseInt(args[1]) <= 23){
+              n_hours = parseInt(args[1]);
+            }
+          }
+
+		      let user_id = member.id;
+          queryString = `SELECT starting_date FROM streak WHERE user_id = '${user_id}';`;
+          queryResult = await query(queryString);
+
+          let starting_date = moment().subtract(days, 'days').subtract(n_hours, 'hours').format('YYYY-MM-DD HH:mm:ss');
+          result = await setStreakByDate(member, starting_date, days);
+
+          if(result === -1){
+            message.channel.send(`${member.toString()} Sorry but this doesn't seem to be true. If you need help then contact an admin.`);
+            return;
+          }else if(result === false){
+            message.channel.send(`${member.toString()} Arguments for \`!relapse\` not valid. See ${streakGuideToStr} for more information.`);
+            return;
+          }
+
+          if (member.roles.has(otherRoles.get('Monthlychallengeparticipant'))){
+            await member.removeRole(otherRoles.get('Monthlychallengeparticipant'));
+            let guild = await message.guild.fetchMembers();
+            let participantCount = guild.roles.get(otherRoles.get('Monthlychallengeparticipant')).members.size;
+            message.guild.channels.get(channelIDs.get('monthly-challenge')).send(`${participantCount} monthly challenge participants are left.`)
+            .then(console.log(`Posting m-c participant count.`)).catch(error => console.log(error));
+          }
+
+
+
+          if(queryResult.rowCount !== null && queryResult.rowCount !== 0 && queryResult.rows[0]['starting_date'] !== null){
+            let time = moment.duration(moment().diff(moment(queryResult.rows[0]['starting_date'])));
+            time.subtract(days, 'days');
+            time.subtract(n_hours, 'hours');
+            var messageText = `${member.toString()} `;
+            if(time > 0){
+              let s = time.years() !== 1? 's' : '';
+              let years = time.years() !== 0? time.years() + ` year${s}, ` :'';
+              s = time.months() !== 1? 's' : '';
+              let months = time.months() !== 0? time.months() + ` month${s}, `:'';
+              s = time.days() !== 1? 's' : '';
+              let daysStr = time.days() !== 0? time.days() + ` day${s} and `:'';
+              s = time.hours() !== 1? 's' : '';
+              let hours = time.hours() + ` hour${s} long.`;
+              messageText += `Your streak was ${years}${months}${daysStr}${hours}\n`;
+              queryString = `UPDATE streak SET previous_streak_lengths = previous_streak_lengths || ARRAY[${parseInt(time.as('hours'))}] WHERE user_id = '${user_id}';`;
+              let result = query(queryString);
+
+            }
+
+            //UPDATE streak SET previous_streak_lengths = previous_streak_lengths || ARRAY[5540] WHERE user_id = '615465637313118209';
+            //UPDATE streak SET previous_streak_lengths = previous_streak_lengths[1:array_upper(previous_streak_lengths, 1) - 1] WHERE user_id = '615465637313118209';
+            //let days = moment().diff(moment(queryResult[0][1]), 'days');
+            //updateStreakRole(member, days);
+            if(args.length === 0 || (Number.isInteger(parseInt(args[0])) && parseInt(args[0]) < 3)){
+              message.channel.send(messageText + `Don't be dejected.`);
+              result = await postRelapsePicture();
+              message.channel.send(result);
+            }else{
+              message.channel.send(messageText +`Streak set successfully.`);
+            }
+
+            queryString = `SELECT * FROM streak WHERE user_id = '${member.id}';`;
+            queryResult = await query(queryString);
+            if(queryResult.rowCount !== null && queryResult.rowCount !== 0 &&
+               queryResult.rows[0]['previous_streak_lengths'] !== null &&
+               queryResult.rows[0]['previous_streak_lengths'].length !== 0){
+              let userId = member.id;
+              let lastStreakStart = moment(queryResult.rows[0]['starting_date']);
+              let prevstreaks = queryResult.rows[0]['previous_streak_lengths'];
+              let max = Math.max(...prevstreaks);
+              let nextRecord = lastStreakStart.clone().add(max, 'hours');
+              let res;
+              if(nextRecord > moment() && max > 24*7){
+                res = achievementData.findIndex(function(value, index){
+                  if(value["userId"] === userId) return index;
+                });
+                if(res === -1){
+                  achievementData.push({"userId":userId, "recordAt":nextRecord, "max":max})
+                }else{
+                  achievementData[res] = {"userId":userId, "recordAt":nextRecord, "max":max};
+                }
+
+              }
+              res = streakLengthData.findIndex(function(value, index){
+                if(value["userId"] === userId) return index;
+              });
+              let startingMoment = moment();
+              startingMoment.subtract(days, 'days');
+              startingMoment.subtract(n_hours, 'hours');
+              if(res === -1){
+                streakLengthData.push({"userId":userId, "startingDate":startingMoment});
+              }else{
+                streakLengthData[res] = {"userId":userId, "startingDate":startingMoment};
+              }
+              achievementData.sort(function(a, b){
+                if(a["recordAt"] < b["recordAt"]) return -1;
+                if(a["recordAt"] > b["recordAt"]) return 1;
+                return 0;
+              });
+              streakLengthData.sort(function(a, b){
+                if(a["startingDate"] < b["startingDate"]) return -1;
+                if(a["startingDate"] > b["startingDate"]) return 1;
+                return 0;
+              });
+            }
+          }else{
+            message.channel.send(`${member.toString()} No record of your previous streak was found.\nA new streak has been set successfully.`);
+          }
+
+          break;
+          case 'stats':
+          if(args.length !== 0){
+            return;
+          }
+          queryString = `SELECT previous_streak_lengths FROM streak WHERE user_id = '${member.id}';`;
+          queryResult = await query(queryString);
+          if(queryResult.rowCount !== null && queryResult.rowCount !== 0 &&
+            queryResult.rows[0]['previous_streak_lengths'] !== null &&
+            queryResult.rows[0]['previous_streak_lengths'].length !== 0){
+              let prevstreaks = queryResult.rows[0]['previous_streak_lengths'];
+              let sum = 0;
+              let max = 0;
+	          let count = 0;
+              for(let streaklen of prevstreaks){
+		           if(streaklen !== 0){
+		                 count += 1;
+		           }
+                sum += streaklen;
+                if(streaklen > max){
+                  max = streaklen;
+                }
+              }
+	          if(count === 0) count = 1;
+              let avg = sum / count;
+              message.channel.send(`${member.toString()} Longest run: ${Math.floor(max/24)} days and ${max % 24} hours.\n Average run: ${Math.floor(avg/24)} days and ${Math.round(avg % 24)} hours.\n Relapse count: ${count + 1}.`);
+            }else{
+              message.channel.send(`${member.toString()} Not enough information available.`);
+            }
+            break;
+            case 'removestreakrole':
+            let [o_days, owned] = getOwnedStreakRole(member);
+            if(!(owned === null)){
+              member.removeRole(owned).then(console.log(`Removed ${o_days}'s role.`)).catch(error => console.log(error));
+            }
+            break;
