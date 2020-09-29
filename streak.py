@@ -39,6 +39,7 @@ async def reset(ctx, *args):
     .delete()
     .where(userdata.c.id == ctx.author.id))
     conn.execute(query)
+    await ctx.channel.send(f'Your streak was reset.')
 
 @commands.command(checks=[is_in_channel()])
 async def relapse(ctx, *args):
