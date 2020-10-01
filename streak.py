@@ -43,6 +43,8 @@ async def reset(ctx, *args):
 
 @commands.command(checks=[is_in_channel()])
 async def relapse(ctx, *args):
+    role = discord.utils.get(ctx.guild.roles, name='MonthlyChallenge-participant')
+    await ctx.author.remove_roles(role)
     maxDays = 365 * 10
     n_days = 0
     n_hours = 0
