@@ -18,7 +18,7 @@ client.add_command(lynch)
 #            'streak': 745452658545918042}!update
 
 @client.command()
-async def DoSomething(ctx, member : discord.Member, *, reason=None):
+async def DoSomething(ctx):
     await ctx.channel.send("*Does your mum*")
 
 async def monthStart():
