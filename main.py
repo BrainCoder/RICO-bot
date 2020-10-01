@@ -17,6 +17,10 @@ client.add_command(lynch)
 #            'botlab': 744145383592296588,
 #            'streak': 745452658545918042}!update
 
+@client.command()
+async def DoSomething(ctx, member : discord.Member, *, reason=None):
+    await ctx.channel.send("*Does your mum*")
+
 async def monthStart():
     while True:
         now = datetime.today()
