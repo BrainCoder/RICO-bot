@@ -35,9 +35,21 @@ async def hourly():
             else:
                 del banDict[key]
 
+async def mCount_update():
+    threading.Timer(1800, mCount_update).start()
+    for guild in client.guilds:
+        if guild.id != 519330541720436736:
+            continue
+        mCount = guild.member_count
+        channel = client.get_channel(761264831981682718)
+        break
+    print(f'There are now {mCount} mebers of this server')
+    await channel.edit(name=(f'{mCount} members'))
+
 @client.event
 async def on_ready():
     print('Bot is active')
+    await mCount_update()
 
     asyncio.create_task(monthStart())
     asyncio.create_task(hourly())
