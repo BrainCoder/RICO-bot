@@ -52,22 +52,44 @@ async def on_command_error(ctx, error):
         return
     raise error
 
-async def startChallenge():
-    print('Starting new month now.')
+@client.command(pass_context=True)
+@commands.has_permissions(ban_members=True)
+async def endChallenge(ctx):
+    print('Ending challenge now.')
     for guild in client.guilds:
-        signupRole = guild.get_role(roles['teamchallenge-signup'])
+        signupRole = guild.get_role(582640858378272793)
+        participationRole = guild.get_role(582649176601657365)
         members = await guild.fetch_members(limit=None).flatten()
         newParticipants = []
         for member in members:
             for role in member.roles:
-                if role.id == roles['teamchallenge-signup']:
+                if role.id == 582640858378272793:
                     client.loop.create_task(member.remove_roles(signupRole))
                     newParticipants.append(member)
+                    client.loop.create_task(member.add_roles(participationRole))
                     break
+        await ctx.send(f"Challenge Winners {len(newParticipants)}")
         print(len(newParticipants))
 
+@client.command(pass_context=True)
+@commands.has_permissions(ban_members=True)
+async def startChallenge(ctx):
+    print('Starting new month now.')
+    for guild in client.guilds:
+        signupRole = guild.get_role(582648694017490945)
+        participationRole = guild.get_role(582640858378272793)
+        members = await guild.fetch_members(limit=None).flatten()
+        newParticipants = []
+        for member in members:
+            for role in member.roles:
+                if role.id == 582648694017490945:
+                    client.loop.create_task(member.remove_roles(signupRole))
+                    newParticipants.append(member)
+                    client.loop.create_task(member.add_roles(participationRole))
+                    break
 
-
+        await ctx.send(f"Challenge participants {len(newParticipants)}")
+        print(len(newParticipants))
 
 # uniqueCategoryNames = ['genderRoles', 'continentRoles', 'religionRoles', 'modeRoles']
 # additionalCategoryName = 'otherRoles'
