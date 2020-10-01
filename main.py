@@ -17,10 +17,6 @@ client.add_command(lynch)
 #            'botlab': 744145383592296588,
 #            'streak': 745452658545918042}!update
 
-@client.command()
-async def GF_Sandwich(ctx):
-    await ctx.channel.send("UwU what kind of sandwich does daddy want? =^.^=")
-
 async def monthStart():
     while True:
         now = datetime.today()
