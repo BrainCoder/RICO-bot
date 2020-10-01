@@ -17,6 +17,22 @@ client.add_command(lynch)
 #            'botlab': 744145383592296588,
 #            'streak': 745452658545918042}!update
 
+async def mCount_update():
+    threading.Timer(1800, mCount_update).start()
+    for guild in client.guilds:
+        if guild.id != 519330541720436736:
+            continue
+        mCount = guild.member_count
+        channel = client.get_channel(761264831981682718)
+        break
+    print(f'There are now {mCount} mebers of this server')
+    await channel.edit(name=(f'{mCount} members'))
+
+@client.event
+async def on_ready():
+    print('Bot is active')
+    await mCount_update()
+
 @client.command()
 async def DoSomething(ctx):
     await ctx.channel.send("*Does your mum*")
@@ -39,21 +55,10 @@ async def hourly():
             else:
                 del banDict[key]
 
-async def mCount_update():
-    threading.Timer(1800, mCount_update).start()
-    for guild in client.guilds:
-        if guild.id != 519330541720436736:
-            continue
-        mCount = guild.member_count
-        channel = client.get_channel(761264831981682718)
-        break
-    print(f'There are now {mCount} mebers of this server')
-    await channel.edit(name=(f'{mCount} members'))
-
 @client.event
-async def on_ready():
-    print('Bot is active')
-    await mCount_update()
+async def on_member_join(member):
+    channel = client.get_channel(519455122602983424)
+    await channel.send(f'{member.mention} welcome! Please go to <#519455164894019584> to read an overview of what this server is about. Go to <#519627611836776490> and <#567283111273037834> to see the commands that you can use to assign yourself.')
 
     asyncio.create_task(monthStart())
     asyncio.create_task(hourly())
