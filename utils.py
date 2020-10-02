@@ -36,11 +36,13 @@ def is_in_channel():
         return False
     return inside_fn
 
+"""
 def hasPerms(ctx, requiredLevel):
     for role in idData['streakRoles']:
         for memberRole in member.roles:
             if memberRole.id == idData['streakRoles'][role]:
                 return idData['streakRoles'][role]
+"""
 
 #SQLite3 database setup
 engine = create_engine('sqlite:///main.db', echo = True)
