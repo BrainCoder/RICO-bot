@@ -27,6 +27,7 @@ async def hourly():
 
 # To prevent mass bans
 #@commands.event
+"""
 async def on_member_ban(guild, user):
     if (datetime.today() - user.joined_at).days < 3:
         return
@@ -49,7 +50,7 @@ async def on_member_ban(guild, user):
     if banDict[ban_initiator.id] > 10:
         roleObj = guild.get_role(combinedDict['Moderator'])
         await ban_initiator.remove_roles(roleObj)
-
+"""
 #I need to do the mute commands
 
 #I need to do the cooldown command
@@ -94,6 +95,7 @@ async def lynch(ctx, member : discord.Member):
     await ctx.channel.send("This command hasn't been coded yet")
 
 
+"""
 async def getMemberLevel(member):
     memberLevel = None
     if(member.roles.has(otherRoles.get('Admin'))):
@@ -108,8 +110,8 @@ async def getMemberLevel(member):
         memberLevel = Perm.MEMBER
     else:
         memberLevel = Perm.GUEST
-    return memberLevel;
-
+    return memberLevel
+"""
 
 
 

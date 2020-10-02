@@ -48,9 +48,11 @@ async def monthStart():
         y = now.year if now.month < 12 else now.year+1
         m = (now.month+1) if now.month < 12 else 1
         secondsToSleep = (datetime(y, m, 1) - datetime.today()).total_seconds()
+        channel = client.get_channel(582650072672632833)
         await asyncio.sleep(secondsToSleep)
-        await startChallenge()
+        await startChallenge(channel)
 
+"""
 async def hourly():
     while True:
         await asyncio.sleep(60*60)
@@ -59,7 +61,7 @@ async def hourly():
                 banDict[key] -= 1
             else:
                 del banDict[key]
-
+"""
 @client.event
 async def on_member_join(member):
     channel = client.get_channel(519455122602983424)
