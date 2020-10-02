@@ -48,26 +48,44 @@ async def on_member_ban(guild, user):
         roleObj = guild.get_role(combinedDict['Moderator'])
         await ban_initiator.remove_roles(roleObj)
 
+#I need to do the mute commands
 
-@commands.command()
+#I need to do the cooldown command
+
+
+@client.command()
+@commands.has_role("Moderator")
 async def clear(ctx,amount=5):
     await ctx.channel.purge(limit=amount)
     print (f'Bot cleared {amount} messages')
 
-@commands.command()
-async def kick(ctx, member : discord.Member, *, reason=None):
-    await ctx.channel.send("This command hasn't been coded yet")
-#    await member.kick(reason=reason)
-#    await ctx.channel.purge (limit=1)
-#    print (f'{member} was kicked from the server')
+@client.command()
+@commands.has_role("Moderator")
+async def ban (ctx, member:discord.User=None, reason =None):
+    if member == None or member == ctx.message.author:
+        await ctx.channel.send("You cannot ban yourself")
+        return
+    if reason == None:
+        reason = "For being a jerk!"
+    message = f"https://tenor.com/view/banned-and-you-are-banned-explosion-yoshi-hammer-gif-17493177"
+    channel = client.get_channel(557201575270154241)
+    await member.send(message)
+    await ctx.guild.ban(member, reason=reason)
+    await channel.send(f"{member} is banned!")
 
-@commands.command()
-async def ban(ctx, member : discord.Member, *, reason=None):
-    await ctx.channel.send("This command hasn't been coded yet")
-#    await member.ban(reason=reason)
-#    await ctx.channel.purge (limit=1)
-#    print (f'{member} was banned from the server')
-
+@client.command()
+@commands.has_role("Moderator")
+async def kick (ctx, member:discord.User=None, reason =None):
+    if member == None or member == ctx.message.author:
+        await ctx.channel.send("You cannot kick yourself")
+        return
+    if reason == None:
+        reason = "For being a jerk!"
+    message = f"https://tenor.com/view/get-out-gif-9615975"
+    channel = client.get_channel(557201575270154241)
+    await member.send(message)
+    await ctx.guild.kick(member, reason=reason)
+    await channel.send(f"{member} has been kicked!")
 
 @commands.command()
 async def lynch(ctx, member : discord.Member):

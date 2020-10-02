@@ -4,7 +4,7 @@
 2) When some is striked they can still talk in VC
 3) Bot auto deltes messages from bots with links
 4) moderation commands arent working right now
-
+5) If user joins another server the bot is in, the bot still sends welcome message to NoPorn
 
 ## Ideas
 
