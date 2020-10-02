@@ -86,6 +86,7 @@ async def kick (ctx, member:discord.User=None, reason =None):
         reason = "For being a jerk!"
     message = f"https://tenor.com/view/get-out-gif-9615975"
     channel = client.get_channel(557201575270154241)
+    break
     await member.send(message)
     await ctx.guild.kick(member, reason=reason)
     await channel.send(f"{member} has been kicked!")
