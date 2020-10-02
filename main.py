@@ -117,6 +117,22 @@ async def startChallenge(ctx):
         await ctx.send(f"Challenge participants {len(newParticipants)}")
         print(len(newParticipants))
 
+## DM Cog
+
+@client.event
+async def on_message(message):
+    channel = client.get_channel(699110029806272592)
+    if message.guild is None and message.author != client.user:
+        await channel.send(f"<@{message.author.id}> said: {message.content}")
+    await client.process_commands(message)
+
+@client.command()
+async def dm(ctx, member: discord.Member, *, content):
+    channel = await member.create_dm()
+    await channel.send(content)
+
+## /DM Cog
+
 # uniqueCategoryNames = ['genderRoles', 'continentRoles', 'religionRoles', 'modeRoles']
 # additionalCategoryName = 'otherRoles'
 # categoryDictsList = list(map(lambda a: idData[a], uniqueCategoryNames+[additionalCategoryName]))
