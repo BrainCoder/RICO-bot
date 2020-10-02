@@ -7,7 +7,7 @@ client.add_command(relapse)
 client.add_command(update)
 client.add_listener(on_member_ban)
 #client.add_command(clear)
-#client.add_command(kick)
+client.add_command(kick)
 client.add_command(ban)
 client.add_command(lynch)
 
@@ -32,24 +32,6 @@ async def mCount_update():
 async def on_ready():
     print('Bot is active')
     await mCount_update()
-
-## DEL test
-
-@commands.command()
-@commands.has_role("Moderator")
-async def kick (ctx, member:discord.User=None, reason =None):
-    if member == None or member == ctx.message.author:
-        await ctx.channel.send("You cannot kick yourself")
-        return
-    if reason == None:
-        reason = "For being a jerk!"
-    message = f"https://tenor.com/view/get-out-gif-9615975"
-    channel = client.get_channel(557201575270154241)
-    await member.send(message)
-    await ctx.guild.kick(member, reason=reason)
-    await channel.send(f"{member} has been kicked!")
-
-##DEL TEST
 
 @client.command()
 async def LTest(ctx):
