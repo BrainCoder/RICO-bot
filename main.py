@@ -34,6 +34,11 @@ async def on_ready():
     await mCount_update()
 
 @client.command()
+async def LTest():
+    channel = client.get_channel(557201575270154241)
+    await channel.send(f'This is a test message')
+
+@client.command()
 async def DoSomething(ctx):
     await ctx.channel.send("*Does your mum*")
 
