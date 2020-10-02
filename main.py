@@ -7,9 +7,9 @@ client.add_command(relapse)
 client.add_command(update)
 #client.add_listener(on_member_ban)
 #client.add_command(clear)
-client.add_command(kick)
-client.add_command(ban)
-client.add_command(lynch)
+#client.add_command(kick)
+#client.add_command(ban)
+#client.add_command(lynch)
 
 
 
