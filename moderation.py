@@ -53,13 +53,13 @@ async def on_member_ban(guild, user):
 #I need to do the cooldown command
 
 
-@client.command()
+@commands.command()
 @commands.has_role("Moderator")
 async def clear(ctx,amount=5):
     await ctx.channel.purge(limit=amount)
     print (f'Bot cleared {amount} messages')
 
-@client.command()
+@commands.command()
 @commands.has_role("Moderator")
 async def ban (ctx, member:discord.User=None, reason =None):
     if member == None or member == ctx.message.author:
@@ -73,7 +73,7 @@ async def ban (ctx, member:discord.User=None, reason =None):
     await ctx.guild.ban(member, reason=reason)
     await channel.send(f"{member} is banned!")
 
-@client.command()
+@commands.command()
 @commands.has_role("Moderator")
 async def kick (ctx, member:discord.User=None, reason =None):
     if member == None or member == ctx.message.author:
