@@ -1,6 +1,8 @@
 from enum import IntEnum, unique, auto
 from utils import *
 
+client=commands.Bot(command_prefix='!')
+
 @unique
 class Perm(IntEnum):
     MUTED = auto()
