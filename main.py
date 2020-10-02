@@ -34,7 +34,7 @@ async def on_ready():
     await mCount_update()
 
 @client.command()
-async def LTest():
+async def LTest(ctx):
     channel = client.get_channel(557201575270154241)
     await channel.send(f'This is a test message')
 
