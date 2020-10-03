@@ -3,7 +3,7 @@ import traceback
 import sys
 from discord.ext import commands
 
-
+client=commands.Bot(command_prefix='!')
 class CommandErrorHandler(commands.Cog):
 
     def __init__(self, client):
