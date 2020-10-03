@@ -52,7 +52,5 @@ class MonthlyChallenge(commands.Cog):
             await ctx.send(f"Challenge participants {len(newParticipants)}")
             print(len(newParticipants))
 
-
-
 def setup(client):
     client.add_cog(MonthlyChallenge(client))
