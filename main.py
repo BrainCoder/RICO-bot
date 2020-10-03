@@ -35,11 +35,6 @@ async def on_ready():
     await client.change_presence(status=discord.Status.online, activity=discord.Game('DM me with complaints!'))
 
 @client.command()
-async def LTest(ctx):
-    channel = client.get_channel(557201575270154241)
-    await channel.send(f'This is a test message')
-
-@client.command()
 async def DoSomething(ctx):
     await ctx.channel.send("*Does your mum*")
 
@@ -53,16 +48,15 @@ async def monthStart():
         await asyncio.sleep(secondsToSleep)
         await startChallenge(channel)
 
-"""
-async def hourly():
-    while True:
-        await asyncio.sleep(60*60)
-        for key in banDict:
-            if banDict[key] > 0:
-                banDict[key] -= 1
-            else:
-                del banDict[key]
-"""
+#async def hourly():
+#    while True:
+#        await asyncio.sleep(60*60)
+#        for key in banDict:
+#            if banDict[key] > 0:
+#                banDict[key] -= 1
+#            else:
+#                del banDict[key]
+
 @client.event
 async def on_member_join(member):
     channel = client.get_channel(519455122602983424)
@@ -134,6 +128,15 @@ async def dm(ctx, member: discord.Member, *, content):
     await channel.send(content)
 
 ## /DM Cog
+
+## Checklist function
+
+@client.command(checks=[is_in_channel3()])
+async def cl(ctx):
+    channel = client.get_channel(761759598419640341)
+    await channel.send(f"<@{author.id}> - {message.content}")
+
+## Checklist function
 
 # uniqueCategoryNames = ['genderRoles', 'continentRoles', 'religionRoles', 'modeRoles']
 # additionalCategoryName = 'otherRoles'
