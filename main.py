@@ -105,15 +105,6 @@ async def on_member_join(member):
     asyncio.create_task(monthStart())
     asyncio.create_task(hourly())
 
-
-# To ignore command not found and command check exceptions:
-# Use the error cog given in the discord.api support server
-@client.event
-async def on_command_error(ctx, error):
-    if isinstance(error, CommandNotFound) or isinstance(error, CheckFailure):
-        return
-    raise error
-
 ## DM Cog
 
 @client.event
