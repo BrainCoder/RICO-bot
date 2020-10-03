@@ -11,10 +11,6 @@ class moderations(commands.Cog):
 
 
 
-    @commands.command()
-    async def ping(self, ctx):
-        await ctx.send('fuck!')
-        print ('test')
 
 
 

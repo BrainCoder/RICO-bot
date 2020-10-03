@@ -47,6 +47,7 @@ async def remove_role(member):
 @commands.command(checks=[is_in_channel()])
 async def relapse(ctx, *args):
     role = discord.utils.get(ctx.guild.roles, name='MonthlyChallenge-participant')
+    role = discord.utils.get(ctx.guild.roles, name='M-Challenge_Participant')
     await ctx.author.remove_roles(role)
     maxDays = 365 * 10
     n_days = 0
