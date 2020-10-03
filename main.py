@@ -1,5 +1,5 @@
 from utils import *
-#from streak import *
+from streak import *
 #from moderation import *
 
 client=commands.Bot(command_prefix='!')
