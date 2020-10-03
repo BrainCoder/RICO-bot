@@ -170,4 +170,6 @@ async def cl(ctx,*,message):
 #             return
 
 
-client.run('NzQ5ODM2MjYzOTU1MTAzNzc0.X0xxcA.lMlc9yHnXkr_tJC9xVXtAefUGD0')
+with open ('token.txt', 'rt') as myfile:
+        contents = myfile.read()
+        client.run(f'{contents}')
