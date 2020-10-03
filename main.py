@@ -12,8 +12,8 @@ from discord.utils import get
 import asyncio
 
 #client.add_command(reset)
-client.add_command(relapse)
-client.add_command(update)
+#client.add_command(relapse)
+#client.add_command(update)
 #client.add_listener(on_member_ban)
 #client.add_command(clear)
 #client.add_command(kick)
