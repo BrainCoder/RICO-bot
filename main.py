@@ -32,6 +32,7 @@ async def mCount_update():
 async def on_ready():
     print('Bot is active')
     await mCount_update()
+    await client.change_presence(status=discord.Status.online, activity=discord.Game('DM me with complaints!'))
 
 @client.command()
 async def LTest(ctx):
