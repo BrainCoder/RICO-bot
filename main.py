@@ -20,10 +20,6 @@ client.add_command(update)
 #client.add_command(ban)
 #client.add_command(lynch)
 
-#channels = {'botlog': 743056752446275596,
-#            'botlab': 744145383592296588,
-#            'streak': 745452658545918042}!update
-
 async def mCount_update():
     threading.Timer(1800, mCount_update).start()
     for guild in client.guilds:
