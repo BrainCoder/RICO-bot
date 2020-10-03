@@ -7,7 +7,7 @@ client.add_command(relapse)
 client.add_command(update)
 #client.add_listener(on_member_ban)
 #client.add_command(clear)
-#client.add_command(kick)
+client.add_command(kick)
 #client.add_command(ban)
 #client.add_command(lynch)
 
@@ -127,7 +127,7 @@ async def on_message(message):
         await channel.send(f"<@{message.author.id}> said: {message.content}")
     await client.process_commands(message)
 
-@client.command()
+@client.command(checks=[is_in_channel2()])
 async def dm(ctx, member: discord.Member, *, content):
     channel = await member.create_dm()
     await channel.send(content)
