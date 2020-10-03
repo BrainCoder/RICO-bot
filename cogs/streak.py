@@ -181,4 +181,4 @@ async def getEmergencyPicture():
 
 
 def setup(client):
-    client.add_cog(SetReaction(client))
+    client.add_cog(streak(client))
