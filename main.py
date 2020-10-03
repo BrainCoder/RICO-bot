@@ -81,13 +81,6 @@ async def hourly():
                 del banDict[key]
 """
 
-@client.event
-async def on_ready():
-    print('Bot is active')
-    await client.change_presence(status=discord.Status.online, activity=discord.Game('dm to speak with mods'))
-    #asyncio.create_task(monthStart())
-    #asyncio.create_task(hourly())
-
 #async def hourly():
 #    while True:
 #        await asyncio.sleep(60*60)
