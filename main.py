@@ -1,7 +1,9 @@
 from utils import *
 from streak import *
 #from moderation import *
+
 client=commands.Bot(command_prefix='!')
+
 #import moderation
 import discord
 import os
@@ -17,10 +19,6 @@ client.add_command(update)
 #client.add_command(kick)
 #client.add_command(ban)
 #client.add_command(lynch)
-
-
-
-
 
 #channels = {'botlog': 743056752446275596,
 #            'botlab': 744145383592296588,
@@ -46,7 +44,6 @@ async def on_ready():
 @client.command()
 async def DoSomething(ctx):
     await ctx.channel.send("*Does your mum*")
-
 
 @client.command()
 async def load(ctx, extension):
