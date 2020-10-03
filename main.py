@@ -7,7 +7,7 @@ client.add_command(relapse)
 client.add_command(update)
 #client.add_listener(on_member_ban)
 #client.add_command(clear)
-client.add_command(kick)
+#client.add_command(kick)
 #client.add_command(ban)
 #client.add_command(lynch)
 
@@ -73,6 +73,7 @@ async def on_member_join(member):
 
 
 # To ignore command not found and command check exceptions:
+# Use the error cog given in the discord.api support server
 @client.event
 async def on_command_error(ctx, error):
     if isinstance(error, CommandNotFound) or isinstance(error, CheckFailure):
