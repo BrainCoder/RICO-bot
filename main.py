@@ -1,8 +1,15 @@
 from utils import *
 from streak import *
-from moderation import *
+#from moderation import *
 client=commands.Bot(command_prefix='!')
-client.add_command(reset)
+#import moderation
+import discord
+import os
+from discord.ext import commands
+from discord.utils import get
+import asyncio
+
+#client.add_command(reset)
 client.add_command(relapse)
 client.add_command(update)
 #client.add_listener(on_member_ban)
@@ -10,6 +17,8 @@ client.add_command(update)
 #client.add_command(kick)
 #client.add_command(ban)
 #client.add_command(lynch)
+
+
 
 
 
@@ -38,6 +47,26 @@ async def on_ready():
 async def DoSomething(ctx):
     await ctx.channel.send("*Does your mum*")
 
+
+@client.command()
+async def load(ctx, extension):
+    client.load_extension(f'cogs.{extension}')
+
+@client.command()
+async def unload(ctx, extension):
+    client.unload_extension(f'cogs.{extension}')
+
+@client.command()
+async def reload(ctx, extension):
+    client.unload_extension(f'cogs.{extension}')
+    client.load_extension(f'cogs.{extension}')
+
+for filename in os.listdir('./cogs'):
+    if filename.endswith('.py'):
+        client.load_extension(f'cogs.{filename[:-3]}')
+
+
+"""
 async def monthStart():
     while True:
         now = datetime.today()
@@ -46,7 +75,25 @@ async def monthStart():
         secondsToSleep = (datetime(y, m, 1) - datetime.today()).total_seconds()
         channel = client.get_channel(582650072672632833)
         await asyncio.sleep(secondsToSleep)
-        await startChallenge(channel)
+        await startChallenge()
+"""
+"""
+async def hourly():
+    while True:
+        await asyncio.sleep(60*60)
+        for key in banDict:
+            if banDict[key] > 0:
+                banDict[key] -= 1
+            else:
+                del banDict[key]
+"""
+
+@client.event
+async def on_ready():
+    print('Bot is active')
+    await client.change_presence(status=discord.Status.online, activity=discord.Game('dm to speak with mods'))
+    #asyncio.create_task(monthStart())
+    #asyncio.create_task(hourly())
 
 #async def hourly():
 #    while True:
@@ -74,45 +121,6 @@ async def on_command_error(ctx, error):
         return
     raise error
 
-@client.command(pass_context=True)
-@commands.has_permissions(ban_members=True)
-async def endChallenge(ctx):
-    print('Ending challenge now.')
-    for guild in client.guilds:
-        signupRole = guild.get_role(582640858378272793)
-        participationRole = guild.get_role(582649176601657365)
-        members = await guild.fetch_members(limit=None).flatten()
-        newParticipants = []
-        for member in members:
-            for role in member.roles:
-                if role.id == 582640858378272793:
-                    client.loop.create_task(member.remove_roles(signupRole))
-                    newParticipants.append(member)
-                    client.loop.create_task(member.add_roles(participationRole))
-                    break
-        await ctx.send(f"Challenge Winners {len(newParticipants)}")
-        print(len(newParticipants))
-
-@client.command(pass_context=True)
-@commands.has_permissions(ban_members=True)
-async def startChallenge(ctx):
-    print('Starting new month now.')
-    for guild in client.guilds:
-        signupRole = guild.get_role(582648694017490945)
-        participationRole = guild.get_role(582640858378272793)
-        members = await guild.fetch_members(limit=None).flatten()
-        newParticipants = []
-        for member in members:
-            for role in member.roles:
-                if role.id == 582648694017490945:
-                    client.loop.create_task(member.remove_roles(signupRole))
-                    newParticipants.append(member)
-                    client.loop.create_task(member.add_roles(participationRole))
-                    break
-
-        await ctx.send(f"Challenge participants {len(newParticipants)}")
-        print(len(newParticipants))
-
 ## DM Cog
 
 @client.event
@@ -138,37 +146,7 @@ async def cl(ctx,*,message):
 
 ## Checklist function
 
-# uniqueCategoryNames = ['genderRoles', 'continentRoles', 'religionRoles', 'modeRoles']
-# additionalCategoryName = 'otherRoles'
-# categoryDictsList = list(map(lambda a: idData[a], uniqueCategoryNames+[additionalCategoryName]))
-# combinedDict = functools.reduce(lambda a,b: {**a, **b}, categoryDictsList)
-#
-# uniqueRolesCategorized = list(map(lambda a: list(idData[a].keys()), uniqueCategoryNames))
-# additionalRolesCategorized = list(idData[additionalCategoryName].keys())
-# rolesLower = list(map(lambda a: a.lower(),combinedDict.keys()))
-# @client.command(aliases=rolesLower)
-# async def roleDistributor(ctx):
-#     if(ctx.invoked_with == "roleDistributor"):
-#         return
-#     print(ctx.invoked_with)
-#     ownedRoleIds = list(map(lambda a: a.id, ctx.author.roles))
-#     formated = uniqueRolesCategorized+list(map(lambda a: [a], additionalRolesCategorized))
-#     for category in formated:
-#         if ctx.invoked_with in category:
-#             for role in category:
-#                 if combinedDict[role] in ownedRoleIds:
-#                     if role in idData['genderRoles'].keys():
-#                         return
-#                     roleObj = ctx.guild.get_role(combinedDict[role])
-#                     await member.remove_roles(roleObj)
-#                     if role != ctx.invoked_with:
-#                         roleObj = ctx.guild.get_role(combinedDict[ctx.invoked_with])
-#                         await member.add_roles(roleObj)
-#                     return
-#             roleObj = ctx.guild.get_role(combinedDict[ctx.invoked_with])
-#             await member.add_roles(roleObj)
-#             return
-
+#client.run('NzYwNTkzODQwNDE5MjQyMDI0.X3OUNg.LUpzU6B589BBRfca5ae1BnS1wv4')
 
 with open ('token.txt', 'rt') as myfile:
         contents = myfile.read()

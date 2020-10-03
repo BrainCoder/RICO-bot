@@ -2,7 +2,7 @@ import aiohttp
 from PIL import Image
 import io
 from utils import *
-
+import discord
 def create_table():
     meta.create_all(engine)
 #create_table()
@@ -39,7 +39,10 @@ async def reset(ctx, *args):
     .delete()
     .where(userdata.c.id == ctx.author.id))
     conn.execute(query)
-    await ctx.channel.send(f'Your streak was reset.')
+
+async def remove_role(member):
+    role = discord.utils.get(ctx.guild.roles, name='M-Challenge_Participant')
+    await member.remove_roles(role)
 
 @commands.command(checks=[is_in_channel()])
 async def relapse(ctx, *args):
@@ -109,7 +112,7 @@ async def update(ctx):
         total_streak_length = (datetime.today() - last_starting_date).total_seconds()
         [daysStr, middleStr, hoursStr] = getStreakString(total_streak_length)
         await updateStreakRole(ctx.author, last_starting_date)
-        await ctx.channel.send(f'Your streak is {daysStr}{middleStr}{hoursStr} long.')
+        await ctx.channel.send(f'Your streak was {daysStr}{middleStr}{hoursStr} long.')
     else:
         await ctx.channel.send("No data about you available do !relapse .")
 
@@ -136,6 +139,10 @@ async def updateStreakRole(member, startingDate):
         await member.remove_roles(roleObj)
     roleObj = member.guild.get_role(deserved)
     await member.add_roles(roleObj)
+
+
+
+
 
 url = "https://emergency.nofap.com/director.php?cat=em&religious=false"
 async def getEmergencyPicture():
