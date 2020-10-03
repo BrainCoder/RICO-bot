@@ -134,7 +134,7 @@ async def dm(ctx, member: discord.Member, *, content):
 @client.command(checks=[is_in_channel3()])
 async def cl(ctx,*,message):
     channel = client.get_channel(761759598419640341)
-    await channel.send(f"<@{ctx.author.id}>: {message}")
+    await channel.send(f"<@{ctx.author.id}>: \n{message}")
 
 ## Checklist function
 
