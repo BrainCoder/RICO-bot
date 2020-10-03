@@ -1,6 +1,8 @@
 from enum import IntEnum, unique, auto
 from utils import *
-
+import discord
+from discord.ext import commands
+client=commands.Bot(command_prefix='!')
 @unique
 class Perm(IntEnum):
     MUTED = auto()
@@ -23,8 +25,10 @@ async def hourly():
                 del banDict[key]
 
 
+#client=commands.Bot(command_prefix='!')
+
 # To prevent mass bans
-#@commands.event
+#client.event
 async def on_member_ban(guild, user):
     if (datetime.today() - user.joined_at).days < 3:
         return
@@ -54,17 +58,43 @@ async def clear(ctx,amount=5):
     await ctx.channel.purge(limit=amount)
     print (f'Bot cleared {amount} messages')
 
-@commands.command()
-async def kick(ctx, member : discord.Member, *, reason=None):
-    await member.kick(reason=reason)
-    await ctx.channel.purge (limit=1)
-    print (f'{member} was kicked from the server')
+
+@client.command()
+async def kick (ctx, member:discord.User=None, reason =None):
+    if member == None or member == ctx.message.author:
+        await ctx.channel.send("You cannot kick yourself")
+        return
+    if reason == None:
+        reason = "For being a jerk!"
+    message = f"https://tenor.com/view/get-out-gif-9615975"
+    channel = client.get_channel(758576163630350366)
+    #await member.send(message)
+    await ctx.guild.kick(member, reason=reason)
+    await channel.send(f"{member} has been kicked!")
 
 @commands.command()
 async def ban(ctx, member : discord.Member, *, reason=None):
     await member.ban(reason=reason)
     await ctx.channel.purge (limit=1)
     print (f'{member} was banned from the server')
+
+
+
+
+
+    @client.command()
+    @client.has_permissions(administrator=True)
+    async def ban(ctx, member: discord.Member, reason=None):
+        """Bans a user"""
+        if reason == None:
+            await ctx.send(f"Woah {ctx.author.mention}, Make sure you provide a reason!")
+        else:
+            messageok = f"You have been banned from {ctx.guild.name} for {reason}"
+            await member.send(messageok)
+            await member.ban(reason=reason)
+
+
+
 
 
 @commands.command()
@@ -74,19 +104,19 @@ async def lynch(ctx, member : discord.Member):
 
 async def getMemberLevel(member):
     memberLevel = None
-    if(member.roles.has(otherRoles.get('Admin'))):
+    if(member.roles.has(statusRoles.get('Admin'))):
         memberLevel = Perm.ADMIN
-    elif(member.roles.has(otherRoles.get('Manager'))):
+    elif(member.roles.has(statusRoles.get('Manager'))):
         memberLevel = Perm.HMOD
-    elif(member.roles.has(otherRoles.get('Moderator'))):
+    elif(member.roles.has(statusRoles.get('Moderator'))):
         memberLevel = Perm.MOD
-    elif(member.roles.has(otherRoles.get('Honorable'))):
+    elif(member.roles.has(statusRoles.get('Honorable'))):
         memberLevel = Perm.SMOD
-    elif(member.roles.has(otherRoles.get('Member'))):
+    elif(member.roles.has(statusRoles.get('Member'))):
         memberLevel = Perm.MEMBER
     else:
         memberLevel = Perm.GUEST
-    return memberLevel;
+    return memberLevel
 
 
 

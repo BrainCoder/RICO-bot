@@ -1,15 +1,24 @@
 from utils import *
 from streak import *
-from moderation import *
+#from moderation import *
 client=commands.Bot(command_prefix='!')
-client.add_command(reset)
+import moderation
+import discord
+import os
+from discord.ext import commands
+from discord.utils import get
+import asyncio
+
+#client.add_command(reset)
 client.add_command(relapse)
 client.add_command(update)
-client.add_listener(on_member_ban)
+#client.add_listener(on_member_ban)
 #client.add_command(clear)
 #client.add_command(kick)
 #client.add_command(ban)
 #client.add_command(lynch)
+
+
 
 
 
@@ -19,6 +28,26 @@ client.add_listener(on_member_ban)
 
 
 
+
+@client.command()
+async def load(ctx, extension):
+    client.load_extension(f'cogs.{extension}')
+
+@client.command()
+async def unload(ctx, extension):
+    client.unload_extension(f'cogs.{extension}')
+
+@client.command()
+async def reload(ctx, extension):
+    client.unload_extension(f'cogs.{extension}')
+    client.load_extension(f'cogs.{extension}')
+
+for filename in os.listdir('./cogs'):
+    if filename.endswith('.py'):
+        client.load_extension(f'cogs.{filename[:-3]}')
+
+
+"""
 async def monthStart():
     while True:
         now = datetime.today()
@@ -27,7 +56,8 @@ async def monthStart():
         secondsToSleep = (datetime(y, m, 1) - datetime.today()).total_seconds()
         await asyncio.sleep(secondsToSleep)
         await startChallenge()
-
+"""
+"""
 async def hourly():
     while True:
         await asyncio.sleep(60*60)
@@ -36,13 +66,14 @@ async def hourly():
                 banDict[key] -= 1
             else:
                 del banDict[key]
+"""
 
 @client.event
 async def on_ready():
     print('Bot is active')
-
-    asyncio.create_task(monthStart())
-    asyncio.create_task(hourly())
+    await client.change_presence(status=discord.Status.online, activity=discord.Game('dm to speak with mods'))
+    #asyncio.create_task(monthStart())
+    #asyncio.create_task(hourly())
 
 
 # To ignore command not found and command check exceptions:
@@ -52,21 +83,65 @@ async def on_command_error(ctx, error):
         return
     raise error
 
-async def startChallenge():
-    print('Starting new month now.')
-    for guild in client.guilds:
-        signupRole = guild.get_role(roles['teamchallenge-signup'])
-        members = await guild.fetch_members(limit=None).flatten()
-        newParticipants = []
+
+@client.event
+async def on_message(message):
+    channel = client.get_channel(758576163630350366)
+    if message.guild is None and message.author != client.user:
+        await channel.send(f"<@{message.author.id}> said: {message.content}")  # send messsage into channel
+    await client.process_commands(message)
+
+@client.command()
+async def dm(ctx, member: discord.Member, *, content):
+    channel = await member.create_dm()  # creates a DM channel for mentioned user
+    await channel.send(content)  # send whatever in the content to the mentioned user.
+
+
+
+@client.command()
+@commands.has_permissions(administrator=True, manage_messages=True, manage_roles=True)
+async def nuke(ctx, amount=100000):
+      await ctx.message.delete()
+      await ctx.channel.purge(limit=amount)
+      await ctx.send("chat nuked")
+
+#@commands.is_owner()  # The account that owns the bot
+
+
+
+
+
+@client.command()
+@commands.has_permissions(administrator=True)
+async def avatar(ctx, *,  avamember : discord.Member=None):
+    userAvatarUrl = avamember.avatar_url
+    await ctx.send(f"{ctx.author}'s avatar is: {userAvatarUrl}")
+
+url2 = "https://emergency.nofap.com/director.php?cat=em&religious=false"
+
+
+
+client.reaction_roles = []
+
+
+
+
+
+
+@client.command()
+async def dm_all(ctx, *, args=None):
+    if args != None:
+        members = ctx.guild.members
         for member in members:
-            for role in member.roles:
-                if role.id == roles['teamchallenge-signup']:
-                    client.loop.create_task(member.remove_roles(signupRole))
-                    newParticipants.append(member)
-                    break
-        print(len(newParticipants))
+            try:
+                await member.send(args)
+                print("'" + args + "' sent to: " + member.name)
 
+            except:
+                print("Couldn't send '" + args + "' to: " + member.name)
 
+    else:
+        await ctx.channel.send("A message was not provided.")
 
 
 # uniqueCategoryNames = ['genderRoles', 'continentRoles', 'religionRoles', 'modeRoles']
@@ -101,4 +176,9 @@ async def startChallenge():
 #             return
 
 
-client.run('NzQ5ODM2MjYzOTU1MTAzNzc0.X0xxcA.lMlc9yHnXkr_tJC9xVXtAefUGD0')
+client.run('NzYwNTkzODQwNDE5MjQyMDI0.X3OUNg.LUpzU6B589BBRfca5ae1BnS1wv4')
+
+#NzQ5ODM2MjYzOTU1MTAzNzc0.X0xxcA.wrZ-tylfYU5k721t7kk3OI4LVRE No Porn
+
+#NzYwNTc4OTIxNjMyMzY2NjQy.X3OGUQ.1dg11jaoJze7l6MVAAsccC0jXrQ Dank Meme
+
