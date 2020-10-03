@@ -28,22 +28,17 @@ async def waitThenRun(seconds, fn):
     await fn()
 
 # Check function to find out if the message came from a permitted channel:
+
+# Main Streak
 def is_in_channel():
     def inside_fn(ctx):
         #channelName = 760244981838512158
-        if ctx.channel.id == 757696811497422972:
+        if ctx.channel.id == 760427949421363230:
             return True
         return False
     return inside_fn
 
-def is_in_channel2():
-    def inside_fn(ctx):
-        #channelName = 760244981838512158
-        if ctx.channel.id == 757696919169400862:
-            return True
-        return False
-    return inside_fn
-
+# Complaints Channel
 def is_in_channel2():
     def inside_fn(ctx):
         #channelName = 760244981838512158

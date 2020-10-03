@@ -75,7 +75,6 @@ async def monthStart():
         secondsToSleep = (datetime(y, m, 1) - datetime.today()).total_seconds()
         channel = client.get_channel(582650072672632833)
         await asyncio.sleep(secondsToSleep)
-<<<<<<< HEAD
         await startChallenge()
 """
 """
@@ -122,56 +121,6 @@ async def on_command_error(ctx, error):
         return
     raise error
 
-
-
-
-
-@client.command()
-@commands.has_permissions(administrator=True, manage_messages=True, manage_roles=True)
-async def nuke(ctx, amount=100000):
-      await ctx.message.delete()
-      await ctx.channel.purge(limit=amount)
-      await ctx.send("chat nuked")
-
-#@commands.is_owner()  # The account that owns the bot
-
-
-
-
-
-@client.command()
-@commands.has_permissions(administrator=True)
-async def avatar(ctx, *,  avamember : discord.Member=None):
-    userAvatarUrl = avamember.avatar_url
-    await ctx.send(f"{ctx.author}'s avatar is: {userAvatarUrl}")
-
-url2 = "https://emergency.nofap.com/director.php?cat=em&religious=false"
-
-
-
-client.reaction_roles = []
-
-
-
-
-
-
-@client.command()
-async def dm_all(ctx, *, args=None):
-    if args != None:
-        members = ctx.guild.members
-        for member in members:
-            try:
-                await member.send(args)
-                print("'" + args + "' sent to: " + member.name)
-
-            except:
-                print("Couldn't send '" + args + "' to: " + member.name)
-
-    else:
-        await ctx.channel.send("A message was not provided.")
-
-
 ## DM Cog
 
 @client.event
@@ -196,38 +145,6 @@ async def cl(ctx,*,message):
     await channel.send(f"<@{ctx.author.id}>: \n{message}")
 
 ## Checklist function
-
-# uniqueCategoryNames = ['genderRoles', 'continentRoles', 'religionRoles', 'modeRoles']
-# additionalCategoryName = 'otherRoles'
-# categoryDictsList = list(map(lambda a: idData[a], uniqueCategoryNames+[additionalCategoryName]))
-# combinedDict = functools.reduce(lambda a,b: {**a, **b}, categoryDictsList)
-#
-# uniqueRolesCategorized = list(map(lambda a: list(idData[a].keys()), uniqueCategoryNames))
-# additionalRolesCategorized = list(idData[additionalCategoryName].keys())
-# rolesLower = list(map(lambda a: a.lower(),combinedDict.keys()))
-# @client.command(aliases=rolesLower)
-# async def roleDistributor(ctx):
-#     if(ctx.invoked_with == "roleDistributor"):
-#         return
-#     print(ctx.invoked_with)
-#     ownedRoleIds = list(map(lambda a: a.id, ctx.author.roles))
-#     formated = uniqueRolesCategorized+list(map(lambda a: [a], additionalRolesCategorized))
-#     for category in formated:
-#         if ctx.invoked_with in category:
-#             for role in category:
-#                 if combinedDict[role] in ownedRoleIds:
-#                     if role in idData['genderRoles'].keys():
-#                         return
-#                     roleObj = ctx.guild.get_role(combinedDict[role])
-#                     await member.remove_roles(roleObj)
-#                     if role != ctx.invoked_with:
-#                         roleObj = ctx.guild.get_role(combinedDict[ctx.invoked_with])
-#                         await member.add_roles(roleObj)
-#                     return
-#             roleObj = ctx.guild.get_role(combinedDict[ctx.invoked_with])
-#             await member.add_roles(roleObj)
-#             return
-
 
 #client.run('NzYwNTkzODQwNDE5MjQyMDI0.X3OUNg.LUpzU6B589BBRfca5ae1BnS1wv4')
 
