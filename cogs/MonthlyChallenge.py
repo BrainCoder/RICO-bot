@@ -2,7 +2,6 @@ import discord
 from discord.ext import commands
 from discord.utils import get
 
-client=commands.Bot(command_prefix='!')
 class MonthlyChallenge(commands.Cog):
 
     def __init__(self, client):
@@ -24,9 +23,10 @@ class MonthlyChallenge(commands.Cog):
             for member in members:
                 for role in member.roles:
                     if role.id == 582640858378272793:  # MonthlyChallenge-participant
+                        self.client.loop.create_task(member.remove_roles(signupRole))
                         client.loop.create_task(member.remove_roles(signupRole))
                         newParticipants.append(member)
-                        client.loop.create_task(member.add_roles(participationRole))
+                        self.client.loop.create_task(member.add_roles(participationRole))
                         break
             await ctx.send(f"Challenge Winners {len(newParticipants)}")
             print(len(newParticipants))
@@ -44,9 +44,10 @@ class MonthlyChallenge(commands.Cog):
             for member in members:
                 for role in member.roles:
                     if role.id == 582648694017490945:  # M-Challenge-Signup
+                        self.client.loop.create_task(member.remove_roles(signupRole))
                         client.loop.create_task(member.remove_roles(signupRole))
                         newParticipants.append(member)
-                        client.loop.create_task(member.add_roles(participationRole))
+                        self.client.loop.create_task(member.add_roles(participationRole))
                         break
 
             await ctx.send(f"Challenge participants {len(newParticipants)}")
