@@ -60,7 +60,7 @@ class ModCommands(commands.Cog):
         await channel.send(embed=embed)
 
     @commands.command()
-    @Commands.has_any_role('Moderator')
+    @commands.has_any_role('Moderator')
     async def mute (self, ctx, member: discord.User = None, *,reason=None):
         if reason == None:
             await ctx.channel.send('please give reason for mute')
@@ -75,7 +75,7 @@ class ModCommands(commands.Cog):
         embed.add_field(name=f"{member} has been Muted! ", value=f"**for:** {reason} Muted by: <@{ctx.author.id}>.")
         await channel.send(embed=embed)
 
-    
+
 
 def setup(client):
     client.add_cog(ModCommands(client))
