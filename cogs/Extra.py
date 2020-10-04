@@ -15,6 +15,17 @@ class Extra(commands.Cog):
         await ctx.channel.send("*Does your mum*")
 
     @client.command()
+    async def habibi(ctx):
+        await ctx.channel.send("""
+        \\
+            \\
+             <:despair:568237870288994315>     Pass the habibi down
+           /
+        /
+        """
+        )
+
+    @client.command()
     @commands.has_role("VIP")
     async def UI(self, ctx, *, member: discord.Member = None):
         DateCreated = member.created_at.strftime("%A, %B %d %Y at %H:%M:%S %p")
