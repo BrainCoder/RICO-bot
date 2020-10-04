@@ -32,7 +32,7 @@ class ModCommands(commands.Cog):
             reason = "For being a jerk!"
         message = f"https://tenor.com/view/get-out-gif-9615975"
         channel = self.client.get_channel(557201575270154241)#logs
-        await member.send(f"kicked for **{reason}** {message}" )
+        await member.send(f"kicked for **{reason}**\n{message}" )
         await ctx.guild.kick(member, reason=reason)
         userAvatarUrl = member.avatar_url
         embed = discord.Embed(color=ctx.author.color, timestamp=ctx.message.created_at)
@@ -51,7 +51,7 @@ class ModCommands(commands.Cog):
         message = f"https://tenor.com/view/get-out-gif-9615975"
         channel = self.client.get_channel(557201575270154241)#logs
         userAvatarUrl = member.avatar_url
-        await member.send(f"Banned for **{reason}** {message}" )
+        await member.send(f"Banned for **{reason}**\n{message}" )
         await ctx.guild.ban(member, reason=reason)
         embed = discord.Embed(color=ctx.author.color, timestamp=ctx.message.created_at)
         #await channel.send(f"{member} has been Banned! for **{reason}** banned by <@{ctx.author.id}>")

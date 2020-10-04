@@ -51,14 +51,14 @@ for filename in os.listdir('./cogs'):
 
 @client.event
 async def on_member_join(member):
-    channel = client.get_channel(519455122602983424)#welcome
+    channel = client.get_channel(519455122602983424)
     await channel.send(f'{member.mention} welcome! Please go to <#519455164894019584> to read an overview of what this server is about. Go to <#519627611836776490> and <#567283111273037834> to see the commands that you can use to assign yourself.')
 
 ## DM Cog
 
 @client.event
 async def on_message(message):
-    channel = client.get_channel(699110029806272592)#complaints
+    channel = client.get_channel(699110029806272592)
     if message.guild is None and message.author != client.user:
         await channel.send(f"<@{message.author.id}> said: {message.content}")
     await client.process_commands(message)

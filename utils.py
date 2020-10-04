@@ -48,15 +48,6 @@ def is_in_channel2():
         return False
     return inside_fn
 
-#cl check list for programmers
-def is_in_channel3():
-    def inside_fn(ctx):
-        #channelName = 760244981838512158
-        if ctx.channel.id == 761118232161157152:
-            return True
-        return False
-    return inside_fn
-
 """
 def hasPerms(ctx, requiredLevel):
     for role in idData['streakRoles']:

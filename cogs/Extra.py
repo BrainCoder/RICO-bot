@@ -1,17 +1,14 @@
-
-
 import discord
 from discord.ext import commands
 from discord.utils import get
 
 client=commands.Bot(command_prefix='!')
+
 class Extra(commands.Cog):
 
     def __init__(self, client):
         self.client = client
         self._last_member = None
-
-
 
     @client.command()
     async def DoSomething(self, ctx):
@@ -50,8 +47,6 @@ class Extra(commands.Cog):
     async def avatar(self, ctx, *, avamember: discord.Member = None):
         userAvatarUrl = avamember.avatar_url
         await ctx.send(f"{ctx.author}'s avatar is: {userAvatarUrl}")
-
-
 
 def setup(client):
     client.add_cog(Extra(client))
