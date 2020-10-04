@@ -158,14 +158,8 @@ async def logout(ctx):
 
 
 
-client.run('NzYwNTkzODQwNDE5MjQyMDI0.X3OUNg.LUpzU6B589BBRfca5ae1BnS1wv4')
-
-#with open ('token.txt', 'rt') as myfile:
- #       contents = myfile.read()
-  #      client.run(f'{contents}')
-
 #client.run('NzYwNTkzODQwNDE5MjQyMDI0.X3OUNg.LUpzU6B589BBRfca5ae1BnS1wv4')
 
-#with open ('token.txt', 'rt') as myfile:
- #       contents = myfile.read()
-   #     client.run(f'{contents}')
+with open ('token.txt', 'rt') as myfile:
+    contents = myfile.read()
+    client.run(f'{contents}')
