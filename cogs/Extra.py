@@ -22,7 +22,7 @@ class Extra(commands.Cog):
         await ctx.message.delete()
         await ctx.send("""
     _ _  \
-        <:despair:762105402682507284>     Pass the habibi down
+        <:despair:568237870288994315>     Pass the habibi down
        /
     /
     """)
