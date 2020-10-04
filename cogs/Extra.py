@@ -15,7 +15,7 @@ class Extra(commands.Cog):
         await ctx.channel.send("*Does your mum*")
 
     @client.command()
-    async def habibi(ctx):
+    async def habibi(self, ctx):
         await ctx.channel.send("""
         \\
             \\
