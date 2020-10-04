@@ -36,7 +36,7 @@ class ModCommands(commands.Cog):
             for discord.guild in self.client.guilds:
                 Mute_role = discord.guild.get_role(520288471399792670)
             #await member.send(f"Muted for '{reason}' by {author}\nTo resolve this mute please communicate with the memeber of staff who muted you")
-            await user.add_roles(Mute_role)
+            await user.add_roles('Muted')
             embed = discord.Embed(color=ctx.author.color, timestamp=ctx.message.created_at)
             #await channel.send(f"{user} has been Muted! for **{reason}** Muted by <@{ctx.author.id}>")
             embed.set_author(name="Mute", icon_url=userAvatarUrl)
@@ -50,7 +50,7 @@ class ModCommands(commands.Cog):
         for discord.guild in self.client.guilds:
             Unmute_Role = discord.guild.get_role(520288471399792670)
         channel = self.client.get_channel(557201575270154241)
-        await user.remove_roles(Unmute_Role)
+        await user.remove_roles('Muted')
         userAvatarUrl = user.avatar_url
         embed = discord.Embed(color=ctx.author.color, timestamp=ctx.message.created_at)
         #await channel.send(f"{member} has been Banned! for **{reason}** banned by <@{ctx.author.id}>")
