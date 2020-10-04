@@ -61,14 +61,14 @@ class ModCommands(commands.Cog):
 
     @commands.command()
     @commands.has_any_role('Moderator')
-    async def mute (self, ctx, member: discord.member, *,reason=None):
+    async def mute (self, ctx, member: discord.User, *,reason=None):
         if reason == None:
             await ctx.channel.send('please give reason for mute')
         author = ctx.message.author
         channel = self.client.get_channel(557201575270154241)
         userAvatarUrl = member.avatar_url
         await member.send(f"Muted for '{reason}' by {author}\nTo resolve this mute please communicate with the memeber of staff who muted you")
-        await member.add_roles(520288471399792670)
+        await member.add_roles('Muted')
         embed = discord.Embed(color=ctx.author.color, timestamp=ctx.message.created_at)
         #await channel.send(f"{member} has been Banned! for **{reason}** banned by <@{ctx.author.id}>")
         embed.set_author(name="Mute", icon_url=userAvatarUrl)
