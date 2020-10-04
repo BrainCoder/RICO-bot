@@ -61,7 +61,7 @@ class ModCommands(commands.Cog):
 
     @commands.command()
     @commands.has_any_role('Moderator')
-    async def mute (self, ctx, member: discord.User = None, *,reason=None):
+    async def mute (self, ctx, member: discord.member, *,reason=None):
         if reason == None:
             await ctx.channel.send('please give reason for mute')
         author = ctx.message.author
