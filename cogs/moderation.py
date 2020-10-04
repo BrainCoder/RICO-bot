@@ -31,7 +31,7 @@ class ModCommands(commands.Cog):
         if reason == None:
             reason = "For being a jerk!"
         message = f"https://tenor.com/view/get-out-gif-9615975"
-        channel = self.client.get_channel(758576163630350366)
+        channel = self.client.get_channel(557201575270154241)#logs
         await member.send(f"kicked for **{reason}** {message}" )
         await ctx.guild.kick(member, reason=reason)
         userAvatarUrl = member.avatar_url
@@ -49,7 +49,7 @@ class ModCommands(commands.Cog):
         if reason == None:
             reason = "For being a jerk!"
         message = f"https://tenor.com/view/get-out-gif-9615975"
-        channel = self.client.get_channel(758576163630350366)
+        channel = self.client.get_channel(557201575270154241)#logs
         userAvatarUrl = member.avatar_url
         await member.send(f"Banned for **{reason}** {message}" )
         await ctx.guild.ban(member, reason=reason)
@@ -58,17 +58,6 @@ class ModCommands(commands.Cog):
         embed.set_author(name="Ban", icon_url=userAvatarUrl)
         embed.add_field(name=f"{member} has been Banned! ", value=f"**for:** {reason} banned by: <@{ctx.author.id}>.")
         await channel.send(embed=embed)
-
-
-
-    @commands.command()
-    @commands.has_permissions(administrator=True)
-    async def nuke(self, ctx, amount=100000):
-        await ctx.message.delete()
-        await ctx.channel.purge(limit=amount)
-        await ctx.send("chat nuked")
-
-
 
 def setup(client):
     client.add_cog(ModCommands(client))

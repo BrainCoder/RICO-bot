@@ -14,7 +14,7 @@ import asyncio
 #client.add_command(reset)
 client.add_command(relapse)
 client.add_command(update)
-#client.add_listener(on_member_ban)
+#client.add_listenser(on_member_ban)
 #client.add_command(clear)
 #client.add_command(kick)
 #client.add_command(ban)
@@ -23,10 +23,10 @@ client.add_command(update)
 async def mCount_update():
     threading.Timer(1800, mCount_update).start()
     for guild in client.guilds:
-        if guild.id != 757696811497422969:
+        if guild.id != 519330541720436736:#server ID
             continue
         mCount = guild.member_count
-        channel = client.get_channel(761862028885229568)
+        channel = client.get_channel(761264831981682718)#MCount channel
         break
     print(f'There are now {mCount} mebers of this server')
     await channel.edit(name=(f'{mCount} members'))
@@ -100,7 +100,7 @@ async def on_ready():
 
 @client.event
 async def on_member_join(member):
-    channel = client.get_channel(519455122602983424)
+    channel = client.get_channel(519455122602983424)#welcome
     await channel.send(f'{member.mention} welcome! Please go to <#519455164894019584> to read an overview of what this server is about. Go to <#519627611836776490> and <#567283111273037834> to see the commands that you can use to assign yourself.')
 
     #asyncio.create_task(monthStart())
@@ -127,7 +127,7 @@ async def on_command_error(ctx, error):
 
 @client.event
 async def on_message(message):
-    channel = client.get_channel(699110029806272592)
+    channel = client.get_channel(699110029806272592)#complaints
     if message.guild is None and message.author != client.user:
         await channel.send(f"<@{message.author.id}> said: {message.content}")
     await client.process_commands(message)
@@ -143,7 +143,7 @@ async def dm(ctx, member: discord.Member, *, content):
 
 @client.command(checks=[is_in_channel3()])
 async def cl(ctx,*,message):
-    channel = client.get_channel(758576163630350366)
+    channel = client.get_channel(761759598419640341)#job board
     await channel.send(f"<@{ctx.author.id}>: \n{message}")
 
 
@@ -169,4 +169,3 @@ client.run('NzYwNTkzODQwNDE5MjQyMDI0.X3OUNg.LUpzU6B589BBRfca5ae1BnS1wv4')
 #with open ('token.txt', 'rt') as myfile:
  #       contents = myfile.read()
    #     client.run(f'{contents}')
-

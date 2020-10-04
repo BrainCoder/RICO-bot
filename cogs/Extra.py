@@ -28,7 +28,7 @@ class Extra(commands.Cog):
     """)
 
     @client.command()
-    @commands.has_role("daddy_role")
+    @commands.has_role("VIP")
     async def UI(self, ctx, *, member: discord.Member = None):
         DateCreated = member.created_at.strftime("%A, %B %d %Y at %H:%M:%S %p")
 
@@ -46,7 +46,7 @@ class Extra(commands.Cog):
         # await ctx.send(f"{ctx.author.name}'s avatar is: {userAvatarUrl}")
 
     @client.command()
-    @commands.has_role("daddy_role")
+    @commands.has_role("VIP")
     async def avatar(self, ctx, *, avamember: discord.Member = None):
         userAvatarUrl = avamember.avatar_url
         await ctx.send(f"{ctx.author}'s avatar is: {userAvatarUrl}")
@@ -55,5 +55,3 @@ class Extra(commands.Cog):
 
 def setup(client):
     client.add_cog(Extra(client))
-
-
