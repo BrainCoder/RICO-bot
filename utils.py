@@ -33,6 +33,8 @@ async def waitThenRun(seconds, fn):
 
 
 
+
+
 # Main Streak
 def is_in_channel():
     def inside_fn(ctx):
@@ -47,15 +49,6 @@ def is_in_channel2():
     def inside_fn(ctx):
         #channelName = 760244981838512158
         if ctx.channel.id == 699110029806272592:
-            return True
-        return False
-    return inside_fn
-
-#cl check list for programmers
-def is_in_channel3():
-    def inside_fn(ctx):
-        #channelName = 760244981838512158
-        if ctx.channel.id == 757696811497422972:
             return True
         return False
     return inside_fn
