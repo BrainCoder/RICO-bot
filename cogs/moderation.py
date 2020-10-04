@@ -68,7 +68,7 @@ class ModCommands(commands.Cog):
         channel = self.client.get_channel(557201575270154241)
         userAvatarUrl = member.avatar_url
         await member.send(f"Muted for '{reason}' by {author}\nTo resolve this mute please communicate with the memeber of staff who muted you")
-        await member.add_roles('Muted')
+        await self.client.add_roles('Muted')
         embed = discord.Embed(color=ctx.author.color, timestamp=ctx.message.created_at)
         #await channel.send(f"{member} has been Banned! for **{reason}** banned by <@{ctx.author.id}>")
         embed.set_author(name="Mute", icon_url=userAvatarUrl)
