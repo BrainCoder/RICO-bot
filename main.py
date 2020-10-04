@@ -1,7 +1,9 @@
 from utils import *
 from streak import *
 #from moderation import *
+
 client=commands.Bot(command_prefix='!')
+
 #import moderation
 import discord
 import os
@@ -17,14 +19,6 @@ client.add_command(update)
 #client.add_command(kick)
 #client.add_command(ban)
 #client.add_command(lynch)
-
-
-
-
-
-#channels = {'botlog': 743056752446275596,
-#            'botlab': 744145383592296588,
-#            'streak': 745452658545918042}!update
 
 async def mCount_update():
     threading.Timer(1800, mCount_update).start()
@@ -43,7 +37,6 @@ async def on_ready():
     print('Bot is active')
     await mCount_update()
     await client.change_presence(status=discord.Status.online, activity=discord.Game('DM me with complaints!'))
-
 
 
 @client.command()
@@ -74,7 +67,6 @@ async def monthStart():
         secondsToSleep = (datetime(y, m, 1) - datetime.today()).total_seconds()
         channel = client.get_channel(582650072672632833)
         await asyncio.sleep(secondsToSleep)
-<<<<<<< HEAD
         await startChallenge()
 """
 """
@@ -96,6 +88,7 @@ async def on_ready():
     #asyncio.create_task(monthStart())
     #asyncio.create_task(hourly())
 
+
 #async def hourly():
 #    while True:
 #        await asyncio.sleep(60*60)
@@ -114,6 +107,7 @@ async def on_member_join(member):
     #asyncio.create_task(hourly())
 
 
+
 # To ignore command not found and command check exceptions:
 # Use the error cog given in the discord.api support server
 @client.event
@@ -121,6 +115,7 @@ async def on_command_error(ctx, error):
     if isinstance(error, CommandNotFound) or isinstance(error, CheckFailure):
         return
     raise error
+
 
 
 
@@ -152,6 +147,7 @@ async def cl(ctx,*,message):
     await channel.send(f"<@{ctx.author.id}>: \n{message}")
 
 
+
 @client.command()
 @commands.has_permissions(administrator=True)
 async def logout(ctx):
@@ -167,3 +163,10 @@ client.run('NzYwNTkzODQwNDE5MjQyMDI0.X3OUNg.LUpzU6B589BBRfca5ae1BnS1wv4')
 #with open ('token.txt', 'rt') as myfile:
  #       contents = myfile.read()
   #      client.run(f'{contents}')
+
+#client.run('NzYwNTkzODQwNDE5MjQyMDI0.X3OUNg.LUpzU6B589BBRfca5ae1BnS1wv4')
+
+#with open ('token.txt', 'rt') as myfile:
+ #       contents = myfile.read()
+   #     client.run(f'{contents}')
+

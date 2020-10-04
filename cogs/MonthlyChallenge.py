@@ -24,6 +24,7 @@ class MonthlyChallenge(commands.Cog):
                 for role in member.roles:
                     if role.id == 582640858378272793:  # MonthlyChallenge-participant
                         self.client.loop.create_task(member.remove_roles(signupRole))
+                        client.loop.create_task(member.remove_roles(signupRole))
                         newParticipants.append(member)
                         self.client.loop.create_task(member.add_roles(participationRole))
                         break
@@ -44,14 +45,13 @@ class MonthlyChallenge(commands.Cog):
                 for role in member.roles:
                     if role.id == 582648694017490945:  # M-Challenge-Signup
                         self.client.loop.create_task(member.remove_roles(signupRole))
+                        client.loop.create_task(member.remove_roles(signupRole))
                         newParticipants.append(member)
                         self.client.loop.create_task(member.add_roles(participationRole))
                         break
 
             await ctx.send(f"Challenge participants {len(newParticipants)}")
             print(len(newParticipants))
-
-
 
 def setup(client):
     client.add_cog(MonthlyChallenge(client))

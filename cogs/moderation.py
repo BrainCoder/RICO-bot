@@ -34,7 +34,11 @@ class ModCommands(commands.Cog):
         channel = self.client.get_channel(758576163630350366)
         await member.send(f"kicked for **{reason}** {message}" )
         await ctx.guild.kick(member, reason=reason)
-        await channel.send(f"{member} has been kicked! for **{reason}** kicked by <@{ctx.author.id}>")
+        userAvatarUrl = member.avatar_url
+        embed = discord.Embed(color=ctx.author.color, timestamp=ctx.message.created_at)
+        embed.set_author(name="Kick", icon_url=userAvatarUrl)
+        embed.add_field(name=f"{member} has been Kicked! ", value=f"**for:** {reason} Kicked by: <@{ctx.author.id}>.")
+        await channel.send(embed=embed)
 
     @commands.command()
     @commands.has_permissions(ban_members=True)
