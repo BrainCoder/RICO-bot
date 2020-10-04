@@ -18,12 +18,11 @@ class Extra(commands.Cog):
     async def habibi(self, ctx):
         await ctx.message.delete()
         await ctx.send("""
-    _ _  \
-        <:despair:568237870288994315>     Pass the habibi down
-       /
-    /
+            \
+             <:despair:568237870288994315>     Pass the habibi down
+            /
+         /
     """)
-
     @client.command()
     @commands.has_role("VIP")
     async def UI(self, ctx, *, member: discord.Member = None):
