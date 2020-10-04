@@ -17,7 +17,7 @@ class Extra(commands.Cog):
     @client.command()
     async def habibi(self, ctx):
         await ctx.channel.send("""
-           \\
+                \\
             \\
              <:despair:568237870288994315>     Pass the habibi down
            /
