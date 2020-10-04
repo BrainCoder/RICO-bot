@@ -22,6 +22,29 @@ class ModCommands(commands.Cog):
         await user.add_roles(role)
         await ctx.send(f"role added {role}")
 
+
+
+    @commands.command()
+    @commands.has_permissions(manage_roles=True)
+    async def mute (self, ctx, user: discord.Member, *,reason=None):
+        if reason == None:
+            await ctx.channel.send('please give reason for mute')
+        elif reason != None:
+            author = ctx.message.author
+            channel = self.client.get_channel(557201575270154241)
+            userAvatarUrl = user.avatar_url
+            for discord.guild in self.client.guilds:
+                Mute_role = discord.guild.get_role(520288471399792670)
+            #await member.send(f"Muted for '{reason}' by {author}\nTo resolve this mute please communicate with the memeber of staff who muted you")
+            await user.add_roles(Mute_role)
+            embed = discord.Embed(color=ctx.author.color, timestamp=ctx.message.created_at)
+            await channel.send(f"{user} has been Muted! for **{reason}** Muted by <@{ctx.author.id}>")
+            embed.set_author(name="Mute", icon_url=userAvatarUrl)
+            embed.add_field(name=f"{user} has been Muted! ", value=f"**for:** {reason} Muted by: <@{ctx.author.id}>.")
+            await channel.send(embed=embed)
+
+
+
     @commands.command()
     @commands.has_permissions(kick_members=True)
     async def kick(self, ctx, member: discord.User = None, *, reason=None):

@@ -40,14 +40,17 @@ async def on_ready():
 
 
 @client.command()
+@commands.has_permissions(ban_members=True)
 async def load(ctx, extension):
     client.load_extension(f'cogs.{extension}')
 
 @client.command()
+@commands.has_permissions(ban_members=True)
 async def unload(ctx, extension):
     client.unload_extension(f'cogs.{extension}')
 
 @client.command()
+@commands.has_permissions(ban_members=True)
 async def reload(ctx, extension):
     client.unload_extension(f'cogs.{extension}')
     client.load_extension(f'cogs.{extension}')
@@ -80,13 +83,6 @@ async def hourly():
                 del banDict[key]
 """
 
-@client.event
-async def on_ready():
-    print('Bot is active')
-    await mCount_update()
-    await client.change_presence(status=discord.Status.online, activity=discord.Game('dm to speak with mods'))
-    #asyncio.create_task(monthStart())
-    #asyncio.create_task(hourly())
 
 
 #async def hourly():
