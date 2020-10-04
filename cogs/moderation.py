@@ -75,7 +75,30 @@ class ModCommands(commands.Cog):
         embed.add_field(name=f"{member} has been Muted! ", value=f"**for:** {reason} Muted by: <@{ctx.author.id}>.")
         await channel.send(embed=embed)
 
+    @commands.command()
+    @command.has_any_role('Moderator')
+    async def unmute (self, ctx, member: discord.user):
+        await discord.guild.Member.remove_roles(520288471399792670)
+        embed = discord.Embed(color=ctx.author.color, timestamp=ctx.message.created_at)
+        #await channel.send(f"{member} has been Banned! for **{reason}** banned by <@{ctx.author.id}>")
+        embed.set_author(name="Mute", icon_url=userAvatarUrl)
+        embed.add_field(name=f"{member} has been Muted! ", value=f"Unmuted by: <@{ctx.author.id}>.")
+        await channel.send(embed=embed)
 
+    @commands.command()
+    @commands.has_any_role('Moderator')
+    async def cooldown (self, ctx, member: discord.User, *,reason=None):
+        if reason == None:
+            await ctx.channel.send('please give reason for cooldown')
+        author = ctx.message.author
+        channel = self.client.get_channel(557201575270154241)
+        userAvatarUrl = member.avatar_url
+        await discord.guild.Member.add_roles(707708746205233212)
+        embed = discord.Embed(color=ctx.author.color, timestamp=ctx.message.created_at)
+        #await channel.send(f"{member} has been Banned! for **{reason}** banned by <@{ctx.author.id}>")
+        embed.set_author(name="Mute", icon_url=userAvatarUrl)
+        embed.add_field(name=f"{member} has been put on cooldown! ", value=f"**for:** {reason} Put on cooldown by: <@{ctx.author.id}>.")
+        await channel.send(embed=embed)
 
 def setup(client):
     client.add_cog(ModCommands(client))
