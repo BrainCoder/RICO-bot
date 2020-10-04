@@ -2,7 +2,6 @@ import discord
 from discord.ext import commands
 from discord.utils import get
 
-client=commands.Bot(command_prefix='!')
 class MonthlyChallenge(commands.Cog):
 
     def __init__(self, client):
@@ -17,16 +16,16 @@ class MonthlyChallenge(commands.Cog):
     async def endChallenge(self, ctx):
         print('Ending challenge now.')
         for discord.guild in self.client.guilds:
-            signupRole = discord.guild.get_role(761079978749067274)  # MonthlyChallenge-participant
-            participationRole = discord.guild.get_role(761073836455362560)  # Challenge Winner
+            signupRole = discord.guild.get_role(582640858378272793)  # MonthlyChallenge-participant
+            participationRole = discord.guild.get_role(582649176601657365)  # Challenge Winner
             members = await discord.guild.fetch_members(limit=None).flatten()
             newParticipants = []
             for member in members:
                 for role in member.roles:
-                    if role.id == 761079978749067274:  # MonthlyChallenge-participant
-                        client.loop.create_task(member.remove_roles(signupRole))
+                    if role.id == 582640858378272793:  # MonthlyChallenge-participant
+                        self.client.loop.create_task(member.remove_roles(signupRole))
                         newParticipants.append(member)
-                        client.loop.create_task(member.add_roles(participationRole))
+                        self.client.loop.create_task(member.add_roles(participationRole))
                         break
             await ctx.send(f"Challenge Winners {len(newParticipants)}")
             print(len(newParticipants))
@@ -37,16 +36,16 @@ class MonthlyChallenge(commands.Cog):
         print('Starting new month now.')
         for discord.guild in self.client.guilds:
             print ('hello')
-            signupRole = discord.guild.get_role(760702609207590962)  # M-Challenge-Signup
-            participationRole = discord.guild.get_role(761079978749067274)  # MonthlyChallenge-participant
+            signupRole = discord.guild.get_role(582648694017490945)  # M-Challenge-Signup
+            participationRole = discord.guild.get_role(582640858378272793)  # MonthlyChallenge-participant
             members = await discord.guild.fetch_members(limit=None).flatten()
             newParticipants = []
             for member in members:
                 for role in member.roles:
-                    if role.id == 760702609207590962:  # M-Challenge-Signup
-                        client.loop.create_task(member.remove_roles(signupRole))
+                    if role.id == 582648694017490945:  # M-Challenge-Signup
+                        self.client.loop.create_task(member.remove_roles(signupRole))
                         newParticipants.append(member)
-                        client.loop.create_task(member.add_roles(participationRole))
+                        self.client.loop.create_task(member.add_roles(participationRole))
                         break
 
             await ctx.send(f"Challenge participants {len(newParticipants)}")

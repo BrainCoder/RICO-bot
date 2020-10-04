@@ -29,13 +29,14 @@ client.add_command(update)
 async def mCount_update():
     threading.Timer(1800, mCount_update).start()
     for guild in client.guilds:
-        if guild.id != 519330541720436736:
+        if guild.id != 757696811497422969:
             continue
         mCount = guild.member_count
-        channel = client.get_channel(761264831981682718)
+        channel = client.get_channel(761862028885229568)
         break
     print(f'There are now {mCount} mebers of this server')
     await channel.edit(name=(f'{mCount} members'))
+
 
 @client.event
 async def on_ready():
@@ -43,9 +44,6 @@ async def on_ready():
     await mCount_update()
     await client.change_presence(status=discord.Status.online, activity=discord.Game('DM me with complaints!'))
 
-@client.command()
-async def DoSomething(ctx):
-    await ctx.channel.send("*Does your mum*")
 
 
 @client.command()
@@ -64,6 +62,7 @@ async def reload(ctx, extension):
 for filename in os.listdir('./cogs'):
     if filename.endswith('.py'):
         client.load_extension(f'cogs.{filename[:-3]}')
+
 
 
 """
@@ -92,6 +91,7 @@ async def hourly():
 @client.event
 async def on_ready():
     print('Bot is active')
+    await mCount_update()
     await client.change_presence(status=discord.Status.online, activity=discord.Game('dm to speak with mods'))
     #asyncio.create_task(monthStart())
     #asyncio.create_task(hourly())
@@ -110,8 +110,8 @@ async def on_member_join(member):
     channel = client.get_channel(519455122602983424)
     await channel.send(f'{member.mention} welcome! Please go to <#519455164894019584> to read an overview of what this server is about. Go to <#519627611836776490> and <#567283111273037834> to see the commands that you can use to assign yourself.')
 
-    asyncio.create_task(monthStart())
-    asyncio.create_task(hourly())
+    #asyncio.create_task(monthStart())
+    #asyncio.create_task(hourly())
 
 
 # To ignore command not found and command check exceptions:
@@ -126,50 +126,6 @@ async def on_command_error(ctx, error):
 
 
 
-@client.command()
-@commands.has_permissions(administrator=True, manage_messages=True, manage_roles=True)
-async def nuke(ctx, amount=100000):
-      await ctx.message.delete()
-      await ctx.channel.purge(limit=amount)
-      await ctx.send("chat nuked")
-
-#@commands.is_owner()  # The account that owns the bot
-
-
-
-
-
-@client.command()
-@commands.has_permissions(administrator=True)
-async def avatar(ctx, *,  avamember : discord.Member=None):
-    userAvatarUrl = avamember.avatar_url
-    await ctx.send(f"{ctx.author}'s avatar is: {userAvatarUrl}")
-
-url2 = "https://emergency.nofap.com/director.php?cat=em&religious=false"
-
-
-
-client.reaction_roles = []
-
-
-
-
-
-
-@client.command()
-async def dm_all(ctx, *, args=None):
-    if args != None:
-        members = ctx.guild.members
-        for member in members:
-            try:
-                await member.send(args)
-                print("'" + args + "' sent to: " + member.name)
-
-            except:
-                print("Couldn't send '" + args + "' to: " + member.name)
-
-    else:
-        await ctx.channel.send("A message was not provided.")
 
 
 ## DM Cog
@@ -192,45 +148,22 @@ async def dm(ctx, member: discord.Member, *, content):
 
 @client.command(checks=[is_in_channel3()])
 async def cl(ctx,*,message):
-    channel = client.get_channel(761759598419640341)
+    channel = client.get_channel(758576163630350366)
     await channel.send(f"<@{ctx.author.id}>: \n{message}")
 
-## Checklist function
 
-# uniqueCategoryNames = ['genderRoles', 'continentRoles', 'religionRoles', 'modeRoles']
-# additionalCategoryName = 'otherRoles'
-# categoryDictsList = list(map(lambda a: idData[a], uniqueCategoryNames+[additionalCategoryName]))
-# combinedDict = functools.reduce(lambda a,b: {**a, **b}, categoryDictsList)
-#
-# uniqueRolesCategorized = list(map(lambda a: list(idData[a].keys()), uniqueCategoryNames))
-# additionalRolesCategorized = list(idData[additionalCategoryName].keys())
-# rolesLower = list(map(lambda a: a.lower(),combinedDict.keys()))
-# @client.command(aliases=rolesLower)
-# async def roleDistributor(ctx):
-#     if(ctx.invoked_with == "roleDistributor"):
-#         return
-#     print(ctx.invoked_with)
-#     ownedRoleIds = list(map(lambda a: a.id, ctx.author.roles))
-#     formated = uniqueRolesCategorized+list(map(lambda a: [a], additionalRolesCategorized))
-#     for category in formated:
-#         if ctx.invoked_with in category:
-#             for role in category:
-#                 if combinedDict[role] in ownedRoleIds:
-#                     if role in idData['genderRoles'].keys():
-#                         return
-#                     roleObj = ctx.guild.get_role(combinedDict[role])
-#                     await member.remove_roles(roleObj)
-#                     if role != ctx.invoked_with:
-#                         roleObj = ctx.guild.get_role(combinedDict[ctx.invoked_with])
-#                         await member.add_roles(roleObj)
-#                     return
-#             roleObj = ctx.guild.get_role(combinedDict[ctx.invoked_with])
-#             await member.add_roles(roleObj)
-#             return
+@client.command()
+@commands.has_permissions(administrator=True)
+async def logout(ctx):
+  await ctx.message.delete()
+  await ctx.send("logging out")
+  await ctx.send("logged out")
+  exit()
 
 
-#client.run('NzYwNTkzODQwNDE5MjQyMDI0.X3OUNg.LUpzU6B589BBRfca5ae1BnS1wv4')
 
-with open ('token.txt', 'rt') as myfile:
-        contents = myfile.read()
-        client.run(f'{contents}')
+client.run('NzYwNTkzODQwNDE5MjQyMDI0.X3OUNg.LUpzU6B589BBRfca5ae1BnS1wv4')
+
+#with open ('token.txt', 'rt') as myfile:
+ #       contents = myfile.read()
+  #      client.run(f'{contents}')
