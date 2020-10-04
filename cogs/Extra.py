@@ -24,6 +24,7 @@ class Extra(commands.Cog):
          /
     """)
     @client.command()
+
     @commands.has_role("VIP")
     async def UI(self, ctx, *, member: discord.Member = None):
         DateCreated = member.created_at.strftime("%A, %B %d %Y at %H:%M:%S %p")
