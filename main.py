@@ -12,6 +12,7 @@ client.add_command(reset)
 client.add_command(relapse)
 client.add_command(update)
 
+#Member count plus game status
 async def mCount_update():
     threading.Timer(1800, mCount_update).start()
     for guild in client.guilds:
@@ -28,7 +29,9 @@ async def on_ready():
     print('Bot is active')
     await mCount_update()
     await client.change_presence(status=discord.Status.online, activity=discord.Game('DM me with complaints!'))
+#/Member count plus game status
 
+#Cogs
 @client.command()
 async def load(ctx, extension):
     client.load_extension(f'cogs.{extension}')
@@ -53,9 +56,9 @@ for filename in os.listdir('./cogs'):
 async def on_member_join(member):
     channel = client.get_channel(519455122602983424)
     await channel.send(f'{member.mention} welcome! Please go to <#519455164894019584> to read an overview of what this server is about. Go to <#519627611836776490> and <#567283111273037834> to see the commands that you can use to assign yourself.')
+#/Cogs
 
-## DM Cog
-
+#Complaints DM code
 @client.event
 async def on_message(message):
     channel = client.get_channel(699110029806272592)
@@ -67,9 +70,9 @@ async def on_message(message):
 async def dm(ctx, member: discord.Member, *, content):
     channel = await member.create_dm()
     await channel.send(content)
+#/Complaints DM code
 
-## /DM Cog
-
+#Self destruct
 @client.command()
 @commands.has_permissions(administrator=True)
 async def logout(ctx):
@@ -77,6 +80,7 @@ async def logout(ctx):
   await ctx.send("logging out")
   await ctx.send("logged out")
   exit()
+#Self destruct
 
 #client.run('NzYwNTkzODQwNDE5MjQyMDI0.X3OUNg.LUpzU6B589BBRfca5ae1BnS1wv4')
 
