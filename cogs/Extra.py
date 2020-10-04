@@ -18,7 +18,7 @@ class Extra(commands.Cog):
     async def habibi(self, ctx):
         await ctx.message.delete()
         await ctx.send("""
-            \
+            \\
              <:despair:568237870288994315>     Pass the habibi down
             /
          /
