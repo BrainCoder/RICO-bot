@@ -49,7 +49,7 @@ class ModCommands(commands.Cog):
         if reason == None:
             reason = "For being a jerk!"
         message = f"https://tenor.com/view/get-out-gif-9615975"
-        channel = self.client.get_channel(557201575270154241)#logs
+        channel = self.client.get_channel(557201575270154241)
         userAvatarUrl = member.avatar_url
         await member.send(f"Banned for **{reason}**\n{message}" )
         await ctx.guild.ban(member, reason=reason)
@@ -58,6 +58,24 @@ class ModCommands(commands.Cog):
         embed.set_author(name="Ban", icon_url=userAvatarUrl)
         embed.add_field(name=f"{member} has been Banned! ", value=f"**for:** {reason} banned by: <@{ctx.author.id}>.")
         await channel.send(embed=embed)
+
+    @commands.command()
+    @Commands.has_any_role('Moderator')
+    async def mute (self, ctx, member: discord.User = None, *,reason=None):
+        if reason == None:
+            await ctx.channel.send('please give reason for mute')
+        author = ctx.message.author
+        channel = self.client.get_channel(557201575270154241)
+        userAvatarUrl = member.avatar_url
+        await member.send(f"Muted for '{reason}' by {author}\nTo resolve this mute please communicate with the memeber of staff who muted you")
+        await member.add_roles('Muted')
+        embed = discord.Embed(color=ctx.author.color, timestamp=ctx.message.created_at)
+        #await channel.send(f"{member} has been Banned! for **{reason}** banned by <@{ctx.author.id}>")
+        embed.set_author(name="Mute", icon_url=userAvatarUrl)
+        embed.add_field(name=f"{member} has been Muted! ", value=f"**for:** {reason} Muted by: <@{ctx.author.id}>.")
+        await channel.send(embed=embed)
+
+    
 
 def setup(client):
     client.add_cog(ModCommands(client))
