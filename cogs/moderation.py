@@ -76,7 +76,7 @@ class ModCommands(commands.Cog):
         await channel.send(embed=embed)
 
     @commands.command()
-    @command.has_any_role('Moderator')
+    @commands.has_any_role('Moderator')
     async def unmute (self, ctx, member: discord.user):
         await discord.guild.Member.remove_roles(520288471399792670)
         embed = discord.Embed(color=ctx.author.color, timestamp=ctx.message.created_at)
