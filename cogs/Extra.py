@@ -15,33 +15,22 @@ class Extra(commands.Cog):
         await ctx.channel.send("*Does your mum*")
 
     @client.command()
-    async def habibi(ctx):
-        await ctx.message.delete(
-        await ctx.send("""
-        \
-            \
-             <:despair:568237870288994315>     Pass the habibi down
-           /
-        /
-        """)
+    @commands.has_role("VIP")
+    async def UI(self, ctx, *, member: discord.Member = None):
+        DateCreated = member.created_at.strftime("%A, %B %d %Y at %H:%M:%S %p")
 
-#    @client.command()
-#    @commands.has_role("VIP")
-#    async def UI(self, ctx, *, member: discord.Member = None):
-#        DateCreated = member.created_at.strftime("%A, %B %d %Y at %H:%M:%S %p")
-#
-#        MemberJoinedAt = member.joined_at.strftime("%A, %B %d %Y at %H:%M:%S %p")
-#        userAvatarUrl = member.avatar_url
-#
-#        embed = discord.Embed(color=ctx.author.color, timestamp=ctx.message.created_at)
-#
-#        embed.set_author(name="UI", icon_url=userAvatarUrl)
-#        embed.add_field(name='Account was created at: ', value=f"{DateCreated}.")
-#        embed.add_field(name="Member joined at: ", value=f"{MemberJoinedAt}.")
-#        embed.add_field(name=f"{member.display_name}'s ", value=f"Avatar is: ")
-#        await ctx.send(embed=embed)
-#        await ctx.send(f"{userAvatarUrl}")
-#        # await ctx.send(f"{ctx.author.name}'s avatar is: {userAvatarUrl}")
+        MemberJoinedAt = member.joined_at.strftime("%A, %B %d %Y at %H:%M:%S %p")
+        userAvatarUrl = member.avatar_url
+
+        embed = discord.Embed(color=ctx.author.color, timestamp=ctx.message.created_at)
+
+        embed.set_author(name="UI", icon_url=userAvatarUrl)
+        embed.add_field(name='Account was created at: ', value=f"{DateCreated}.")
+        embed.add_field(name="Member joined at: ", value=f"{MemberJoinedAt}.")
+        embed.add_field(name=f"{member.display_name}'s ", value=f"Avatar is: ")
+        await ctx.send(embed=embed)
+        await ctx.send(f"{userAvatarUrl}")
+        # await ctx.send(f"{ctx.author.name}'s avatar is: {userAvatarUrl}")
 
     @client.command()
     @commands.has_role("VIP")
