@@ -32,7 +32,7 @@ async def on_ready():
 @client.command()
 async def load(ctx, extension):
     client.load_extension(f'cogs.{extension}')
-    await ctx.send(f'loaded {extension}'')
+    await ctx.send(f'loaded {extension}')
 
 @client.command()
 async def unload(ctx, extension):
