@@ -12,7 +12,7 @@ class Extra(commands.Cog):
 
     @client.command()
     async def ping(self, ctx):
-        await ctx.send(f'pong! Latency is {client.latency*1000}ms')
+        await ctx.send(f'pong! Latency is {self.client.latency*1000}ms')
 
     @client.command()
     async def DoSomething(self, ctx):
