@@ -111,15 +111,14 @@ async def dm(ctx, member: discord.Member, *, content):
     await channel.send(content)
 #/Complaints DM code
 
-#Self destruct
+#Killswitch command
 @client.command()
 @commands.has_permissions(administrator=True)
 async def logout(ctx):
   await ctx.message.delete()
-  await ctx.send("logging out")
   await ctx.send("logged out")
   quit()
-#Self destruct
+#/Killswitch commands
 
 #client.run('NzYwNTkzODQwNDE5MjQyMDI0.X3OUNg.LUpzU6B589BBRfca5ae1BnS1wv4')
 
