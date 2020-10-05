@@ -32,9 +32,10 @@ class ModCommands(commands.Cog):
             await ctx.channel.send('please give reason for mute')
         elif reason != None:
             author = ctx.message.author
-            channel = self.client.get_channel(557201575270154241)
+            channel = self.client.get_channel(758576163630350366)
             userAvatarUrl = user.avatar_url
             for discord.guild in self.client.guilds:
+                Mute_role = user.guild.get_role(762405273599869018)
                 Mute_role = user.guild.get_role(520288471399792670)
             #await member.send(f"Muted for '{reason}' by {author}\nTo resolve this mute please communicate with the memeber of staff who muted you")
             await user.add_roles(Mute_role)
@@ -51,6 +52,9 @@ class ModCommands(commands.Cog):
     async def unmute (self, ctx, user: discord.Member):
         await self.client.wait_until_ready()
         for discord.guild in self.client.guilds:
+            Unmute_Role = user.guild.get_role(762405273599869018)
+            channel = self.client.get_channel(758576163630350366)
+
             Unmute_Role = user.guild.get_role(520288471399792670)
         channel = self.client.get_channel(557201575270154241)
         await user.remove_roles(Unmute_Role)
