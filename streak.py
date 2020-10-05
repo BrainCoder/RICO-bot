@@ -6,7 +6,7 @@ import discord
 def create_table():
     meta.create_all(engine)
 #create_table()
-def insert_data():
+async def insert_data():
     ins = userdata.insert().values(id = 488779608172658690,
                                   # last_relapse = 12345678912345678,
                                    usertype = 0,
