@@ -118,7 +118,7 @@ async def logout(ctx):
   await ctx.message.delete()
   await ctx.send("logging out")
   await ctx.send("logged out")
-  exit()
+  quit()
 #Self destruct
 
 #client.run('NzYwNTkzODQwNDE5MjQyMDI0.X3OUNg.LUpzU6B589BBRfca5ae1BnS1wv4')
