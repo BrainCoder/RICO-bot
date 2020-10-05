@@ -41,11 +41,11 @@ class CommandErrorHandler(commands.Cog):
     #async def do_repeat(self, ctx, *, inp: str):
         #await ctx.send(inp)
 
-    @do_repeat.error
-    async def do_repeat_handler(self, ctx, error):
-        if isinstance(error, commands.MissingRequiredArgument):
-            if error.param.name == 'inp':
-                await ctx.send("You forgot to give me input to repeat!")
+    #@do_repeat.error
+    #async def do_repeat_handler(self, ctx, error):
+        #if isinstance(error, commands.MissingRequiredArgument):
+            #if error.param.name == 'inp':
+                #await ctx.send("You forgot to give me input to repeat!")
 
 def setup(bot):
     bot.add_cog(CommandErrorHandler(client))
