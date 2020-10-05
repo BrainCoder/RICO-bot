@@ -174,7 +174,7 @@ async def dm(ctx, member: discord.Member, *, content):
   #      client.run(f'{contents}')
 #Self destruct
 @client.command()
-@commands.has_role('Developer')
+@commands.has_permissions(administrator=True)
 async def logout(ctx):
   await ctx.message.delete()
   await ctx.send("logging out")
@@ -184,8 +184,8 @@ async def logout(ctx):
 
 
 
-client.run('NzQ5ODM2MjYzOTU1MTAzNzc0.X0xxcA.GYgm0dLg7RX8-8sMUvOTsZtGakc')
+#client.run('NzQ5ODM2MjYzOTU1MTAzNzc0.X0xxcA.GYgm0dLg7RX8-8sMUvOTsZtGakc')
 
-#with open ('token.txt', 'rt') as myfile:
-#    contents = myfile.read()
-#    client.run(f'{contents}')
+with open ('token.txt', 'rt') as myfile:
+    contents = myfile.read()
+    client.run(f'{contents}')

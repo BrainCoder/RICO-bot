@@ -48,9 +48,6 @@ class Extra(commands.Cog):
         
 
     @client.command()
-
-    @commands.has_role("member")
-
     @commands.has_role("VIP")
     async def avatar(self, ctx, *, avamember: discord.Member = None):
         userAvatarUrl = avamember.avatar_url

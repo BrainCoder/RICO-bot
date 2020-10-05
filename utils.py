@@ -40,7 +40,7 @@ async def waitThenRun(seconds, fn):
 def is_in_channel():
     def inside_fn(ctx):
         #channelName = 760244981838512158
-        if ctx.channel.id == 757696811497422972:
+        if ctx.channel.id == 760427949421363230:
             return True
         return False
     return inside_fn
@@ -49,7 +49,7 @@ def is_in_channel():
 def is_in_channel2():
     def inside_fn(ctx):
         #channelName = 760244981838512158
-        if ctx.channel.id == 758576163630350366:
+        if ctx.channel.id == 699110029806272592:
             return True
         return False
     return inside_fn
@@ -57,7 +57,7 @@ def is_in_channel2():
 def is_in_channel3():
     def inside_fn(ctx):
         #channelName = 760244981838512158
-        if ctx.channel.id == 758576163630350366:
+        if ctx.channel.id == 761118232161157152:
             return True
         return False
     return inside_fn
