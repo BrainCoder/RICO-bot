@@ -11,7 +11,6 @@ class MonthlyChallenge(commands.Cog):
     #Events
     #@commands.Cog.listener()
 
-
     @commands.command(pass_context=True)
     @commands.has_permissions(ban_members=True)
     async def startChallenge(self, ctx):
