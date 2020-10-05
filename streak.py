@@ -128,7 +128,7 @@ async def update(ctx):
         total_streak_length = (datetime.today() - last_starting_date).total_seconds()
         [daysStr, middleStr, hoursStr] = getStreakString(total_streak_length)
         await updateStreakRole(ctx.author, last_starting_date)
-        await ctx.channel.send(f'Your streak was {daysStr}{middleStr}{hoursStr} long.')
+        await ctx.channel.send(f'Your streak is {daysStr}{middleStr}{hoursStr} long.')
     else:
         await ctx.channel.send("No data about you available do !relapse .")
 
