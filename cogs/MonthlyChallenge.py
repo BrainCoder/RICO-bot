@@ -18,8 +18,8 @@ class MonthlyChallenge(commands.Cog):
         newParticipants = []
         print('Starting new month now.')
         for discord.guild in self.client.guilds:
-            signupRole = discord.guild.get_role(760702609207590962)  # M-Challenge-Signup
-            participationRole = discord.guild.get_role(761079978749067274)  # MonthlyChallenge-participant
+            signupRole = discord.guild.get_role(582648694017490945)  # M-Challenge-Signup
+            participationRole = discord.guild.get_role(582640858378272793)  # MonthlyChallenge-participant
             members = await discord.guild.fetch_members(limit=None).flatten()
             for member in members:
                 for role in member.roles:
@@ -28,7 +28,6 @@ class MonthlyChallenge(commands.Cog):
                         newParticipants.append(member)
                         self.client.loop.create_task(member.add_roles(participationRole))
                         break
-
         await ctx.send(f"Challenge participants {len(newParticipants)}")
         print(len(newParticipants))
 
@@ -38,8 +37,8 @@ class MonthlyChallenge(commands.Cog):
         newParticipants = []
         print('Ending challenge now.')
         for discord.guild in self.client.guilds:
-            signupRole = discord.guild.get_role(761079978749067274)  # MonthlyChallenge-participant
-            participationRole = discord.guild.get_role(761073836455362560)  # Challenge Winner
+            signupRole = discord.guild.get_role(582640858378272793)  # MonthlyChallenge-participant
+            participationRole = discord.guild.get_role(582649176601657365)  # Challenge Winner
             members = await discord.guild.fetch_members(limit=None).flatten()
             for member in members:
                 for role in member.roles:
@@ -57,11 +56,11 @@ class MonthlyChallenge(commands.Cog):
     async def participation_amount(self, ctx):
         newParticipants = []
         for discord.guild in self.client.guilds:
-            signupRole = discord.guild.get_role(761079978749067274)  # MonthlyChallenge-participant
+            signupRole = discord.guild.get_role(582640858378272793)  # MonthlyChallenge-participant
             members = await discord.guild.fetch_members(limit=None).flatten()
             for member in members:
                 for role in member.roles:
-                    if role.id == 761079978749067274:  # MonthlyChallenge-participant
+                    if role.id == 582640858378272793:  # MonthlyChallenge-participant
                         if (newParticipants.append(member) != None):
                             newParticipants.append(member)
                             break
@@ -72,11 +71,11 @@ class MonthlyChallenge(commands.Cog):
     async def signup_amount(self, ctx):
         newSignups = []
         for discord.guild in self.client.guilds:
-            signupRole = discord.guild.get_role(760702609207590962)  # MonthlyChallenge-signup
+            signupRole = discord.guild.get_role(582648694017490945)  # MonthlyChallenge-signup
             members = await discord.guild.fetch_members(limit=None).flatten()
             for member in members:
                 for role in member.roles:
-                    if role.id == 760702609207590962:  # MonthlyChallenge-signup
+                    if role.id == 582648694017490945:  # MonthlyChallenge-signup
                         if (newSignups.append(member) != None):
                             newSignups.append(member)
                             break
@@ -87,11 +86,11 @@ class MonthlyChallenge(commands.Cog):
     async def winner_amount(self, ctx):
         newWinners = []
         for discord.guild in self.client.guilds:
-            signupRole = discord.guild.get_role(761073836455362560)  # MonthlyChallenge-signup
+            signupRole = discord.guild.get_role(582648694017490945)  # MonthlyChallenge-signup
             members = await discord.guild.fetch_members(limit=None).flatten()
             for member in members:
                 for role in member.roles:
-                    if role.id == 761073836455362560:  # MonthlyChallenge-signup
+                    if role.id == 582648694017490945:  # MonthlyChallenge-signup
                         if (newWinners.append(member) != None):
                             newWinners.append(member)
                             break
