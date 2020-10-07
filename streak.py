@@ -49,7 +49,6 @@ async def remove_role(member):
 
 @commands.command(checks=[is_in_channel()])
 async def relapse(ctx, *args):
-<<<<<<< HEAD
 #    members = await ctx.guild.fetch_members(limit=None).flatten()
 #    for role in ctx.author.roles:
 #        if role.id == 582640858378272793:
@@ -68,26 +67,6 @@ async def relapse(ctx, *args):
 #            await channel.send(f"Monthly Challenge Members Left: {len(newParticipants)}")
 #            print(len(newParticipants))
 #    else:
-=======
-    members = await ctx.guild.fetch_members(limit=None).flatten()
-    for role in ctx.author.roles:
-        if role.id == 582640858378272793:
-            signupRole = ctx.guild.get_role(582640858378272793)
-            await ctx.author.remove_roles(signupRole)
-            newParticipants = []
-            for discord.guild in client.guilds:
-                members = await discord.guild.fetch_members(limit=None).flatten()
-                for member in members:
-                    for role in member.roles:
-                        if role.id == 582640858378272793:  # MonthlyChallenge-participant
-                            if (newParticipants.append(member) != None):
-                                newParticipants.append(member)
-                                break
-            channel = client.get_channel(582650072672632833)
-            await channel.send(f"Monthly Challenge Members Left: {len(newParticipants)}")
-            print(len(newParticipants))
-    else:
->>>>>>> 979d04e174d028e4b8dbad31425260d46f760e17
         role = discord.utils.get(ctx.guild.roles, name='M-Challenge_Participant')
         await ctx.author.remove_roles(role)
         maxDays = 365 * 10
