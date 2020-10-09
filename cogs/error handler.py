@@ -1,6 +1,7 @@
 import discord
+import traceback
+import sys
 from discord.ext import commands
-from discord.utils import get
 
 client=commands.Bot(command_prefix='!')
 
