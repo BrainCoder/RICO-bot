@@ -6,7 +6,7 @@ client=commands.Bot(command_prefix='!')
 
 
 
-class SetReaction(commands.Cog):
+class ErrorHandler(commands.Cog):
 
     def __init__(self, client):
         self.client = client
