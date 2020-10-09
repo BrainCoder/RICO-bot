@@ -141,11 +141,11 @@ async def hourly():
 #                del banDict[key]
 
 
-@client.event
-async def on_command_error(ctx, error):
-    if isinstance(error, CommandNotFound) or isinstance(error, CheckFailure):
-        return
-    raise error
+#@client.event
+#async def on_command_error(ctx, error):
+#    if isinstance(error, CommandNotFound) or isinstance(error, CheckFailure):
+#        return
+#    raise error
 
 #client.run('NzQ5ODM2MjYzOTU1MTAzNzc0.X0xxcA.GYgm0dLg7RX8-8sMUvOTsZtGakc')
 
