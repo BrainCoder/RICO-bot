@@ -60,8 +60,10 @@ async def on_ready():
 
 @client.event
 async def on_member_join(member):
+    print('I can see someone has joined')
     channel = client.get_channel(519455122602983424)
     await channel.send(f'{member.mention} welcome! Please go to <#519455164894019584> to read an overview of what this server is about. Go to <#519627611836776490> and <#567283111273037834> to see the commands that you can use to assign yourself.')
+    print('I should have sent the message')
 
 #/Welcome message
 
