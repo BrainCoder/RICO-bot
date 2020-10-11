@@ -4,6 +4,7 @@ from discord.utils import get
 
 intents = discord.Intents.all()
 intents.members = True 
+client=commands.Bot(command_prefix='!', intients=intents)
 
 class MonthlyChallenge(commands.Cog):
 
