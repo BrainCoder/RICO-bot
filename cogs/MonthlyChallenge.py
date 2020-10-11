@@ -2,6 +2,9 @@ import discord
 from discord.ext import commands
 from discord.utils import get
 
+intents = discord.Intents.all()
+intents.members = True 
+
 class MonthlyChallenge(commands.Cog):
 
     def __init__(self, client):
