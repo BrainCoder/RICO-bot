@@ -69,7 +69,7 @@ class MonthlyChallenge(commands.Cog):
     @commands.command()
     @commands.has_any_role('Developer')
     async def participation_amount2(self, ctx):
-        guild = self.ctx.guild
+        guild = ctx.guild
         role = self.guild.get_role(582640858378272793)
         partcipants = [m for m in guild.members if role in m.roles]
         no = len(partcipants)
