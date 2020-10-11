@@ -1,12 +1,14 @@
 from utils import *
 from streak import *
-
-client=commands.Bot(command_prefix='!')
 import discord
 import os
 from discord.ext import commands
 from discord.utils import get
 import asyncio
+
+intents = discord.Intents.all()
+intents.members = True 
+client=commands.Bot(command_prefix='!', intients=intents)
 
 client.add_command(reset)
 client.add_command(relapse)
