@@ -66,6 +66,16 @@ class MonthlyChallenge(commands.Cog):
         await ctx.send(f"Monthly Challenge Members Left: {len(newParticipants)}")
         print(len(newParticipants))
 
+    @commands.command()
+    @commands.has_any_role('Developer')
+    async def participation_amount2(self, ctx):
+        guild = self.ctx.guild
+        role = self.guild.get_role(582640858378272793)
+        partcipants = [m for m in guild.members if role in m.roles]
+        no = len(partcipants)
+        print(f'{no}')
+        await ctx.send(f'Monthly Challenge members left: {no}')
+        
     @commands.command(pass_context=True)
     async def signup_amount(self, ctx):
         newSignups = []
