@@ -7,8 +7,8 @@ from discord.utils import get
 import asyncio
 
 intents = discord.Intents.all()
-intents.members = True 
-client=commands.Bot(command_prefix='.', intients=intents)
+intents.members = True
+client=commands.Bot(command_prefix='!', intents=intents)
 
 client.add_command(reset)
 client.add_command(relapse)
@@ -91,8 +91,6 @@ async def logout(ctx):
   await ctx.send("logging out")
   exit()
 #/Self destruct
-
-
 """
 async def monthStart():
     while True:
