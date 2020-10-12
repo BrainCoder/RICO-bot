@@ -85,15 +85,15 @@ async def dm(ctx, member: discord.Member, *, content):
 
 #Word Filter
 
-@client.event
-async def on_message(message):
-    with open ('badWords.txt', 'r') as file:
-        content = file.read()
-    badWordsArr = content.split()
-    for word in badWordsArr:
-        if word in message.content:
-            await message.delete()
-            break
+#@client.event
+#async def on_message(message):
+#    with open ('badWords.txt', 'r') as file:
+#        content = file.read()
+#    badWordsArr = content.split()
+#    for word in badWordsArr:
+#        if word in message.content:
+#            await message.delete()
+#            break
 #TODO: Warn/mute the user here
 
 #/Word Filter
