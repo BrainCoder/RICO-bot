@@ -69,13 +69,14 @@ async def on_member_join(member):
 #/Welcome message
 
 #Complaints DM code & Word Filter
+
 @client.event
 async def on_message(message):
     with open ('badWords.txt', 'r') as file:
         content = file.read()
-    badWordsArr = content.split()
+    badWordsArr = content.split(',')
     for word in badWordsArr:
-        if word in message.content:
+        if word in message.content.lower():
             await message.delete()
             #TODO: Warn/mute the user here
             break
@@ -84,10 +85,6 @@ async def on_message(message):
         await channel.send(f"<@{message.author.id}> said: {message.content}")
     await client.process_commands(message)
 
-@client.command(checks=[is_in_channel2()])
-async def dm(ctx, member: discord.Member, *, content):
-    channel = await member.create_dm()
-    await channel.send(content)
 #/Complaints DM code & Word filter
 
 #Self destruct
