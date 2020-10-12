@@ -4,7 +4,10 @@ import io
 from utils import *
 import discord
 
-client=commands.Bot(command_prefix='!')
+intents = discord.Intents.all()
+intents.members = True
+intents.presences = True
+client=commands.Bot(command_prefix='!', intents=intents)
 
 def create_table():
     meta.create_all(engine)
@@ -49,26 +52,20 @@ async def remove_role(member):
 
 @commands.command(checks=[is_in_channel()])
 async def relapse(ctx, *args):
-#    members = await ctx.guild.fetch_members(limit=None).flatten()
-#    for role in ctx.author.roles:
-#        if role.id == 582640858378272793:
-#            signupRole = ctx.guild.get_role(582640858378272793)
-#            await ctx.author.remove_roles(signupRole)
-#            newParticipants = []
-#            for discord.guild in client.guilds:
-#                members = await discord.guild.fetch_members(limit=None).flatten()
-#                for member in members:
-#                    for role in member.roles:
-#                        if role.id == 582640858378272793:  # MonthlyChallenge-participant
-#                            if (newParticipants.append(member) != None):
-#                                newParticipants.append(member)
-#                                break
-#            channel = client.get_channel(582650072672632833)
-#            await channel.send(f"Monthly Challenge Members Left: {len(newParticipants)}")
-#            print(len(newParticipants))
-#    else:
-        role = discord.utils.get(ctx.guild.roles, name='M-Challenge_Participant')
-        await ctx.author.remove_roles(role)
+    members = await ctx.guild.fetch_members(limit=None).flatten()
+    for role in ctx.author.roles:
+        if role.id == 582640858378272793:
+            guild = ctx.guild
+            role = guild.get_role(582640858378272793)
+            partcipants = [m for m in guild.members if role in m.roles]
+            no = len(partcipants)
+            print(f'{no}')
+            channel = guild.get_channel(582650072672632833)
+            print(f'{channel}')
+            await channel.send(f'Monthly Challenge members left: {no}')
+            role = discord.utils.get(ctx.guild.roles, name='M-Challenge_Participant')
+            await ctx.author.remove_roles(role)
+    else:
         maxDays = 365 * 10
         n_days = 0
         n_hours = 0
