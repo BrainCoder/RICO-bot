@@ -8,7 +8,7 @@ import asyncio
 
 intents = discord.Intents.all()
 intents.members = True 
-client=commands.Bot(command_prefix='!', intients=intents)
+client=commands.Bot(command_prefix='.', intients=intents)
 
 client.add_command(reset)
 client.add_command(relapse)
@@ -92,26 +92,6 @@ async def logout(ctx):
   exit()
 #/Self destruct
 
-"""@client.command(pass_context=True)
-@commands.has_permissions(ban_members=True)
-async def endChallenge(ctx):
-    newParticipants = []
-    print('Ending challenge now.')
-    for discord.guild in client.guilds:
-        signupRole = discord.guild.get_role(761079978749067274)  # MonthlyChallenge-participant
-        participationRole = discord.guild.get_role(761073836455362560)  # Challenge Winner
-        members = await discord.guild.fetch_members(limit=None).flatten()
-        newParticipants = []
-        for member in members:
-            for role in member.roles:
-                if role.id == 761079978749067274:  # MonthlyChallenge-participant
-                    client.loop.create_task(member.remove_roles(signupRole))
-                    client.loop.create_task(member.remove_roles(signupRole))
-                    newParticipants.append(member)
-                    client.loop.create_task(member.add_roles(participationRole))
-                    break
-    await ctx.send(f"Challenge Winners {len(newParticipants)}")
-    print(len(newParticipants))"""
 
 """
 async def monthStart():
@@ -150,8 +130,6 @@ async def hourly():
 #    if isinstance(error, CommandNotFound) or isinstance(error, CheckFailure):
 #        return
 #    raise error
-
-#client.run('NzQ5ODM2MjYzOTU1MTAzNzc0.X0xxcA.GYgm0dLg7RX8-8sMUvOTsZtGakc')
 
 with open ('token.txt', 'rt') as myfile:
     contents = myfile.read()
