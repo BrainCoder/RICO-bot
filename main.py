@@ -74,7 +74,7 @@ async def on_member_join(member):
 async def on_message(message):
     with open ('badWords.txt', 'r') as file:
         content = file.read()
-    badWordsArr = content.split(',')
+    badWordsArr = content.split(',\n')
     for word in badWordsArr:
         if word in message.content.lower():
             await message.delete()
