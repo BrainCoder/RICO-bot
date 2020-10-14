@@ -85,6 +85,11 @@ async def on_message(message):
         await channel.send(f"<@{message.author.id}> said: {message.content}")
     await client.process_commands(message)
 
+@client.command(checks=[is_in_channel2()])
+async def dm(ctx, member: discord.Member, *, content):
+    channel = await member.create_dm()
+    await channel.send(content)
+
 #/Complaints DM code & Word filter
 
 #Self destruct
