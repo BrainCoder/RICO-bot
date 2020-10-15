@@ -1,6 +1,6 @@
 import discord
 from discord.ext import commands
-from config import config
+import settings
 class ModCommands(commands.Cog):
 
     def __init__(self, client):
@@ -35,7 +35,7 @@ class ModCommands(commands.Cog):
             userAvatarUrl = user.avatar_url
             for discord.guild in self.client.guilds:
                 Mute_role = user.guild.get_role(762405273599869018) #I don't know what role this is
-                Mute_role = user.guild.get_role(config["statusRoles"]["Muted"])
+                Mute_role = user.guild.get_role(settings.config["statusRoles"]["Muted"])
             #await member.send(f"Muted for '{reason}' by {author}\nTo resolve this mute please communicate with the memeber of staff who muted you")
             await user.add_roles(Mute_role)
             #await req(guild_id, user_id, role.id, reason=reason)
@@ -54,8 +54,8 @@ class ModCommands(commands.Cog):
             Unmute_Role = user.guild.get_role(762405273599869018) #I don't know what role this is
             channel = self.client.get_channel(758576163630350366) #I don't know what channel this is
 
-            Unmute_Role = user.guild.get_role(config["statusRoles"]["Muted"])
-        channel = self.client.get_channel(config["channels"]["log"])#log
+            Unmute_Role = user.guild.get_role(settings.config["statusRoles"]["Muted"])
+        channel = self.client.get_channel(settings.config["channels"]["log"])#log
         await user.remove_roles(Unmute_Role)
         userAvatarUrl = user.avatar_url
         embed = discord.Embed(color=ctx.author.color, timestamp=ctx.message.created_at)
@@ -74,7 +74,7 @@ class ModCommands(commands.Cog):
         if reason == None:
             reason = "For being a jerk!"
         message = f"https://tenor.com/view/get-out-gif-9615975"
-        channel = self.client.get_channel(config["channels"]["log"])#log
+        channel = self.client.get_channel(settings.config["channels"]["log"])#log
         await member.send(f"kicked for **{reason}**\n{message}" )
         await ctx.guild.kick(member, reason=reason)
         userAvatarUrl = member.avatar_url
@@ -92,7 +92,7 @@ class ModCommands(commands.Cog):
         if reason == None:
             reason = "For being a jerk!"
         message = f"https://tenor.com/view/get-out-gif-9615975"
-        channel = self.client.get_channel(config["channels"]["log"])#log
+        channel = self.client.get_channel(settings.config["channels"]["log"])#log
         userAvatarUrl = member.avatar_url
         await member.send(f"Banned for **{reason}**\n{message}" )
         await ctx.guild.ban(member, reason=reason)

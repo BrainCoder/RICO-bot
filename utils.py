@@ -6,7 +6,7 @@ from sqlalchemy import create_engine, MetaData, Table, Column, Integer, String, 
 from sqlalchemy.dialects.mysql import insert
 from os import listdir
 from os.path import isfile, join
-from config import config
+import settings
 def to_dt(t_stamp):
     return datetime.fromtimestamp(t_stamp)
 
@@ -22,7 +22,7 @@ async def waitThenRun(seconds, fn):
 def is_in_channel():
     def inside_fn(ctx):
         #channelName = 760244981838512158
-        if ctx.channel.id == config["channels"]["streaks"]:
+        if ctx.channel.id == settings.config["channels"]["streaks"]:
             return True
         return False
     return inside_fn

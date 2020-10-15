@@ -3,7 +3,7 @@ from discord.ext import commands
 import discord
 import os
 import sys
-from config import config
+import settings
 import threading
 
 intents = discord.Intents.all()
@@ -44,10 +44,10 @@ for filename in os.listdir('./cogs'):
 async def mCount_update():
     threading.Timer(1800, mCount_update).start()
     for guild in client.guilds:
-        if guild.id != config["serverId"]:
+        if guild.id != settings.config["serverId"]:
             continue
         mCount = guild.member_count
-        channel = client.get_channel(config["channels"]["memberscount"])
+        channel = client.get_channel(settings.config["channels"]["memberscount"])
         break
     print(f'There are now {mCount} mebers of this server')
     await channel.edit(name=(f'{mCount} members'))
@@ -63,7 +63,7 @@ async def on_ready():
 
 @client.event
 async def on_member_join(member):
-    channel = client.get_channel(config["channels"]["welcome"])
+    channel = client.get_channel(settings.config["channels"]["welcome"])
     await channel.send(f'{member.mention} welcome! Please go to <#519455164894019584> to read an overview of what this server is about. Go to <#519627611836776490> and <#567283111273037834> to see the commands that you can use to assign yourself.')
 
 #/Welcome message
@@ -80,7 +80,7 @@ async def on_message(message):
             await message.delete()
             #TODO: Warn/mute the user here
             break
-    channel = client.get_channel(config["channels"]["complaints"])     #-- Complaints part starts here
+    channel = client.get_channel(settings.config["channels"]["complaints"])     #-- Complaints part starts here
     if message.guild is None and message.author != client.user:
         await channel.send(f"<@{message.author.id}> said: {message.content}")
     await client.process_commands(message)
@@ -142,7 +142,8 @@ if (len(sys.argv) < 2):
     print("Need config file in order to run. enter an argument to run. Example: python config.json")
 else:
     with open (sys.argv[1], 'rt') as conf_file:
-        config = json.load(conf_file)
+        settings.init()
+        settings.config = json.load(conf_file)
     with open ('token.txt', 'rt') as myfile:
         contents = myfile.read()
         client.run(f'{contents}')

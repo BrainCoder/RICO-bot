@@ -3,7 +3,7 @@ import io
 from utils import *
 import discord
 from discord.ext import commands
-from config import config
+import settings
 intents = discord.Intents.all()
 intents.members = True
 intents.presences = True
@@ -41,13 +41,13 @@ async def reset(ctx, *args):
 async def relapse(ctx, *args):
     members = await ctx.guild.fetch_members(limit=None).flatten()
     for role in ctx.author.roles:
-        if role.id == config["statusRoles"]["monthlyChallengeParticipant"]:
+        if role.id == settings.config["statusRoles"]["monthlyChallengeParticipant"]:
             guild = ctx.guild
-            role = guild.get_role(config["statusRoles"]["monthlyChallengeParticipant"])
+            role = guild.get_role(settings.config["statusRoles"]["monthlyChallengeParticipant"])
             partcipants = [m for m in guild.members if role in m.roles]
             no = len(partcipants)
             print(f'{no}')
-            channel = guild.get_channel(config["channels"]["monthly-challenge"])
+            channel = guild.get_channel(settings.config["channels"]["monthly-challenge"])
             print(f'{channel}')
             await channel.send(f'Monthly Challenge members left: {no}')
             role = discord.utils.get(ctx.guild.roles, name='M-Challenge_Participant')

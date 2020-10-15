@@ -1,11 +1,11 @@
 from discord.ext import commands
-from config import config
+import settings
 client=commands.Bot(command_prefix='!')
 
 def IsIn_CheckList():
     def inside_fn(ctx):
         #channelName = 760244981838512158
-        if ctx.channel.id == config["channels"]["checklist"]: #staff stuff check-list
+        if ctx.channel.id == settings.config["channels"]["checklist"]: #staff stuff check-list
             return True
         return False
     return inside_fn

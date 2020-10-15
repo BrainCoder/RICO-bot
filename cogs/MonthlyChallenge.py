@@ -1,6 +1,6 @@
 import discord
 from discord.ext import commands
-from config import config
+import settings
 intents = discord.Intents.all()
 intents.members = True 
 client=commands.Bot(command_prefix='!', intients=intents)
@@ -20,12 +20,12 @@ class MonthlyChallenge(commands.Cog):
         newParticipants = []
         print('Starting new month now.')
         for discord.guild in self.client.guilds:
-            signupRole = discord.guild.get_role(config["otherRoles"]["monthlyChallenge"])  # M-Challenge-Signup
-            participationRole = discord.guild.get_role(config["statusRoles"]["monthlyChallengeParticipant"])  # MonthlyChallenge-participant
+            signupRole = discord.guild.get_role(settings.config["otherRoles"]["monthlyChallenge"])  # M-Challenge-Signup
+            participationRole = discord.guild.get_role(settings.config["statusRoles"]["monthlyChallengeParticipant"])  # MonthlyChallenge-participant
             members = await discord.guild.fetch_members(limit=None).flatten()
             for member in members:
                 for role in member.roles:
-                    if role.id == config["otherRoles"]["monthlyChallenge"]:  # M-Challenge-Signup
+                    if role.id == settings.config["otherRoles"]["monthlyChallenge"]:  # M-Challenge-Signup
                         self.client.loop.create_task(member.remove_roles(signupRole))
                         newParticipants.append(member)
                         self.client.loop.create_task(member.add_roles(participationRole))
@@ -39,12 +39,12 @@ class MonthlyChallenge(commands.Cog):
         newParticipants = []
         print('Ending challenge now.')
         for discord.guild in self.client.guilds:
-            signupRole = discord.guild.get_role(config["statusRoles"]["monthlyChallengeParticipant"])  # MonthlyChallenge-participant
-            participationRole = discord.guild.get_role(config["statusRoles"]["monthlyChallengeWinner"])  # Challenge Winner
+            signupRole = discord.guild.get_role(settings.config["statusRoles"]["monthlyChallengeParticipant"])  # MonthlyChallenge-participant
+            participationRole = discord.guild.get_role(settings.config["statusRoles"]["monthlyChallengeWinner"])  # Challenge Winner
             members = await discord.guild.fetch_members(limit=None).flatten()
             for member in members:
                 for role in member.roles:
-                    if role.id == config["statusRoles"]["monthlyChallengeParticipant"]:  # MonthlyChallenge-participant
+                    if role.id == settings.config["statusRoles"]["monthlyChallengeParticipant"]:  # MonthlyChallenge-participant
                         self.client.loop.create_task(member.remove_roles(signupRole))
                         newParticipants.append(member)
                         self.client.loop.create_task(member.add_roles(participationRole))
@@ -57,7 +57,7 @@ class MonthlyChallenge(commands.Cog):
     @commands.has_any_role('M-Challenge_Participant', 'owners', 'Developer')
     async def participation_amount(self, ctx):
         guild = ctx.guild
-        role = guild.get_role(config["statusRoles"]["monthlyChallengeParticipant"]) # MonthlyChallenge-participant
+        role = guild.get_role(settings.config["statusRoles"]["monthlyChallengeParticipant"]) # MonthlyChallenge-participant
         partcipants = [m for m in guild.members if role in m.roles]
         no = len(partcipants)
         print(f'{no}')
@@ -67,7 +67,7 @@ class MonthlyChallenge(commands.Cog):
     @commands.has_any_role('owners', 'Developer')
     async def signup_amount(self, ctx):
         guild = ctx.guild
-        role = guild.get_role(config["otherRoles"]["monthlyChallenge"]) # M-Challenge-Signup
+        role = guild.get_role(settings.config["otherRoles"]["monthlyChallenge"]) # M-Challenge-Signup
         signups = [m for m in guild.members if role in m.roles]
         no = len(signups)
         print(f'{no}')
@@ -77,7 +77,7 @@ class MonthlyChallenge(commands.Cog):
     @commands.has_any_role('owners', 'Developer')
     async def winner_amount(self, ctx):
         guild = ctx.guild
-        role = guild.get_role(config["statusRoles"]["monthlyChallengeWinner"]) # Challenge Winner
+        role = guild.get_role(settings.config["statusRoles"]["monthlyChallengeWinner"]) # Challenge Winner
         winners = [m for m in guild.members if role in m.roles]
         no = len(winners)
         print(f'{no}')

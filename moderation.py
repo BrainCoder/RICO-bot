@@ -2,7 +2,7 @@ from enum import IntEnum, unique, auto
 from utils import *
 import discord
 from discord.ext import commands
-from config import config
+from settings import config
 client=commands.Bot(command_prefix='!')
 
 client=commands.Bot(command_prefix='!')
