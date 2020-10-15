@@ -41,9 +41,9 @@ async def reset(ctx, *args):
 async def relapse(ctx, *args):
     members = await ctx.guild.fetch_members(limit=None).flatten()
     for role in ctx.author.roles:
-        if role.id == settings.config["statusRoles"]["monthlyChallengeParticipant"]:
+        if role.id == settings.config["statusRoles"]["monthly-challenge-participant"]:
             guild = ctx.guild
-            role = guild.get_role(settings.config["statusRoles"]["monthlyChallengeParticipant"])
+            role = guild.get_role(settings.config["statusRoles"]["monthly-challenge-participant"])
             partcipants = [m for m in guild.members if role in m.roles]
             no = len(partcipants)
             print(f'{no}')

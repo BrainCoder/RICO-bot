@@ -2,7 +2,7 @@ from enum import IntEnum, unique, auto
 from utils import *
 import discord
 from discord.ext import commands
-from settings import config
+import settings
 client=commands.Bot(command_prefix='!')
 
 client=commands.Bot(command_prefix='!')
@@ -92,7 +92,7 @@ async def ban (ctx, member:discord.User=None, reason =None):
     if reason == None:
         reason = "For being a jerk!"
     message = f"https://tenor.com/view/banned-and-you-are-banned-explosion-yoshi-hammer-gif-17493177"
-    channel = client.get_channel(config["channels"]["log"])
+    channel = client.get_channel(settings.config["channels"]["log"])
     await member.send(message)
     await ctx.guild.ban(member, reason=reason)
     await channel.send(f"{member} is banned!")
@@ -106,7 +106,7 @@ async def kick (ctx, member:discord.User=None, reason =None):
     if reason == None:
         reason = "For being a jerk!"
     message = f"https://tenor.com/view/get-out-gif-9615975"
-    channel = client.get_channel(config["channels"]["log"])
+    channel = client.get_channel(settings.config["channels"]["log"])
     await member.send(message)
     await ctx.guild.kick(member, reason=reason)
     await channel.send(f"{member} has been kicked!")
