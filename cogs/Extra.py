@@ -1,6 +1,5 @@
 import discord
 from discord.ext import commands
-from discord.utils import get
 
 client=commands.Bot(command_prefix='!')
 
@@ -46,7 +45,6 @@ class Extra(commands.Cog):
         embed.add_field(name=f"{member.display_name}'s ", value=f"Avatar is: ")
         await ctx.send(embed=embed)
         await ctx.send(f"{userAvatarUrl}")
-        # await ctx.send(f"{ctx.author.name}'s avatar is: {userAvatarUrl}")
 
 
 
