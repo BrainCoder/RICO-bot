@@ -47,7 +47,7 @@ async def mCount_update():
         if guild.id != config["serverId"]:
             continue
         mCount = guild.member_count
-        channel = client.get_channel(config["channels"]["membersCount"])
+        channel = client.get_channel(config["channels"]["memberscount"])
         break
     print(f'There are now {mCount} mebers of this server')
     await channel.edit(name=(f'{mCount} members'))
