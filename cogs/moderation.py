@@ -10,10 +10,12 @@ class ModCommands(commands.Cog):
 
     @commands.command()
     @commands.has_any_role('Moderator')
-    async def purge(self, ctx, amount=0):
-        await ctx.message.delete()
-        await ctx.channel.purge(limit=amount)
-        await ctx.send("purged")
+    async def purge(self, ctx, amount=5):
+        if amount > 50:
+            await ctx.send(f'You cannot purge more than 50 messages at a time')
+        else:
+            await ctx.message.delete()
+            await ctx.channel.purge(limit=amount)
 
     @commands.command(pass_context=True)
     @commands.has_permissions(manage_roles=True)
