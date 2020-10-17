@@ -1,9 +1,9 @@
 import aiohttp
-from PIL import Image
 import io
 from utils import *
 import discord
-
+from discord.ext import commands
+import settings
 intents = discord.Intents.all()
 intents.members = True
 intents.presences = True
@@ -11,22 +11,6 @@ client=commands.Bot(command_prefix='!', intents=intents)
 
 def create_table():
     meta.create_all(engine)
-#create_table()
-async def insert_data():
-    ins = userdata.insert().values(id = 488779608172658690,
-                                  # last_relapse = 12345678912345678,
-                                   usertype = 0,
-                                   past_streaks = json.dumps([56,15,74]),
-                                   points = 5)
-    conn.execute(ins)
-#insert_data()
-#d = userdata.select()
-#rows = conn.execute(d)
-#print([row for row in rows])
-#query = userdata.select().where(userdata.c.id == 488779608172658690)
-#rows = conn.execute(query).fetchall()
-#print(rows)
-#exit()
 
 def getStreakString(total_streak_length):
     days, remainder = divmod(total_streak_length, 60*60*24)
@@ -46,21 +30,17 @@ async def reset(ctx, *args):
     .where(userdata.c.id == ctx.author.id))
     conn.execute(query)
 
-async def remove_role(member):
-    role = discord.utils.get(ctx.guild.roles, name='M-Challenge_Participant')
-    await member.remove_roles(role)
-
 @commands.command(checks=[is_in_channel()])
 async def relapse(ctx, *args):
     members = await ctx.guild.fetch_members(limit=None).flatten()
     for role in ctx.author.roles:
-        if role.id == 582640858378272793:
+        if role.id == settings.config["statusRoles"]["monthly-challenge-participant"]:
             guild = ctx.guild
-            role = guild.get_role(582640858378272793)
+            role = guild.get_role(settings.config["statusRoles"]["monthly-challenge-participant"])
             partcipants = [m for m in guild.members if role in m.roles]
             no = len(partcipants)
             print(f'{no}')
-            channel = guild.get_channel(582650072672632833)
+            channel = guild.get_channel(settings.config["channels"]["monthly-challenge"])
             print(f'{channel}')
             await channel.send(f'Monthly Challenge members left: {no}')
             role = discord.utils.get(ctx.guild.roles, name='M-Challenge_Participant')

@@ -1,21 +1,12 @@
-import discord
-import random
-from discord.ext import commands
-from discord.ext.commands import CommandNotFound, CheckFailure
 import json
 from datetime import datetime, timedelta
-import pickle
 import asyncio
-import functools
-import time
-import sqlite3
-import threading
 
 from sqlalchemy import create_engine, MetaData, Table, Column, Integer, String, Text
 from sqlalchemy.dialects.mysql import insert
 from os import listdir
 from os.path import isfile, join
-
+import settings
 def to_dt(t_stamp):
     return datetime.fromtimestamp(t_stamp)
 
@@ -27,20 +18,11 @@ async def waitThenRun(seconds, fn):
     await asyncio.sleep(seconds)
     await fn()
 
-#relapse channel
-# Check function to find out if the message came from a permitted channel:
-
-
-
-
-
-
-
 # Main Streak
 def is_in_channel():
     def inside_fn(ctx):
         #channelName = 760244981838512158
-        if ctx.channel.id == 760427949421363230:
+        if ctx.channel.id == settings.config["channels"]["streaks"]:
             return True
         return False
     return inside_fn
@@ -49,7 +31,7 @@ def is_in_channel():
 def is_in_channel2():
     def inside_fn(ctx):
         #channelName = 760244981838512158
-        if ctx.channel.id == 699110029806272592:
+        if ctx.channel.id == config["channels"]["streaks"]:
             return True
         return False
     return inside_fn
@@ -57,7 +39,7 @@ def is_in_channel2():
 def is_in_channel3():
     def inside_fn(ctx):
         #channelName = 760244981838512158
-        if ctx.channel.id == 761118232161157152:
+        if ctx.channel.id == config["channels"]["checklist"]:
             return True
         return False
     return inside_fn
