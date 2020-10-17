@@ -11,10 +11,6 @@ class Extra(commands.Cog):
         self._last_member = None
 
     @client.command()
-    async def ping(self, ctx):
-        await ctx.send(f'pong! Latency is {self.client.latency*1000}ms')
-
-    @client.command()
     async def DoSomething(self, ctx):
         await ctx.channel.send("*Does your mum*")
 
