@@ -9,7 +9,7 @@ class ModCommands(commands.Cog):
 
 
     @commands.command()
-    @commands.has_permissions(manage_messages=True)
+    @commands.has_any_role('Moderator')
     async def purge(self, ctx, amount=0):
         await ctx.message.delete()
         await ctx.channel.purge(limit=amount)
@@ -24,13 +24,13 @@ class ModCommands(commands.Cog):
 
 
     @commands.command()
-    @commands.has_permissions(manage_roles=True)
+    @commands.has_any_role('Moderator', 'Semi-Moderator')
     async def mute (self, ctx, user: discord.Member, *,reason=None):
         await self.client.wait_until_ready()
         if reason == None:
             await ctx.channel.send('please give reason for mute')
         elif reason != None:
-            author = ctx.message.author
+            #author = ctx.message.author
             channel = self.client.get_channel(758576163630350366) #I don't know what channel this is
             userAvatarUrl = user.avatar_url
             for discord.guild in self.client.guilds:
@@ -47,7 +47,7 @@ class ModCommands(commands.Cog):
 
 
     @commands.command()
-    @commands.has_permissions(manage_roles=True)
+    @commands.has_any_role('Moderator', 'Semi-Moderator')
     async def unmute (self, ctx, user: discord.Member):
         await self.client.wait_until_ready()
         for discord.guild in self.client.guilds:
@@ -66,7 +66,7 @@ class ModCommands(commands.Cog):
 
 
     @commands.command()
-    @commands.has_permissions(kick_members=True)
+    @commands.has_any_role('Moderator')
     async def kick(self, ctx, member: discord.User = None, *, reason=None):
         if member == None or member == ctx.message.author:
             await ctx.channel.send("You cannot kick yourself")
@@ -84,7 +84,7 @@ class ModCommands(commands.Cog):
         await channel.send(embed=embed)
 
     @commands.command()
-    @commands.has_permissions(ban_members=True)
+    @commands.has_any_role('Moderator')
     async def ban(self, ctx, member: discord.User = None, *, reason=None):
         if member == None or member == ctx.message.author:
             await ctx.channel.send("You cannot Ban yourself")
