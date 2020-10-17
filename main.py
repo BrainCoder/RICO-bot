@@ -1,16 +1,16 @@
-from utils import *
 from streak import *
+from discord.ext import commands
 import discord
 import os
-from discord.ext import commands
-from discord.utils import get
-import asyncio
+import sys
+import settings
+import threading
 
 intents = discord.Intents.all()
 intents.members = True
 intents.presences = True
 client=commands.Bot(command_prefix='!', intents=intents)
-
+mCount = 0
 client.add_command(reset)
 client.add_command(relapse)
 client.add_command(update)
@@ -44,10 +44,10 @@ for filename in os.listdir('./cogs'):
 async def mCount_update():
     threading.Timer(1800, mCount_update).start()
     for guild in client.guilds:
-        if guild.id != 519330541720436736:
+        if guild.id != settings.config["serverId"]:
             continue
         mCount = guild.member_count
-        channel = client.get_channel(761264831981682718)
+        channel = client.get_channel(settings.config["channels"]["memberscount"])
         break
     print(f'There are now {mCount} mebers of this server')
     await channel.edit(name=(f'{mCount} members'))
@@ -63,7 +63,7 @@ async def on_ready():
 
 @client.event
 async def on_member_join(member):
-    channel = client.get_channel(519455122602983424)
+    channel = client.get_channel(settings.config["channels"]["welcome"])
     await channel.send(f'{member.mention} welcome! Please go to <#519455164894019584> to read an overview of what this server is about. Go to <#519627611836776490> and <#567283111273037834> to see the commands that you can use to assign yourself.')
 
 #/Welcome message
@@ -80,7 +80,7 @@ async def on_message(message):
             await message.delete()
             #TODO: Warn/mute the user here
             break
-    channel = client.get_channel(699110029806272592)     #-- Complaints part starts here
+    channel = client.get_channel(settings.config["channels"]["complaints"])     #-- Complaints part starts here
     if message.guild is None and message.author != client.user:
         await channel.send(f"<@{message.author.id}> said: {message.content}")
     await client.process_commands(message)
@@ -138,6 +138,12 @@ async def hourly():
 #        return
 #    raise error
 
-with open ('token.txt', 'rt') as myfile:
-    contents = myfile.read()
-    client.run(f'{contents}')
+if (len(sys.argv) < 2):
+    print("Need config file in order to run. enter an argument to run. Example: python config.json")
+else:
+    with open (sys.argv[1], 'rt') as conf_file:
+        settings.init()
+        settings.config = json.load(conf_file)
+    with open ('token.txt', 'rt') as myfile:
+        contents = myfile.read()
+        client.run(f'{contents}')
