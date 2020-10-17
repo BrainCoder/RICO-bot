@@ -18,7 +18,7 @@ class checklist(commands.Cog):
 
     @client.command(checks=[IsIn_CheckList()])
     async def cl(self, ctx,*,message):
-        channel = self.client.get_channel(761759598419640341) #I don't know what channel this is
+        channel = self.client.get_channel(settings.config["channels"]["job-board"]) #job-board
         await channel.send(f"<@{ctx.author.id}>: \n{message}")
 
 def setup(client):

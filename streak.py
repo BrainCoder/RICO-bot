@@ -11,13 +11,6 @@ client=commands.Bot(command_prefix='!', intents=intents)
 
 def create_table():
     meta.create_all(engine)
-async def insert_data():
-    ins = userdata.insert().values(id = 488779608172658690, #What is this?
-                                  # last_relapse = 12345678912345678,
-                                   usertype = 0,
-                                   past_streaks = json.dumps([56,15,74]),
-                                   points = 5)
-    conn.execute(ins)
 
 def getStreakString(total_streak_length):
     days, remainder = divmod(total_streak_length, 60*60*24)
