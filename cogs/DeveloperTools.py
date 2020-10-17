@@ -79,7 +79,7 @@ class DeveloperTools(commands.Cog):
         for role in ctx.author.roles:
             if role.id != (763078830352891916):
                 await ctx.send(f'This happened')
-                break
+                return
         await ctx.send(f'That happened')
 
 def setup(client):
