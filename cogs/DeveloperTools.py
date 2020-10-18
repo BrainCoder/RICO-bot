@@ -73,6 +73,14 @@ class DeveloperTools(commands.Cog):
         if isinstance(error, commands.MissingRequiredArgument):
             if error.param.name == 'inp':
                 await ctx.send("You forgot to give me input to repeat!")
+    
+    @client.command()
+    async def test(self, ctx):
+        for role in ctx.author.roles:
+            if role.id != (763078830352891916):
+                await ctx.send(f'This happened')
+                return
+        await ctx.send(f'That happened')
 
 def setup(client):
     client.add_cog(DeveloperTools(client))
