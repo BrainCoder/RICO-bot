@@ -1,4 +1,5 @@
 from streak import *
+import utils
 from discord.ext import commands
 import discord
 import os
@@ -88,7 +89,7 @@ async def on_message(message):
         await channel.send(f"<@{message.author.id}> said: {message.content}")
     await client.process_commands(message)
 
-@client.command(checks=[is_in_channel2()])
+@client.command(checks=[utils.is_in_complaint_channel()])
 async def dm(ctx, member: discord.Member, *, content):
     channel = await member.create_dm()
     await channel.send(content)
@@ -141,12 +142,15 @@ async def hourly():
 #        return
 #    raise error
 
-if (len(sys.argv) < 2):
-    print("Need config file in order to run. enter an argument to run. Example: python config.json")
+if (len(sys.argv) < 3):
+    print("Need config file and database url in order to run. Example: python config.json "
+          "mysql+pymysql://user(:password if present)@localhost/database_name")
 else:
     with open (sys.argv[1], 'rt') as conf_file:
         settings.init()
-        settings.config = json.load(conf_file)
+        settings.config = utils.json.load(conf_file)
+        settings.config["databaseUrl"] = sys.argv[2]
+        utils.init()
     with open ('token.txt', 'rt') as myfile:
         contents = myfile.read()
         client.run(f'{contents}')
