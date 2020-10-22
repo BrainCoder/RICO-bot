@@ -38,18 +38,13 @@ class Extra(commands.Cog):
         embed.set_author(name="UI", icon_url=userAvatarUrl)
         embed.add_field(name='Account was created at: ', value=f"{DateCreated}.")
         embed.add_field(name="Member joined at: ", value=f"{MemberJoinedAt}.")
-        embed.add_field(name=f"{member.display_name}'s ", value=f"Avatar is: ")
         await ctx.send(embed=embed)
-        await ctx.send(f"{userAvatarUrl}")
-
-
-
 
     @client.command()
     @commands.has_role("VIP")
     async def avatar(self, ctx, *, avamember: discord.Member = None):
         userAvatarUrl = avamember.avatar_url
-        await ctx.send(f"{ctx.author}'s avatar is: {userAvatarUrl}")
+        await ctx.send(f"{avamember}'s avatar is: {userAvatarUrl}")
 
 def setup(client):
     client.add_cog(Extra(client))
