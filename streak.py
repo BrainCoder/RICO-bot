@@ -1,6 +1,8 @@
+from datetime import timedelta
 import aiohttp
 import io
-from utils import *
+import utils
+from utils import idData
 import discord
 from discord.ext import commands
 import settings
@@ -8,9 +10,6 @@ intents = discord.Intents.all()
 intents.members = True
 intents.presences = True
 client=commands.Bot(command_prefix='!', intents=intents)
-
-def create_table():
-    meta.create_all(engine)
 
 def getStreakString(total_streak_length):
     days, remainder = divmod(total_streak_length, 60*60*24)
@@ -23,14 +22,14 @@ def getStreakString(total_streak_length):
     hoursStr = f'{hours} hour{"s" if hours != 1 else ""}' if hours > 0 else ''
     return [daysStr, middleStr, hoursStr]
 
-@commands.command(checks=[is_in_channel()])
+@commands.command(checks=[utils.is_in_streak_channel()])
 async def reset(ctx, *args):
-    query = (userdata
+    query = (utils.userdata
     .delete()
-    .where(userdata.c.id == ctx.author.id))
-    conn.execute(query)
+    .where(utils.userdata.c.id == ctx.author.id))
+    utils.conn.execute(query)
 
-@commands.command(checks=[is_in_channel()])
+@commands.command(checks=[utils.is_in_streak_channel()])
 async def relapse(ctx, *args):
     members = await ctx.guild.fetch_members(limit=None).flatten()
     for role in ctx.author.roles:
@@ -59,55 +58,55 @@ async def relapse(ctx, *args):
         elif(len(args) > 0 and ( not args[0].isnumeric() or not maxDays > int(args[0]) >= 0)):
             await ctx.channel.send(f'The provided command arguments are not permitted.')
             return
-        current_starting_date = datetime.today() - timedelta(days=n_days, hours=n_hours)
-        query = userdata.select().where(userdata.c.id == ctx.author.id)
-        rows = conn.execute(query).fetchall()
+        current_starting_date = utils.datetime.today() - timedelta(days=n_days, hours=n_hours)
+        query = utils.userdata.select().where(utils.userdata.c.id == ctx.author.id)
+        rows = utils.conn.execute(query).fetchall()
         if(len(rows)):
             if(rows[0]['last_relapse'] is not None):
-                last_starting_date = to_dt(rows[0]['last_relapse'])
+                last_starting_date = utils.to_dt(rows[0]['last_relapse'])
                 total_streak_length = (current_starting_date - last_starting_date).total_seconds()
                 if total_streak_length > 60:
                     [daysStr, middleStr, hoursStr] = getStreakString(total_streak_length)
                     totalHours, _ = divmod(total_streak_length, 60*60)
                     if(rows[0]['past_streaks'] is not None):
-                        past_streaks = json.loads(rows[0]['past_streaks'])
+                        past_streaks = utils.json.loads(rows[0]['past_streaks'])
                         past_streaks.append(totalHours)
                     else:
                         past_streaks = [totalHours]
-                    query = (userdata
+                    query = (utils.userdata
                     .update()
-                    .where(userdata.c.id == ctx.author.id)
+                    .where(utils.userdata.c.id == ctx.author.id)
                     .values(last_relapse = current_starting_date.timestamp(),
-                            past_streaks = json.dumps(past_streaks)))
-                    conn.execute(query)
+                            past_streaks = utils.json.dumps(past_streaks)))
+                    utils.conn.execute(query)
                     await updateStreakRole(ctx.author, current_starting_date)
                     #pic = await getEmergencyPicture()
                     await ctx.channel.send(
                         content=f'Your streak was {daysStr}{middleStr}{hoursStr} long.')#,
                         #file=pic)
             if(rows[0]['last_relapse'] is None or total_streak_length <= 60):
-                query = (userdata
+                query = (utils.userdata
                 .update()
-                .where(userdata.c.id == ctx.author.id)
+                .where(utils.userdata.c.id == ctx.author.id)
                 .values(last_relapse = current_starting_date.timestamp()))
-                conn.execute(query)
+                utils.conn.execute(query)
                 await updateStreakRole(ctx.author, current_starting_date)
                 await ctx.channel.send('Streak set successfully.')
         else:
-            query = userdata.insert().values(id = ctx.author.id,
+            query = utils.userdata.insert().values(id = ctx.author.id,
                     last_relapse = current_starting_date.timestamp())
-            conn.execute(query)
+            utils.conn.execute(query)
             await updateStreakRole(ctx.author, current_starting_date)
             await ctx.channel.send('Streak set successfully.')
 
 
-@commands.command(checks=[is_in_channel()])
+@commands.command(checks=[utils.is_in_streak_channel()])
 async def update(ctx):
-    query = userdata.select().where(userdata.c.id == ctx.author.id)
-    rows = conn.execute(query).fetchall()
+    query = utils.userdata.select().where(utils.userdata.c.id == ctx.author.id)
+    rows = utils.conn.execute(query).fetchall()
     if(len(rows) and rows[0]['last_relapse'] is not None):
-        last_starting_date = to_dt(rows[0]['last_relapse'])
-        total_streak_length = (datetime.today() - last_starting_date).total_seconds()
+        last_starting_date = utils.to_dt(rows[0]['last_relapse'])
+        total_streak_length = (utils.datetime.today() - last_starting_date).total_seconds()
         [daysStr, middleStr, hoursStr] = getStreakString(total_streak_length)
         await updateStreakRole(ctx.author, last_starting_date)
         await ctx.channel.send(f'Your streak is {daysStr}{middleStr}{hoursStr} long.')
@@ -127,7 +126,7 @@ def getDeservedStreakRole(days, serverID):
             return idData[serverID]['streakRoles'][role]
 
 async def updateStreakRole(member, startingDate):
-    days = (datetime.today() - startingDate).days
+    days = (utils.datetime.today() - startingDate).days
     owned = getOwnedStreakRole(member)
     deserved = getDeservedStreakRole(days, member.guild.id)
     if owned == deserved:
