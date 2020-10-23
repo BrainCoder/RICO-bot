@@ -23,7 +23,21 @@ class ModCommands(commands.Cog):
         await user.add_roles(role)
         await ctx.send(f"role added {role}")
 
-
+    @commands.command()
+    @commands.has_any_role('Moderator', 'Semi-Moderator')
+    async def Nmember (self, ctx, user: discord.Member, *,reason=None):
+        await self.client.wait_until_ready()
+        #author = ctx.message.author
+        channel = self.client.get_channel(settings.config["channels"]["log"])
+        userAvatarUrl = user.avatar_url
+        for discord.guild in self.client.guilds:
+            Member_role = user.guild.get_role(settings.config["statusRoles"]["member"])
+        await user.add_roles(Member_role)
+        #await req(guild_id, user_id, role.id, reason=reason)
+        embed = discord.Embed(color=ctx.author.color, timestamp=ctx.message.created_at)
+        embed.set_author(name="Member", icon_url=userAvatarUrl)
+        embed.add_field(name=f"{user} has been given member! ", value=f"Member given by: <@{ctx.author.id}>.")
+        await channel.send(embed=embed)
 
     @commands.command()
     @commands.has_any_role('Moderator', 'Semi-Moderator')
