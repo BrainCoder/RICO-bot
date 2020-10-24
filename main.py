@@ -53,7 +53,7 @@ async def mCount_update():
         mCount = guild.member_count
         channel = client.get_channel(settings.config["channels"]["memberscount"])
         break
-    print(f'There are now {mCount} mebers of this server')
+    print(f'There are now {mCount} members of this server')
     await channel.edit(name=(f'{mCount} members'))
 
 @client.event
