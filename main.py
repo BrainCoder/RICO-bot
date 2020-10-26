@@ -54,7 +54,7 @@ async def mCount_update():
         channel = client.get_channel(settings.config["channels"]["memberscount"])
         break
     print(f'There are now {mCount} members of this server')
-    await channel.edit(name=(f'{mCount} members'))
+    await channel.edit(name=(f'[{mCount} members]'))
 
 @client.event
 async def on_ready():
