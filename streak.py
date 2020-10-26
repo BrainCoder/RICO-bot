@@ -31,6 +31,12 @@ async def reset(ctx, *args):
 
 @commands.command(checks=[utils.is_in_streak_channel()])
 async def relapse(ctx, *args):
+    Anon = False
+    anon_role = ctx.guild.get_role(settings.config["modeRoles"]["anon-streak"])
+    for role in ctx.author.roles:
+        if role.id == anon_role.id:
+            Anon = True
+            await ctx.message.delete()
     members = await ctx.guild.fetch_members(limit=None).flatten()
     for role in ctx.author.roles:
         if role.id == settings.config["statusRoles"]["monthly-challenge-participant"]:
@@ -79,7 +85,8 @@ async def relapse(ctx, *args):
                     .values(last_relapse = current_starting_date.timestamp(),
                             past_streaks = utils.json.dumps(past_streaks)))
                     utils.conn.execute(query)
-                    await updateStreakRole(ctx.author, current_starting_date)
+                    if not Anon:
+                        await updateStreakRole(ctx.author, current_starting_date)
                     #pic = await getEmergencyPicture()
                     await ctx.channel.send(
                         content=f'Your streak was {daysStr}{middleStr}{hoursStr} long.')#,
@@ -90,25 +97,34 @@ async def relapse(ctx, *args):
                 .where(utils.userdata.c.id == ctx.author.id)
                 .values(last_relapse = current_starting_date.timestamp()))
                 utils.conn.execute(query)
-                await updateStreakRole(ctx.author, current_starting_date)
+                if not Anon:
+                    await updateStreakRole(ctx.author, current_starting_date)
                 await ctx.channel.send('Streak set successfully.')
         else:
             query = utils.userdata.insert().values(id = ctx.author.id,
                     last_relapse = current_starting_date.timestamp())
             utils.conn.execute(query)
-            await updateStreakRole(ctx.author, current_starting_date)
+            if not Anon:
+                await updateStreakRole(ctx.author, current_starting_date)
             await ctx.channel.send('Streak set successfully.')
 
 
 @commands.command(checks=[utils.is_in_streak_channel()])
 async def update(ctx):
+    Anon = False
+    anon_role = ctx.guild.get_role(settings.config["modeRoles"]["anon-streak"])
+    for role in ctx.author.roles:
+        if role.id == anon_role.id:
+            Anon = True
+            await ctx.message.delete()
     query = utils.userdata.select().where(utils.userdata.c.id == ctx.author.id)
     rows = utils.conn.execute(query).fetchall()
     if(len(rows) and rows[0]['last_relapse'] is not None):
         last_starting_date = utils.to_dt(rows[0]['last_relapse'])
         total_streak_length = (utils.datetime.today() - last_starting_date).total_seconds()
         [daysStr, middleStr, hoursStr] = getStreakString(total_streak_length)
-        await updateStreakRole(ctx.author, last_starting_date)
+        if not Anon:
+            await updateStreakRole(ctx.author, last_starting_date)
         await ctx.channel.send(f'Your streak is {daysStr}{middleStr}{hoursStr} long.')
     else:
         await ctx.channel.send("No data about you available do !relapse .")
