@@ -6,6 +6,8 @@ from utils import idData
 import discord
 from discord.ext import commands
 import settings
+import asyncio
+
 intents = discord.Intents.all()
 intents.members = True
 intents.presences = True
@@ -59,10 +61,16 @@ async def relapse(ctx, *args):
             if(len(args) > 1 and args[1].isnumeric() and 24 > int(args[1]) >= 0):
                 n_hours = int(args[1])
             elif(len(args) > 1 and (not args[1].isnumeric() or not 24 > int(args[1]) >= 0)):
-                await ctx.channel.send(f'The provided command arguments are not permitted.')
+                message = await ctx.channel.send(f'The provided command arguments are not permitted.')
+                if Anon:
+                    await asyncio.sleep(5)
+                    await message.delete()
                 return
-        elif(len(args) > 0 and ( not args[0].isnumeric() or not maxDays > int(args[0]) >= 0)):
-            await ctx.channel.send(f'The provided command arguments are not permitted.')
+        elif(len(args) > 0 and ( not args[0].isnumeric() or not maxDays > int(args[0]) >= 0)): 
+            message = await ctx.channel.send(f'The provided command arguments are not permitted.')
+            if Anon:
+                await asyncio.sleep(5)
+                await message.delete()
             return
         current_starting_date = utils.datetime.today() - timedelta(days=n_days, hours=n_hours)
         query = utils.userdata.select().where(utils.userdata.c.id == ctx.author.id)
@@ -88,9 +96,12 @@ async def relapse(ctx, *args):
                     if not Anon:
                         await updateStreakRole(ctx.author, current_starting_date)
                     #pic = await getEmergencyPicture()
-                    await ctx.channel.send(
+                    message = await ctx.channel.send(
                         content=f'Your streak was {daysStr}{middleStr}{hoursStr} long.')#,
                         #file=pic)
+                    if Anon:
+                        await asyncio.sleep(5)
+                        await message.delete()
             if(rows[0]['last_relapse'] is None or total_streak_length <= 60):
                 query = (utils.userdata
                 .update()
@@ -99,14 +110,20 @@ async def relapse(ctx, *args):
                 utils.conn.execute(query)
                 if not Anon:
                     await updateStreakRole(ctx.author, current_starting_date)
-                await ctx.channel.send('Streak set successfully.')
+                message = await ctx.channel.send('Streak set successfully.')
+                if Anon:
+                    await asyncio.sleep(5)
+                    await message.delete()
         else:
             query = utils.userdata.insert().values(id = ctx.author.id,
                     last_relapse = current_starting_date.timestamp())
             utils.conn.execute(query)
             if not Anon:
                 await updateStreakRole(ctx.author, current_starting_date)
-            await ctx.channel.send('Streak set successfully.')
+            message = await ctx.channel.send('Streak set successfully.')
+            if Anon:
+                await asyncio.sleep(5)
+                await message.delete() 
 
 
 @commands.command(checks=[utils.is_in_streak_channel()])
@@ -125,9 +142,15 @@ async def update(ctx):
         [daysStr, middleStr, hoursStr] = getStreakString(total_streak_length)
         if not Anon:
             await updateStreakRole(ctx.author, last_starting_date)
-        await ctx.channel.send(f'Your streak is {daysStr}{middleStr}{hoursStr} long.')
+        message = await ctx.channel.send(f'Your streak is {daysStr}{middleStr}{hoursStr} long.')
+        if Anon:
+            await asyncio.sleep(5)
+            await message.delete()
     else:
-        await ctx.channel.send("No data about you available do !relapse .")
+        message = await ctx.channel.send("No data about you available do !relapse .")
+        if Anon:
+            await asyncio.sleep(5)
+            await message.delete()
 
 def getOwnedStreakRole(member):
     for role in idData[member.guild.id]['streakRoles']:
