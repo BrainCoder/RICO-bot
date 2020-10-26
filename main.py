@@ -93,6 +93,8 @@ async def on_message(message):
 async def dm(ctx, member: discord.Member, *, content):
     channel = await member.create_dm()
     await channel.send(content)
+    emoji = '✅'
+    await ctx.message.add_reaction(emoji)
 
 #/Complaints DM code & Word filter
 
