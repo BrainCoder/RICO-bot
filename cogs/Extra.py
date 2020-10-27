@@ -76,7 +76,7 @@ class Extra(commands.Cog):
         await ctx.send(embed=embed)
 
     @client.command()
-    @commands.has_role("VIP")
+    @commands.has_any_role('💎 VIP', '💎 Booster VIP', 'Moderator', 'Semi-Moderator')
     async def avatar(self, ctx, *, avamember: discord.Member = None):
         userAvatarUrl = avamember.avatar_url
         await ctx.send(f"{avamember}'s avatar is: {userAvatarUrl}")
