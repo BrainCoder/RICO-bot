@@ -75,11 +75,11 @@ class Extra(commands.Cog):
         embed.add_field(name="Member joined at: ", value=f"{MemberJoinedAt}.")
         await ctx.send(embed=embed)
 
-    @client.command()
-    @commands.has_role('💎 VIP', '💎 Booster VIP', 'Moderator', 'Semi-Moderator')
-    async def avatar(self, ctx, *, avamember: discord.Member = None):
-        userAvatarUrl = avamember.avatar_url
-        await ctx.send(f"{avamember}'s avatar is: {userAvatarUrl}")
+    #@client.command()
+    #@commands.has_role('💎 VIP', '💎 Booster VIP', 'Moderator', 'Semi-Moderator')
+    #async def avatar(self, ctx, *, avamember: discord.Member = None):
+    #    userAvatarUrl = avamember.avatar_url
+    #    await ctx.send(f"{avamember}'s avatar is: {userAvatarUrl}")
 
 def setup(client):
     client.add_cog(Extra(client))
