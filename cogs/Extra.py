@@ -61,7 +61,7 @@ class Extra(commands.Cog):
         )
 
     @client.command()
-    @commands.has_role("VIP")
+    @commands.has_any_role('💎 VIP', '💎 Booster VIP', 'Moderator', 'Semi-Moderator')
     async def UI(self, ctx, *, member: discord.Member = None):
         DateCreated = member.created_at.strftime("%A, %B %d %Y at %H:%M:%S %p")
 
