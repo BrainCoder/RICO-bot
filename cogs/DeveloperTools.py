@@ -3,7 +3,6 @@ import settings
 import traceback
 import sys
 from discord.ext import commands
-from utils import is_in_checklist_channel
 
 
 client=commands.Bot(command_prefix='!')
@@ -14,7 +13,8 @@ class DeveloperTools(commands.Cog):
         self.client = client
         self._last_member = None
 
-    @client.command(checks=[is_in_checklist_channel()])
+    @client.command()
+    @commands.has_any_role('Moderator', 'Developer')
     async def cl(self, ctx,*,message):
         channel = self.client.get_channel(settings.config["channels"]["job-board"]) #job-board
         await channel.send(f"<@{ctx.author.id}>: \n{message}")
