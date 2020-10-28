@@ -38,9 +38,10 @@ class ModCommands(commands.Cog):
             await ctx.message.delete()
             await ctx.channel.purge(limit=amount)
 
+
     @commands.command()
     @commands.has_any_role('Moderator', 'Semi-Moderator')
-    async def Nmember (self, ctx, user: discord.Member):
+    async def nmember (self, ctx, user: discord.Member):
         await self.client.wait_until_ready()
         channel = self.client.get_channel(settings.config["channels"]["log"])
         userAvatarUrl = user.avatar_url
@@ -51,6 +52,7 @@ class ModCommands(commands.Cog):
         embed.set_author(name="Member", icon_url=userAvatarUrl)
         embed.add_field(name=f"{user} has been given member! ", value=f"Member given by: <@{ctx.author.id}>.")
         await channel.send(embed=embed)
+
 
     @commands.command()
     @commands.has_any_role('Moderator', 'Semi-Moderator')
@@ -71,7 +73,26 @@ class ModCommands(commands.Cog):
             await channel.send(embed=embed)
 
 
-
+    @commands.command()
+    @commands.has_any_role('Moderator', 'Semi-Moderator')
+    async def cooldown(self, ctx, user: discord.Member, *, time:TimeConverter = None):
+        cooldown_role = user.guild.get_role(settings.config["statusRoles"]["cooldown"])
+        logs_channel = self.client.get_channel(settings.config["channels"]["log"])
+        userAvatarUrl = user.avatar_url
+        if time:
+            await user.add_roles(cooldown_role)
+            embed = discord.Embed(color=ctx.author.color, timestamp=ctx.message.created_at)
+            embed.set_author(name="user", icon_url=userAvatarUrl)
+            embed.add_field(name=f'{user} cooled-down by {ctx.author}', value=f'The cooldown will be removed in {time}s, or a moderator will have to remove it manually')
+            await logs_channel.send(embed=embed)
+            await asyncio.sleep(time)
+            await user.remove_roles(cooldown_role)
+            embed = discord.Embed(color=ctx.author.color, timestamp=ctx.message.created_at)
+            embed.set_author(name="user", icon_url=userAvatarUrl)
+            embed.add_field(name=f'{user} is no longer cooled-down', value=f'The cooldown was removed automatically by the bot')
+            await logs_channel.send(embed=embed)
+        else:
+            await ctx.send(f'Please give a timer for the cooldown')
 
 
     @commands.command()
@@ -94,12 +115,6 @@ class ModCommands(commands.Cog):
         await channel.send(embed=embed)
 
 
-
-
-
-
-
-
     @commands.command()
     @commands.has_any_role('Moderator')
     async def kick(self, ctx, member: discord.User = None, *, reason=None):
@@ -117,6 +132,7 @@ class ModCommands(commands.Cog):
         embed.set_author(name="Kick", icon_url=userAvatarUrl)
         embed.add_field(name=f"{member} has been Kicked! ", value=f"**for:** {reason} Kicked by: <@{ctx.author.id}>.")
         await channel.send(embed=embed)
+
 
     @commands.command()
     @commands.has_any_role('Moderator')
