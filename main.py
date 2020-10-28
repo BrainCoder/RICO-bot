@@ -1,17 +1,21 @@
-from streak import *
-import utils
-from discord.ext import commands
 import discord
+from discord.ext import commands
 import os
 import sys
 import settings
 import threading
+
+import utils
+from streak import reset
+from streak import relapse
+from streak import update
 
 intents = discord.Intents.all()
 intents.members = True
 intents.presences = True
 client=commands.Bot(command_prefix='!', intents=intents)
 mCount = 0
+
 client.add_command(reset)
 client.add_command(relapse)
 client.add_command(update)
