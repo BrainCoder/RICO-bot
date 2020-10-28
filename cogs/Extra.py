@@ -23,6 +23,7 @@ class TimeConverter(commands.Converter):
                 raise commands.BadArgument("{} is an invalid time-key! h/m/s/d are valid!".format(k))
             except ValueError:
                 raise commands.BadArgument("{} is not a number!".format(v))
+        return time
 
 class Extra(commands.Cog):
 
@@ -31,18 +32,33 @@ class Extra(commands.Cog):
         self._last_member = None
 
     
-    #@commands.command()
-    #@commands.has_any_role('Member')
-    #async def SelfMute(self, ctx, time:TimeConverter = None):
-    #    user = ctx.author
-    #    channel = self.client.get_channel(settings.config["channels"]["log"])
-    #    for discord.guild in self.client.guilds:
-    #        Selfmute_Role = user.guild.get_role(settings.config["statusRoles"]["selfmute"])
-    #    await user.add_roles(Selfmute_Role)
-    #    await channel.send(("Muted {} for {}s" if time else "Muted {}").format(user, time))
-    #    if time:
-    #        await asyncio.sleep(time)
-    #        await user.remove_roles(Selfmute_Role)
+    @commands.command()
+    @commands.has_any_role('Member')
+    async def SelfMute(self, ctx, *, time:TimeConverter = None):
+        InSelfMute = False
+        member = ctx.author
+        Selfmute_Role = member.guild.get_role(settings.config["statusRoles"]["selfmute"])
+        logs_channel = self.client.get_channel(settings.config["channels"]["log"])
+        userAvatarUrl = member.avatar_url
+        if ctx.channel.id == settings.config["channels"]["selfmute"]:
+            InSelfMute = True
+        if InSelfMute:
+            await ctx.send('You cannot !SelfMute while selfmuted')
+        else:
+            await member.add_roles(Selfmute_Role)
+            if time:
+                embed = discord.Embed(color=ctx.author.color, timestamp=ctx.message.created_at)
+                embed.set_author(name="Member", icon_url=userAvatarUrl)
+                embed.add_field(name=f'{member} selfmuted for {time}s', value='The self mute role will be removed in {time}s, or a moderator will have to remove it manually')
+                await logs_channel.send(embed=embed)
+                await asyncio.sleep(time)
+                await member.remove_roles(Selfmute_Role)
+            else:
+                embed = discord.Embed(color=ctx.author.color, timestamp=ctx.message.created_at)
+                embed.set_author(name="Member", icon_url=userAvatarUrl)
+                embed.add_field(name=f'{member} selfmuted indefinitely!', value='A moderator will be required to remove the selfmute role.')
+                await logs_channel.send(embed=embed)
+            
 
     @client.command()
     async def DoSomething(self, ctx):

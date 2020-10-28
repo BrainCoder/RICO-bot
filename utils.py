@@ -54,7 +54,6 @@ def is_in_streak_channel():
         return False
     return inside_fn
 
-
 # Complaints Channel
 def is_in_complaint_channel():
     def inside_fn(ctx):
@@ -64,7 +63,7 @@ def is_in_complaint_channel():
         return False
     return inside_fn
 
-
+# Checklist Channel
 def is_in_checklist_channel():
     def inside_fn(ctx):
         #channelName = 760244981838512158
