@@ -49,17 +49,19 @@ class Extra(commands.Cog):
             if time:
                 embed = discord.Embed(color=ctx.author.color, timestamp=ctx.message.created_at)
                 embed.set_author(name="Member", icon_url=userAvatarUrl)
-                embed.add_field(name=f'{member} selfmuted for {time}s', value='The self mute role will be removed in {time}s, or a moderator will have to remove it manually')
+                embed.add_field(name=f'{member} selfmuted for {time}s', value=f'The self mute role will be removed in {time}s, or a moderator will have to remove it manually')
                 await logs_channel.send(embed=embed)
                 await asyncio.sleep(time)
                 await member.remove_roles(Selfmute_Role)
+                embed = discord.Embed(color=ctx.author.color, timestamp=ctx.message.created_at)
+                embed.set_author(name="Member", icon_url=userAvatarUrl)
+                embed.add_field(name=f'{member} is no longer self muted', value=f'The self mute was removed automatically by the bot')
             else:
                 embed = discord.Embed(color=ctx.author.color, timestamp=ctx.message.created_at)
                 embed.set_author(name="Member", icon_url=userAvatarUrl)
                 embed.add_field(name=f'{member} selfmuted indefinitely!', value='A moderator will be required to remove the selfmute role.')
                 await logs_channel.send(embed=embed)
             
-
     @client.command()
     async def DoSomething(self, ctx):
         await ctx.channel.send("*Does your mum*")
