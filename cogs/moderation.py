@@ -1,6 +1,27 @@
 import discord
 from discord.ext import commands
 import settings
+import sys
+import traceback
+import asyncio
+import re
+
+time_regex = re.compile("(?:(\d{1,5})(h|s|m|d))+?")
+time_dict = {"h":3600, "s":1, "m":60, "d":86400}
+
+class TimeConverter(commands.Converter):
+    async def convert(self, ctx, argument):
+        args = argument.lower()
+        matches = re.findall(time_regex, args)
+        time = 0
+        for v, k in matches:
+            try:
+                time += time_dict[k]*float(v)
+            except KeyError:
+                raise commands.BadArgument("{} is an invalid time-key! h/m/s/d are valid!".format(k))
+            except ValueError:
+                raise commands.BadArgument("{} is not a number!".format(v))
+        return time
 
 class ModCommands(commands.Cog):
 
@@ -49,19 +70,35 @@ class ModCommands(commands.Cog):
             embed.add_field(name=f"{user} has been Muted! ", value=f"**for:** {reason} Muted by: <@{ctx.author.id}>.")
             await channel.send(embed=embed)
 
+
+
+
+
     @commands.command()
     @commands.has_any_role('Moderator', 'Semi-Moderator')
-    async def unmute (self, ctx, user: discord.Member):
+    async def unmute (self, ctx, user: discord.Member, *, time:TimeConverter = None):
         await self.client.wait_until_ready()
-        for discord.guild in self.client.guilds:
-            Unmute_Role = user.guild.get_role(settings.config["statusRoles"]["muted"])
+        Unmute_Role = user.guild.get_role(settings.config["statusRoles"]["muted"])
         channel = self.client.get_channel(settings.config["channels"]["log"])
-        await user.remove_roles(Unmute_Role)
         userAvatarUrl = user.avatar_url
+        if time:
+            embed = discord.Embed(color=ctx.author.color, timestamp=ctx.message.created_at)
+            embed.set_author(name="Unmute", icon_url=userAvatarUrl)
+            embed.add_field(name=f"{user} will be unmuted in {time}s! ", value=f"Unmuted by: <@{ctx.author.id}>.")
+            await channel.send(embed=embed)
+            await asyncio.sleep(time)
+        await user.remove_roles(Unmute_Role)
         embed = discord.Embed(color=ctx.author.color, timestamp=ctx.message.created_at)
-        embed.set_author(name="UnMute", icon_url=userAvatarUrl)
+        embed.set_author(name="Unmute", icon_url=userAvatarUrl)
         embed.add_field(name=f"{user} has been Unmuted! ", value=f"Unmuted by: <@{ctx.author.id}>.")
         await channel.send(embed=embed)
+
+
+
+
+
+
+
 
     @commands.command()
     @commands.has_any_role('Moderator')
