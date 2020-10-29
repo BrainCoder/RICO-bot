@@ -1,0 +1,17 @@
+{
+  "embeds": [
+    {
+      "title": "Glossary",
+      "description": "**Accountability Partners:** Accountability partners are pairs who hold each other responsible for their sexual habits\n**Chaser Effect:** The super-charged desire to masturbate after sexual acts.\n**ED: Erectile dysfunction** – inability to maintain an erection during intercourse\n**Edging:** Traditionally, this describes masturbating to the brink of orgasm and stopping right before “going over the edge.” This could be repeated over and over, usually in conjunction with pornography.\n**Flatlining:** Period(s) of zero libido during your streak\n**NSFL:** Not safe for life. This is reserved for disgusting stuff.\n**NSFW:** Not safe for work. This label is affixed to potentially-triggering content and should be viewed with caution\n**PIED:** Porn-induced erectile dysfunction.\n**PMO:** Porn/Masturbation/Orgasm.\n**PSUB:** Also known as P-SUBs, or porn substitutes, are considered undesirable replacements to using pornography. Examples might include excessive use of dating websites, looking at clothed images of models, or even cruising social media websites for pictures.\n**Reboot:** Also called “rebooting.” The process of restoring your brain to “factory defaults.” Verb meaning abstinence from sexual behaviors, namely the use of porn, but often also masturbation and sex. Said to take 90 days or longer, by anecdotal reports.\n**Relapse:** The act of returning to bad habits after a period of improvement.\n**Retention:** Practicing retention involves going for longer periods of time without sexual release, beyond the goal of addiction recovery.\n**The Surge:** The period 5-14 days after the start of a streak that often features a physically recognizable surge in energy and sexual drive.\n\n*source:\nhttps://www.nofap.com/glossary/*",
+      "url": "https://tenor.com/view/dictionary-simpsons-hmmmm-homer-simpson-gif-15407882",
+      "color": 1615657,
+      "author": {
+        "name": "NoPorn",
+        "url": "https://discord.gg/CFR9bt",
+        "icon_url": "https://cdn.discordapp.com/icons/519330541720436736/a_2bdbaecdd90c85cdc8e9108d8a8c5907.png?size=128"
+      }
+    }
+  ],
+  "username": "Manager Bot",
+  "avatar_url": "https://cdn.discordapp.com/avatars/519326532498620439/eaf7cc6b79917c7dacaea358e08a85a5.png?size=128"
+}

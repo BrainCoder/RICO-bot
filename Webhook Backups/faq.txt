@@ -1,0 +1,17 @@
+{
+  "embeds": [
+    {
+      "title": "FAQ",
+      "description": "•** Do wet dreams count as a relapse?**\nNo, they're a natural process that can't be prevented, so they don't count.\n\n• **Why is there no Softmode on this server?**\nSoftmode has long been thought of as a way to water down from the temptations of porn addiction and fetishes. We on the other hand see it as a method of masturbation that still provides with the addictive pleasure that lead towards watching pornography.\n\n•** What time is the support group?**\nThe support group is held every sunday at 16:00 (EST), for more information please message <@!122451101604642817>.\n\n•** What is the support group?**\nThe support group is a weekly event hosted by <@!122451101604642817>. The purposes of these meetings are to help people talk out their feelings, vent, share successes and failures, give and get advice. Participation is not required so you can drop by and listen.",
+      "url": "https://tenor.com/view/did-you-get-bored-are-you-bored-boring-are-you-not-entertained-amber-ruffin-gif-14147198",
+      "color": 1615657,
+      "author": {
+        "name": "NoPorn",
+        "url": "https://discord.com/invite/CFR9bt",
+        "icon_url": "https://cdn.discordapp.com/icons/519330541720436736/a_2bdbaecdd90c85cdc8e9108d8a8c5907.png?size=128"
+      }
+    }
+  ],
+  "username": "Manager Bot",
+  "avatar_url": "https://cdn.discordapp.com/avatars/519326532498620439/eaf7cc6b79917c7dacaea358e08a85a5.png?size=128"
+}
