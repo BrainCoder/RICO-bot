@@ -2,7 +2,7 @@
   "embeds": [
     {
       "title": "Hobbies & Interests",
-      "description": ":droplet: - Super Hydrator - \n:writing_hand_tone3: - Productivity\n :books: - Book Club\n :man_lifting_weights: - Fitness \n\n**Please note**\n*The fitness channel holds a weekly event called physique Friday. During this time, certain members could be exposed to triggering material. If this personally affects you, it is the staff team’s recommendation that you do not take the fitness role. For more information, please refer to* <#519455164894019584>.",
+      "description": ":droplet: - Super Hydrator\n:writing_hand_tone3: - Productivity\n :books: - Book Club\n :man_lifting_weights: - Fitness\n:chess_pawn: - Chess\n:speaking_head: - Discussions\n:couple: - Relationships\n\n**Please note**\n*The fitness channel holds a weekly event called physique Friday. During this time, certain members could be exposed to triggering material. If this personally affects you, it is the staff team’s recommendation that you do not take the fitness role. For more information, please refer to* <#519455164894019584>",
       "color": 64168,
       "author": {
         "name": "NoPorn",

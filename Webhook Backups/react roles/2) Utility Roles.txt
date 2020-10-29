@@ -2,7 +2,7 @@
   "embeds": [
     {
       "title": "Utility Roles",
-      "description": "\n 🆘️ - Helper\n :medical_symbol: - Support Group\n:video_game: - Monthly Challenge Signup \n :detective: - Anon Streak\n\n :regional_indicator_v: - Virgin\n:no_mobile_phones: - Caveman Mode \n:regional_indicator_r:  - Retention\n\n**Please note**\n*It is against server rules to harass/intimidate other users based on streak length or streak roles. We politely ask you respect how other users intent to complete their NoFap journey. For more information please refer to* <#519455164894019584>",
+      "description": "\n:sos: - Helper\n:medical_symbol: - Support Group\n:video_game: - Monthly Challenge Signup\n:busts_in_silhouette: - Accountability Partners\n:cockroach: - Urge Killer\n:detective: - Anon Streak\n\n :regional_indicator_v: - Virgin\n:no_mobile_phones: - Caveman Mode \n:regional_indicator_r:  - Retention\n\n**Please note**\n*It is against server rules to harass/intimidate other users based on streak length or streak roles. We politely ask you respect how other users intent to complete their NoFap journey. For more information please refer to* <#519455164894019584>",
       "color": 16756992,
       "author": {
         "name": "NoPorn",
