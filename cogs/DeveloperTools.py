@@ -16,16 +16,16 @@ class DeveloperTools(commands.Cog):
     @client.command()
     @commands.has_any_role('Moderator', 'Developer')
     async def cl(self, ctx,*,message):
-        channel = self.client.get_channel(settings.config["channels"]["job-board"]) #job-board
+        channel = self.client.get_channel(settings.config["channels"]["job-board"])
         await channel.send(f"<@{ctx.author.id}>: \n{message}")
     
     @client.command()
-    @commands.has_any_role('Moderator', 'Developer')
+    @commands.has_any_role('Developer')
     async def ping(self, ctx):
         await ctx.send(f'pong! Latency is {self.client.latency*1000}ms')
     
     @client.command()
-    @commands.has_any_role('Moderator', 'Developer')
+    @commands.has_any_role('Developer')
     async def GetChannel(self, ctx, id):
         channel = ctx.guild.get_channel(int(id))
         await ctx.send(f'{channel}')
@@ -57,7 +57,7 @@ class DeveloperTools(commands.Cog):
             traceback.print_exception(type(error), error, error.__traceback__, file=sys.stderr)
 
     @commands.command(name='repeat', aliases=['mimic', 'copy'])
-    @commands.has_any_role('Moderator', 'Developer')
+    @commands.has_any_role('Developer')
     async def do_repeat(self, ctx, *, inp: str):
         await ctx.send(inp)
 
@@ -67,6 +67,23 @@ class DeveloperTools(commands.Cog):
             if error.param.name == 'inp':
                 await ctx.send("You forgot to give me input to repeat!")
     
+'''    @client.command()
+    @commands.has_any_role('Developer')
+    async def test(self, ctx, harg=None, *, member: discord.Member = None):
+        help = False
+        if harg == 'h':
+            help = True
+        if help:
+            await ctx.send('This is is the help explanation')
+        else:
+            DateCreated = member.created_at.strftime("%A, %B %d %Y at %H:%M:%S %p")
+            MemberJoinedAt = member.joined_at.strftime("%A, %B %d %Y at %H:%M:%S %p")
+            userAvatarUrl = member.avatar_url
+            embed = discord.Embed(color=ctx.author.color, timestamp=ctx.message.created_at)
+            embed.set_author(name="UI", icon_url=userAvatarUrl)
+            embed.add_field(name='Account was created at: ', value=f"{DateCreated}.")
+            embed.add_field(name="Member joined at: ", value=f"{MemberJoinedAt}.")
+            await ctx.send(embed=embed)'''
 
 def setup(client):
     client.add_cog(DeveloperTools(client))

@@ -34,7 +34,7 @@ class Extra(commands.Cog):
     
     @commands.command()
     @commands.has_any_role('Member')
-    async def SelfMute(self, ctx, *, time:TimeConverter = None):
+    async def selfmute(self, ctx, *, time:TimeConverter = None):
         InSelfMute = False
         member = ctx.author
         Selfmute_Role = member.guild.get_role(settings.config["statusRoles"]["selfmute"])
@@ -63,31 +63,16 @@ class Extra(commands.Cog):
                 await logs_channel.send(embed=embed)
             
     @client.command()
-    async def DoSomething(self, ctx):
+    async def sosomething(self, ctx):
         await ctx.channel.send("*Does your mum*")
 
     @client.command()
-    async def habibi(self, ctx):
-        await ctx.message.delete()
-        await ctx.channel.send("""
-                \\
-            \\
-             <:despair:568237870288994315>     Pass the habibi down
-           /
-        /
-        """
-        )
-
-    @client.command()
     @commands.has_any_role('💎 VIP', '💎 Booster VIP', 'Moderator', 'Semi-Moderator')
-    async def UI(self, ctx, *, member: discord.Member = None):
+    async def ui(self, ctx, *, member: discord.Member = None):
         DateCreated = member.created_at.strftime("%A, %B %d %Y at %H:%M:%S %p")
-
         MemberJoinedAt = member.joined_at.strftime("%A, %B %d %Y at %H:%M:%S %p")
         userAvatarUrl = member.avatar_url
-
         embed = discord.Embed(color=ctx.author.color, timestamp=ctx.message.created_at)
-
         embed.set_author(name="UI", icon_url=userAvatarUrl)
         embed.add_field(name='Account was created at: ', value=f"{DateCreated}.")
         embed.add_field(name="Member joined at: ", value=f"{MemberJoinedAt}.")
