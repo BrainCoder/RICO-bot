@@ -99,20 +99,42 @@ class ModCommands(commands.Cog):
     @commands.has_any_role('Moderator', 'Semi-Moderator')
     async def unmute (self, ctx, user: discord.Member, *, time:TimeConverter = None):
         await self.client.wait_until_ready()
-        Unmute_Role = user.guild.get_role(settings.config["statusRoles"]["muted"])
+        #selfmute = False
+        #muted = False
+        #selfmute_role = ctx.guild.get_role(settings.config["statusRoles"]["selfmute"])
+        muted_role = ctx.guild.get_role(settings.config["statusRoles"]["muted"])
         channel = self.client.get_channel(settings.config["channels"]["log"])
         userAvatarUrl = user.avatar_url
+        #for role in ctx.author.roles:
+        #    if role.id == selfmute_role.id:
+        #        selfmute = True
+        #for role in ctx.author.roles:
+        #    if role.id == muted_role.id:
+        #        muted = True
+        #if selfmute:
+        #     await self.client.wait_until_ready() 
+        #     if time:
+        #        await ctx.send(f'This user is self muted, please use the unmute command without the time argument')
+        #     else:
+        #        await user.remove_roles(selfmute_role)
+        #        embed = discord.Embed(color=ctx.author.color, timestamp=ctx.message.created_at)
+        #        embed.set_author(name="Unmute", icon_url=userAvatarUrl)
+        #        embed.add_field(name=f"{user} is no longer selfmuted! ", value=f"Unmuted by: <@{ctx.author.id}>.")
+        #        await channel.send(embed=embed)
+        #elif muted:
         if time:
             embed = discord.Embed(color=ctx.author.color, timestamp=ctx.message.created_at)
             embed.set_author(name="Unmute", icon_url=userAvatarUrl)
             embed.add_field(name=f"{user} will be unmuted in {time}s! ", value=f"Unmuted by: <@{ctx.author.id}>.")
             await channel.send(embed=embed)
             await asyncio.sleep(time)
-        await user.remove_roles(Unmute_Role)
+        await user.remove_roles(muted_role)
         embed = discord.Embed(color=ctx.author.color, timestamp=ctx.message.created_at)
         embed.set_author(name="Unmute", icon_url=userAvatarUrl)
         embed.add_field(name=f"{user} has been Unmuted! ", value=f"Unmuted by: <@{ctx.author.id}>.")
         await channel.send(embed=embed)
+        #else:
+        #    await ctx.send(f'{user} cannot be unmuted')
 
 
     @commands.command()
