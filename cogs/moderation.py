@@ -97,7 +97,7 @@ class ModCommands(commands.Cog):
 
     @commands.command()
     @commands.has_any_role('Moderator', 'Semi-Moderator')
-    async def unmute (self, ctx, user: discord.Member, *, time:TimeConverter = None):
+    async def nunmute (self, ctx, user: discord.Member, *, time:TimeConverter = None):
         await self.client.wait_until_ready()
         #selfmute = False
         #muted = False
