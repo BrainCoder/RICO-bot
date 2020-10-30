@@ -1,0 +1,17 @@
+{
+  "embeds": [
+    {
+      "title": "Roles & Access",
+      "description": "To grab your role type ! followed by the appropriate role\n\n__ **General Support & Development**__\n!helper\n!support-group\n!relationships\n!fitness\n!book-club\n!virgin\n!retention\n!monthlychallenge\n!cavemanmode\n\n__**Religion**__\n!islam\n!christianity\n!judaism\n!religious-else\n\n__**Gender**__\n!male\n!female\n\n__**Location**__\n!asia\n!europe\n!africa\n!north-america\n!south-america\n!antarctica\n!oceania",
+      "url": "https://www.youtube.com/watch?v=hv-ODnbbP7U",
+      "color": 1615657,
+      "author": {
+        "name": "NoPorn",
+        "url": "https://discord.gg/CFR9bt",
+        "icon_url": "https://cdn.discordapp.com/icons/519330541720436736/a_2bdbaecdd90c85cdc8e9108d8a8c5907.png?size=128"
+      }
+    }
+  ],
+  "username": "Manager Bot",
+  "avatar_url": "https://cdn.discordapp.com/avatars/519326532498620439/eaf7cc6b79917c7dacaea358e08a85a5.png?size=128"
+}

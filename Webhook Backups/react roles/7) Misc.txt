@@ -1,0 +1,16 @@
+{
+  "embeds": [
+    {
+      "title": "Miscellaneous",
+      "description": ":toilet: - Memes\n:newspaper2: - Media & News\n:ballot_box: - Polls\n:exploding_head: - Lunatic Asylum\n\n**Please note**\n*Be self-aware of what you say and the content you post inside the mems channel, due to Discord TOS. For more information, please refer to* <#519455164894019584>",
+      "color": 64168,
+      "author": {
+        "name": "NoPorn",
+        "url": "https://discord.gg/CFR9bt",
+        "icon_url": "https://cdn.discordapp.com/icons/519330541720436736/a_2bdbaecdd90c85cdc8e9108d8a8c5907.png?size=128"
+      }
+    }
+  ],
+  "username": "NoPorn Companion",
+  "avatar_url": "https://cdn.discordapp.com/avatars/749836263955103774/d95c04a16c2bad01a4451c97fae42766.png?size=128"
+}

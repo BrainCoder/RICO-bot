@@ -1,0 +1,50 @@
+{
+  "embeds": [
+    {
+      "title": "Welcome",
+      "description": "This server was created with the purpose of helping people overcome their drive to watch porn.\n\nWe have a bot to keep track of the number of days you've been clean, learn more about this in <#519627611836776490> where you can also assign yourself the mode that you're attempting, and to see the commands that you can apply there.\n\nserver creation date: 9/12/2018",
+      "url": "https://www.youtube.com/watch?v=dTS2Yya9Jj4&list=LLhv0ss-9EZsbjxEU67Rawsg&index=38",
+      "color": 56575,
+      "author": {
+        "name": "NoPorn",
+        "url": "https://discord.gg/CFR9bt",
+        "icon_url": "https://cdn.discordapp.com/icons/519330541720436736/a_2bdbaecdd90c85cdc8e9108d8a8c5907.png?size=128"
+      }
+    },
+    {
+      "title": "Rules",
+      "description": "**Rule 1**\nDo not post sexually suggestive (includes fetishes that are suggestive for some people) or gore containing pictures, videos or links to them. Skin showing, or tight clothes, from the knees to the shoulders for women and from the knees to the navel for men are considered sexually suggestive.\n\n**Rule 2**\nDo not have a sexually suggestive profile picture, name, or status.\n\n**Rule 3**\nDo not say sexually suggestive things when not asking for help or simp after someone.\n\n**Rule 4**\nDo not troll members while they're seeking help.\n\n**Rule 5**\nDo not search for images with the bot by using words that could lead to another users relapse, or are borderline sexual.\n\n**Rule 6**\nDo not spam pings, media, messages or ping moderators without a good reason.\n\n**Rule 7**\nDo not post invite links without the consent of an admin or moderator.\n\n**Rule 8**\nDo not behave in a toxic way towards, bully, or harass other members, or insult religions.\n\n**Rule 9**\nDo not use profanity with the intent of insulting in any of the core channels.\n\n**Rule 10**\nDo not complain excessively about others.\n\n**Rule 11**\nDo not disrespect staff members for a moderation decision. Comply and if you really think what happened was unjust then direct message the bot a complaint.\n\n**Rule 12**\nDo not take the wrong gender role.\n\n**Rule 13**\nAny action undertaken by a member of this server that can be viewed as hostile/inflammatory to another server is neither encouraged nor allowed.\n\n**Rule 14**\nDo not violate the Discord terms of service. (https://discordapp.com/terms)",
+      "url": "https://tenor.com/view/idiot-lafuddyduddy-rules-follow-the-rules-penguin-gif-16685859",
+      "color": 56575,
+      "author": {
+        "name": "NoPorn",
+        "url": "https://discord.gg/CFR9bt",
+        "icon_url": "https://cdn.discordapp.com/icons/519330541720436736/a_2bdbaecdd90c85cdc8e9108d8a8c5907.png?size=128"
+      }
+    },
+    {
+      "title": "Channels",
+      "description": "<#547858092021514250>: Urgent help if you might PMO. You can ping a <@&558231394548056065> if you need to talk to someone.\n<#544596899047538708>: Reasons and methods to stop watching porn.\n<#519456612235083806>: Posts about how your day went.\n<#519627611836776490>: A guide for how to interact with the bot.\n<#567283111273037834>: To get roles",
+      "url": "https://www.youtube.com/watch?v=0itU7sA765U",
+      "color": 64168,
+      "author": {
+        "name": "NoPorn",
+        "url": "https://discord.gg/CFR9bt",
+        "icon_url": "https://cdn.discordapp.com/icons/519330541720436736/a_2bdbaecdd90c85cdc8e9108d8a8c5907.png?size=128"
+      }
+    },
+    {
+      "title": "Other Info",
+      "description": "__**Bot Commands**__\n\nThese are the bot commands that work in every channel\n\n**!m** - Posts a motivational picture, video or link.\n**!lynch @user** - If porn is posted and there's no mod around to ban them, then you can mute them yourself with `!lynch @user`. 3 members using this command are necessary to mute that person. Using the command legitimately will temporarily take away your member role until a mod gives it back while abusing the command will lead to losing the member role or getting banned\n**!selfmute <time>** - This will give you the self mute role, which is the same as the mute role without any strikes. To mute yourself for 1 day 3 hours you would do `!selfmute 1d 3h`\n\nComplaints\n\nSend a direct message to <@!749836263955103774> with your complaints if you have any.\n\nSpecial Roles\n\nVIP\nTo get the <@&749033237438791691> role, you have to do one of the following:\n1. be very active and helpful to people struggling with PMO\n2. boosting the server will give you VIP perms, however, these will be removed when your boost expires.",
+      "url": "https://tenor.com/view/give-you-alittle-bit-more-info-abit-more-info-little-bit-info-information-info-gif-15208503",
+      "color": 64168,
+      "author": {
+        "name": "NoPorn",
+        "url": "https://discord.gg/CFR9bt",
+        "icon_url": "https://cdn.discordapp.com/icons/519330541720436736/a_2bdbaecdd90c85cdc8e9108d8a8c5907.png?size=128"
+      }
+    }
+  ],
+  "username": "NoPorn Companion",
+  "avatar_url": "https://cdn.discordapp.com/avatars/749836263955103774/d95c04a16c2bad01a4451c97fae42766.png?size=128"
+}

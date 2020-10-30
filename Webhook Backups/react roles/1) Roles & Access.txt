@@ -1,0 +1,17 @@
+{
+  "embeds": [
+    {
+      "title": "Roles & Access",
+      "description": "Welcome to the Roles & Access channel. This is where you grab all relevant roles that caters to your interests. If you have any questions, please ping a <@&520288314218119235>.\n\nTo claim your role, simply react with the corresponding emoji.",
+      "url": "https://www.youtube.com/watch?v=hv-ODnbbP7U",
+      "color": 56575,
+      "author": {
+        "name": "NoPorn",
+        "url": "https://discord.gg/CFR9bt",
+        "icon_url": "https://cdn.discordapp.com/icons/519330541720436736/a_2bdbaecdd90c85cdc8e9108d8a8c5907.png?size=128"
+      }
+    }
+  ],
+  "username": "NoPorn Companion",
+  "avatar_url": "https://cdn.discordapp.com/avatars/749836263955103774/d95c04a16c2bad01a4451c97fae42766.png?size=128"
+}
