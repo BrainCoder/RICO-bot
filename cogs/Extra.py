@@ -32,7 +32,7 @@ class Extra(commands.Cog):
         self._last_member = None
 
     
-    @commands.command()
+    '''@commands.command()
     @commands.has_any_role('Member')
     async def selfmute(self, ctx, *, time:TimeConverter = None):
         InSelfMute = False
@@ -60,7 +60,7 @@ class Extra(commands.Cog):
                 embed = discord.Embed(color=ctx.author.color, timestamp=ctx.message.created_at)
                 embed.set_author(name="Member", icon_url=userAvatarUrl)
                 embed.add_field(name=f'{member} selfmuted indefinitely!', value='A moderator will be required to remove the selfmute role.')
-                await logs_channel.send(embed=embed)
+                await logs_channel.send(embed=embed)'''
             
     @client.command()
     async def sosomething(self, ctx):
