@@ -63,7 +63,7 @@ class Extra(commands.Cog):
                 await logs_channel.send(embed=embed)'''
             
     @client.command()
-    async def sosomething(self, ctx):
+    async def dosomething(self, ctx):
         await ctx.channel.send("*Does your mum*")
 
     @client.command()

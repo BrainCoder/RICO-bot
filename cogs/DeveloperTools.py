@@ -26,7 +26,7 @@ class DeveloperTools(commands.Cog):
     
     @client.command()
     @commands.has_any_role('Developer')
-    async def GetChannel(self, ctx, id):
+    async def getchannel(self, ctx, id):
         channel = ctx.guild.get_channel(int(id))
         await ctx.send(f'{channel}')
     
