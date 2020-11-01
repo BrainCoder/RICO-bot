@@ -1,9 +1,8 @@
 import discord
-from discord.ext import commands
+from discord.ext import commands, tasks
 import os
 import sys
 import settings
-import threading
 
 import utils
 from streak import reset
@@ -49,8 +48,8 @@ for filename in os.listdir('./cogs'):
 #/Cogs
 
 #Member count plus game status
-async def mCount_update():
-    threading.Timer(1800, mCount_update).start()
+@tasks.loop(minutes = 900)
+async def mcount_update():
     for guild in client.guilds:
         if guild.id != settings.config["serverId"]:
             continue
@@ -64,7 +63,7 @@ async def mCount_update():
 async def on_ready():
     logs_channel = client.get_channel(settings.config["channels"]["log"]) 
     print('Bot is active')
-    await mCount_update()
+    mcount_update.start()
     await client.change_presence(status=discord.Status.online, activity=discord.Game('DM me with complaints!'))
     await logs_channel.send(f'Bot is online')
 #/Member count plus game status
@@ -142,13 +141,6 @@ async def hourly():
 #                banDict[key] -= 1
 #            else:
 #                del banDict[key]
-
-
-#@client.event
-#async def on_command_error(ctx, error):
-#    if isinstance(error, CommandNotFound) or isinstance(error, CheckFailure):
-#        return
-#    raise error
 
 if (len(sys.argv) < 3):
     print("Need config file and database url in order to run. Example: python config.json "
