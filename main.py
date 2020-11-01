@@ -62,9 +62,11 @@ async def mCount_update():
 
 @client.event
 async def on_ready():
+    logs_channel = client.get_channel(settings.config["channels"]["log"]) 
     print('Bot is active')
     await mCount_update()
     await client.change_presence(status=discord.Status.online, activity=discord.Game('DM me with complaints!'))
+    await logs_channel.send(f'Bot is online')
 #/Member count plus game status
 
 #Welcome message
