@@ -38,7 +38,7 @@ class HelpMenu(ListPageSource):
     async def format_page(self, menu, entries):
         fields = []
         for entry in entries:
-            fields.append((entry.brief or "No description", syntax(entry)))
+            fields.append((entry.name or "No description", syntax(entry)))
         return await self.write_page(menu, fields)
 
 class Help(commands.Cog):
@@ -53,6 +53,7 @@ class Help(commands.Cog):
 
     @commands.command(name="help")
     async def show_help(self, ctx, cmd: Optional[str]):
+        """Im not explaining this, if you do not know what this command does then I cannot help you"""
         if cmd is None:
             menu = MenuPages(source=HelpMenu(ctx, list(self.client.commands)), delete_message_after=True, timeout=60.0)
             await menu.start(ctx)

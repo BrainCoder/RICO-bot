@@ -21,23 +21,26 @@ client.add_command(update)
 client.remove_command('help')
 
 #Cogs
-@client.command()
+@client.command(name="load")
 @commands.has_permissions(ban_members=True)
 async def load(ctx, extension):
+    """loads the identified cog"""
     client.load_extension(f'cogs.{extension}')
     emoji = '✅'
     await ctx.message.add_reaction(emoji)
 
-@client.command()
+@client.command(name="unload")
 @commands.has_permissions(ban_members=True)
 async def unload(ctx, extension):
+    """unloads the identified cog"""
     client.unload_extension(f'cogs.{extension}')
     emoji = '✅'
     await ctx.message.add_reaction(emoji)
 
-@client.command()
+@client.command(name="reload")
 @commands.has_permissions(ban_members=True)
 async def reload(ctx, extension):
+    """reloads the identified cog"""
     client.unload_extension(f'cogs.{extension}')
     client.load_extension(f'cogs.{extension}')
     emoji = '✅'
@@ -95,8 +98,9 @@ async def on_message(message):
         await channel.send(f"<@{message.author.id}> said: {message.content}")
     await client.process_commands(message)
 
-@client.command(checks=[utils.is_in_complaint_channel()])
+@client.command(name="dm", aliases=['message'], checks=[utils.is_in_complaint_channel()])
 async def dm(ctx, member: discord.Member, *, content):
+    """messages the given user through the bot"""
     channel = await member.create_dm()
     await channel.send(content)
     emoji = '✅'
@@ -105,12 +109,13 @@ async def dm(ctx, member: discord.Member, *, content):
 #/Complaints DM code & Word filter
 
 #Self destruct
-@client.command()
+@client.command(name="logout", aliases=["killswitch"])
 @commands.has_permissions(administrator=True)
 async def logout(ctx):
-  await ctx.message.delete()
-  await ctx.send("logging out")
-  exit()
+    """kills the bot and all its processes"""
+    await ctx.message.delete()
+    await ctx.send("logging out")
+    exit()
 #/Self destruct
 """
 async def monthStart():

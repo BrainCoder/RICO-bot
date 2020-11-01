@@ -29,9 +29,10 @@ class ModCommands(commands.Cog):
         self.client = client
         self._last_member = None
 
-    @commands.command()
+    @commands.command(name="purge", aliases=["clear"])
     @commands.has_any_role('Moderator')
     async def purge(self, ctx, amount=5):
+        """clears messages in the given channel"""
         if amount > 50:
             await ctx.send(f'You cannot purge more than 50 messages at a time')
         else:
@@ -39,9 +40,10 @@ class ModCommands(commands.Cog):
             await ctx.channel.purge(limit=amount)
 
 
-    @commands.command()
+    @commands.command(name="nmember")
     @commands.has_any_role('Moderator', 'Semi-Moderator')
-    async def nmember (self, ctx, user: discord.Member):
+    async def member (self, ctx, user: discord.Member):
+        """gives the tadded user the member role"""
         await self.client.wait_until_ready()
         channel = self.client.get_channel(settings.config["channels"]["log"])
         userAvatarUrl = user.avatar_url
@@ -54,9 +56,10 @@ class ModCommands(commands.Cog):
         await channel.send(embed=embed)
 
 
-    @commands.command()
+    @commands.command(name="mute")
     @commands.has_any_role('Moderator', 'Semi-Moderator')
     async def mute (self, ctx, user: discord.Member, *,reason=None):
+        """mutes the user and puts a strike against their name"""
         await self.client.wait_until_ready()
         if reason == None:
             await ctx.channel.send('please give reason for mute')
@@ -73,9 +76,10 @@ class ModCommands(commands.Cog):
             await channel.send(embed=embed)
 
 
-    @commands.command()
+    @commands.command(name="cooldown")
     @commands.has_any_role('Moderator', 'Semi-Moderator')
     async def cooldown(self, ctx, user: discord.Member, *, time:TimeConverter = None):
+        """takes the user out of the general channel for a specific amount of time"""
         cooldown_role = user.guild.get_role(settings.config["statusRoles"]["cooldown"])
         logs_channel = self.client.get_channel(settings.config["channels"]["log"])
         userAvatarUrl = user.avatar_url
@@ -95,9 +99,10 @@ class ModCommands(commands.Cog):
             await ctx.send(f'Please give a timer for the cooldown')
 
 
-    @commands.command()
+    @commands.command(name="nunmute")
     @commands.has_any_role('Moderator', 'Semi-Moderator')
     async def nunmute (self, ctx, user: discord.Member, *, time:TimeConverter = None):
+        """unmuted the user"""
         await self.client.wait_until_ready()
         #selfmute = False
         #muted = False
@@ -137,9 +142,10 @@ class ModCommands(commands.Cog):
         #    await ctx.send(f'{user} cannot be unmuted')
 
 
-    @commands.command()
+    @commands.command(name="kick")
     @commands.has_any_role('Moderator')
     async def kick(self, ctx, member: discord.User = None, *, reason=None):
+        """kicks the user from the server"""
         if member == None or member == ctx.message.author:
             await ctx.channel.send("You cannot kick yourself")
             return
@@ -156,9 +162,10 @@ class ModCommands(commands.Cog):
         await channel.send(embed=embed)
 
 
-    @commands.command()
+    @commands.command(name="ban")
     @commands.has_any_role('Moderator')
     async def ban(self, ctx, member: discord.User = None, *, reason=None):
+        """bans the user from the server"""
         if member == None or member == ctx.message.author:
             await ctx.channel.send("You cannot Ban yourself")
             return
