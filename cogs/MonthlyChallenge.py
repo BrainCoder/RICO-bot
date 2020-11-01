@@ -39,15 +39,17 @@ class MonthlyChallenge(commands.Cog):
         newParticipants = []
         print('Ending challenge now.')
         for discord.guild in self.client.guilds:
-            signupRole = discord.guild.get_role(settings.config["statusRoles"]["monthly-challenge-participant"])  # monthly-challenge-participant
-            participationRole = discord.guild.get_role(settings.config["statusRoles"]["monthly-challenge-winner"])  # Challenge Winner
+            participationrole = discord.guild.get_role(settings.config["statusRoles"]["monthly-challenge-participant"])  # monthly-challenge-participant
+            winnerrole = discord.guild.get_role(settings.config["statusRoles"]["monthly-challenge-winner"])  # Challenge Winner
+            nnn2020 = discord.guild.get_role(settings.config["statusRoles"]["nnn2020"])  # Challenge Winner
             members = await discord.guild.fetch_members(limit=None).flatten()
             for member in members:
                 for role in member.roles:
                     if role.id == settings.config["statusRoles"]["monthly-challenge-participant"]:  # monthly-challenge-participant
-                        self.client.loop.create_task(member.remove_roles(signupRole))
+                        self.client.loop.create_task(member.remove_roles(participationrole))
                         newParticipants.append(member)
-                        self.client.loop.create_task(member.add_roles(participationRole))
+                        self.client.loop.create_task(member.add_roles(winnerrole))
+                        self.client.loop.create_task(member.add_roles(nnn2020))
                         break
         await ctx.send(f"Challenge Winners {len(newParticipants)}")
         print(len(newParticipants))
