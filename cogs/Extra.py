@@ -87,7 +87,10 @@ class Extra(commands.Cog):
                     'Outlook not so good',
                     'Very doubtful'
                     ]
-        await ctx.send(f' **Question:** {question}\n**Answer:** {random.choice(responses)}')
+        if '@everyone' in question or '@here' in question:
+            await ctx.send(f'Questions contains illegal tag')
+        else:
+            await ctx.send(f' **Question:** {question}\n**Answer:** {random.choice(responses)}')
             
     @client.command()
     async def dosomething(self, ctx):
