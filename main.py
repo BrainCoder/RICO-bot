@@ -18,6 +18,7 @@ mCount = 0
 client.add_command(reset)
 client.add_command(relapse)
 client.add_command(update)
+client.remove_command('help')
 
 #Cogs
 @client.command()
