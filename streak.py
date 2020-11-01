@@ -35,7 +35,6 @@ async def reset(ctx, *args):
     utils.conn.execute(query)
 
 @commands.command(checks=[utils.is_in_streak_channel()])
-@cooldown(1, 60)
 async def relapse(ctx, *args):
     Anon = False
     anon_role = ctx.guild.get_role(settings.config["modeRoles"]["anon-streak"])
@@ -130,7 +129,6 @@ async def relapse(ctx, *args):
 
 
 @commands.command(checks=[utils.is_in_streak_channel()])
-@cooldown(1, 300)
 async def update(ctx):
     Anon = False
     anon_role = ctx.guild.get_role(settings.config["modeRoles"]["anon-streak"])
