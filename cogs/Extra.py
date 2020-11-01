@@ -33,7 +33,7 @@ class Extra(commands.Cog):
         self._last_member = None
 
     
-    @commands.command()
+    '''@commands.command()
     @commands.has_any_role('Member')
     async def selfmute(self, ctx, *, time:TimeConverter = None):
         InSelfMute = False
@@ -62,6 +62,7 @@ class Extra(commands.Cog):
                 embed.set_author(name="Member", icon_url=userAvatarUrl)
                 embed.add_field(name=f'{member} selfmuted indefinitely!', value='A moderator will be required to remove the selfmute role.')
                 await logs_channel.send(embed=embed)
+                await logs_channel.send(embed=embed)'''
     
     @commands.command(aliases=['8ball','8b'])
     async def _8ball(self, ctx, *, question):
@@ -89,7 +90,7 @@ class Extra(commands.Cog):
         await ctx.send(f' **Question:** {question}\n**Answer:** {random.choice(responses)}')
             
     @client.command()
-    async def sosomething(self, ctx):
+    async def dosomething(self, ctx):
         await ctx.channel.send("*Does your mum*")
 
     @client.command()
