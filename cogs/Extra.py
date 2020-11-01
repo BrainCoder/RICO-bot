@@ -64,8 +64,9 @@ class Extra(commands.Cog):
                 await logs_channel.send(embed=embed)
                 await logs_channel.send(embed=embed)'''
     
-    @commands.command(aliases=['8ball','8b'])
+    @commands.command(name="8ball", aliases=['8b'])
     async def _8ball(self, ctx, *, question):
+        """standard 8ball command"""
         responses=[
                     'It is certain',
                     'It is decidedly so',
@@ -92,13 +93,15 @@ class Extra(commands.Cog):
         else:
             await ctx.send(f' **Question:** {question}\n**Answer:** {random.choice(responses)}')
             
-    @client.command()
+    @client.command(name="dosomething")
     async def dosomething(self, ctx):
+        """try it and find out ;)"""
         await ctx.channel.send("*Does your mum*")
 
-    @client.command()
+    @client.command(name="userinfo", aliases=["ui"])
     @commands.has_any_role('💎 VIP', '💎 Booster VIP', 'Moderator', 'Semi-Moderator')
     async def ui(self, ctx, *, member: discord.Member = None):
+        """gives basic info on the user tagged in the arg"""
         DateCreated = member.created_at.strftime("%A, %B %d %Y at %H:%M:%S %p")
         MemberJoinedAt = member.joined_at.strftime("%A, %B %d %Y at %H:%M:%S %p")
         userAvatarUrl = member.avatar_url
@@ -108,9 +111,10 @@ class Extra(commands.Cog):
         embed.add_field(name="Member joined at: ", value=f"{MemberJoinedAt}.")
         await ctx.send(embed=embed)
 
-    @client.command()
+    @client.command(name="avatar", aliases=["av"])
     @commands.has_any_role('💎 VIP', '💎 Booster VIP', 'Moderator', 'Semi-Moderator')
     async def avatar(self, ctx, *, avamember: discord.Member = None):
+        """sends a link of the users avatar"""
         userAvatarUrl = avamember.avatar_url
         await ctx.send(f"{avamember}'s avatar is: {userAvatarUrl}")
 

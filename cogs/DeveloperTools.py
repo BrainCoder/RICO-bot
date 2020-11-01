@@ -13,20 +13,23 @@ class DeveloperTools(commands.Cog):
         self.client = client
         self._last_member = None
 
-    @client.command()
+    @client.command(name="checklist")
     @commands.has_any_role('Moderator', 'Developer')
     async def cl(self, ctx,*,message):
+        """Add the message to the dev team job-board"""
         channel = self.client.get_channel(settings.config["channels"]["job-board"])
         await channel.send(f"<@{ctx.author.id}>: \n{message}")
     
-    @client.command()
+    @client.command(name="ping")
     @commands.has_any_role('Developer')
     async def ping(self, ctx):
+        """Check the latency of the bot"""
         await ctx.send(f'pong! Latency is {self.client.latency*1000}ms')
     
-    @client.command()
+    @client.command(name="getchannel")
     @commands.has_any_role('Developer')
     async def getchannel(self, ctx, id):
+        """Find a channel with the channel ID"""
         channel = ctx.guild.get_channel(int(id))
         await ctx.send(f'{channel}')
     
@@ -59,6 +62,7 @@ class DeveloperTools(commands.Cog):
     @commands.command(name='repeat', aliases=['mimic', 'copy'])
     @commands.has_any_role('Developer')
     async def do_repeat(self, ctx, *, inp: str):
+        """repeats the input you give it"""
         await ctx.send(inp)
 
     @do_repeat.error

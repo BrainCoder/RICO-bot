@@ -34,8 +34,9 @@ async def reset(ctx, *args):
     .where(utils.userdata.c.id == ctx.author.id))
     utils.conn.execute(query)
 
-@commands.command(checks=[utils.is_in_streak_channel()])
+@commands.command(name="relapse", checks=[utils.is_in_streak_channel()])
 async def relapse(ctx, *args):
+    """resets the users streak to day 0"""
     Anon = False
     anon_role = ctx.guild.get_role(settings.config["modeRoles"]["anon-streak"])
     for role in ctx.author.roles:
@@ -128,8 +129,9 @@ async def relapse(ctx, *args):
                 await message.delete() 
 
 
-@commands.command(checks=[utils.is_in_streak_channel()])
+@commands.command(name="update", checks=[utils.is_in_streak_channel()])
 async def update(ctx):
+    """updates the users streak"""
     Anon = False
     anon_role = ctx.guild.get_role(settings.config["modeRoles"]["anon-streak"])
     for role in ctx.author.roles:

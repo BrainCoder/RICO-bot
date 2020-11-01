@@ -14,9 +14,10 @@ class MonthlyChallenge(commands.Cog):
     #Events
     #@commands.Cog.listener()
 
-    @commands.command(pass_context=True)
+    @commands.command(name="startchallenge", pass_context=True)
     @commands.has_permissions(ban_members=True)
     async def startChallenge(self, ctx):
+        """starts that months monthly challenge"""
         newParticipants = []
         print('Starting new month now.')
         for discord.guild in self.client.guilds:
@@ -33,9 +34,10 @@ class MonthlyChallenge(commands.Cog):
         await ctx.send(f"Challenge participants {len(newParticipants)}")
         print(len(newParticipants))
 
-    @commands.command(pass_context=True)
+    @commands.command(name="endchallenge", pass_context=True)
     @commands.has_permissions(ban_members=True)
     async def endChallenge(self, ctx):
+        """ends that monthly challenge"""
         newParticipants = []
         print('Ending challenge now.')
         for discord.guild in self.client.guilds:
@@ -55,33 +57,14 @@ class MonthlyChallenge(commands.Cog):
         print(len(newParticipants))
 
 
-    @commands.command(pass_context=True)
+    @commands.command(name="participation", pass_context=True)
     @commands.has_any_role('NNN-Challenge_Participant', 'owners', 'Developer')
     async def participation_amount(self, ctx):
+        """sends the current number of users with the M-Challenge participant role"""
         guild = ctx.guild
         role = guild.get_role(settings.config["statusRoles"]["monthly-challenge-participant"]) # monthly-challenge-participant
         partcipants = [m for m in guild.members if role in m.roles]
         no = len(partcipants)
-        print(f'{no}')
-        await ctx.send(f'Monthly Challenge members left: {no}')
-        
-    @commands.command(pass_context=True)
-    @commands.has_any_role('owners', 'Developer')
-    async def signup_amount(self, ctx):
-        guild = ctx.guild
-        role = guild.get_role(settings.config["otherRoles"]["monthly-challenge"]) # M-Challenge-Signup
-        signups = [m for m in guild.members if role in m.roles]
-        no = len(signups)
-        print(f'{no}')
-        await ctx.send(f'Monthly Challenge members left: {no}')
-
-    @commands.command(pass_context=True)
-    @commands.has_any_role('owners', 'Developer')
-    async def winner_amount(self, ctx):
-        guild = ctx.guild
-        role = guild.get_role(settings.config["statusRoles"]["monthly-challenge-winner"]) # Challenge Winner
-        winners = [m for m in guild.members if role in m.roles]
-        no = len(winners)
         print(f'{no}')
         await ctx.send(f'Monthly Challenge members left: {no}')
 
