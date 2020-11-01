@@ -13,7 +13,7 @@ class DeveloperTools(commands.Cog):
         self.client = client
         self._last_member = None
 
-    @client.command(name="checklist")
+    @client.command(name="checklist", aliases=['cl'])
     @commands.has_any_role('Moderator', 'Developer')
     async def cl(self, ctx,*,message):
         """Add the message to the dev team job-board"""
