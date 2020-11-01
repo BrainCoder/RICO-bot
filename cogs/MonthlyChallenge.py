@@ -56,7 +56,7 @@ class MonthlyChallenge(commands.Cog):
 
 
     @commands.command(pass_context=True)
-    @commands.has_any_role('M-Challenge_Participant', 'owners', 'Developer')
+    @commands.has_any_role('NNN-Challenge_Participant', 'owners', 'Developer')
     async def participation_amount(self, ctx):
         guild = ctx.guild
         role = guild.get_role(settings.config["statusRoles"]["monthly-challenge-participant"]) # monthly-challenge-participant
