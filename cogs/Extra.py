@@ -1,5 +1,6 @@
 import discord
 from discord.ext import commands
+import random
 import sys
 import traceback
 import asyncio
@@ -60,7 +61,33 @@ class Extra(commands.Cog):
                 embed = discord.Embed(color=ctx.author.color, timestamp=ctx.message.created_at)
                 embed.set_author(name="Member", icon_url=userAvatarUrl)
                 embed.add_field(name=f'{member} selfmuted indefinitely!', value='A moderator will be required to remove the selfmute role.')
+                await logs_channel.send(embed=embed)
                 await logs_channel.send(embed=embed)'''
+    
+    @commands.command(aliases=['8ball','8b'])
+    async def _8ball(self, ctx, *, question):
+        responses=[
+                    'It is certain',
+                    'It is decidedly so',
+                    'Yes Definatley',
+                    'You may rely on it',
+                    'As I se it, yes',
+                    'Most Likely',
+                    'Outlook good',
+                    'Yes.',
+                    'Signs point to yes',
+                    'Reply hazy, try again',
+                    'Ask again later',
+                    'Better not tell you now',
+                    'Cannot predict now',
+                    'Concentrate and ask again',
+                    'Dont count on it',
+                    'My reply is no',
+                    'My sources say no',
+                    'Outlook not so good',
+                    'Very doubtful'
+                    ]
+        await ctx.send(f' **Question:** {question}\n**Answer:** {random.choice(responses)}')
             
     @client.command()
     async def dosomething(self, ctx):
