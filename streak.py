@@ -45,7 +45,6 @@ async def relapse(ctx, *args):
             guild = ctx.guild
             role = guild.get_role(settings.config["statusRoles"]["monthly-challenge-participant"])
             await ctx.author.remove_roles(role)
-            role = guild.get_role(settings.config["statusRoles"]["monthly-challenge-participant"])
             partcipants = [m for m in guild.members if role in m.roles]
             no = len(partcipants)
             print(f'{no}')
