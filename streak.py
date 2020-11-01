@@ -42,9 +42,9 @@ async def relapse(ctx, *args):
     members = await ctx.guild.fetch_members(limit=None).flatten()
     for role in ctx.author.roles:
         if role.id == settings.config["statusRoles"]["monthly-challenge-participant"]:
-            role = discord.utils.get(ctx.guild.roles, name='M-Challenge_Participant')
-            await ctx.author.remove_roles(role)
             guild = ctx.guild
+            role = guild.get_role(settings.config["statusRoles"]["monthly-challenge-participant"])
+            await ctx.author.remove_roles(role)
             role = guild.get_role(settings.config["statusRoles"]["monthly-challenge-participant"])
             partcipants = [m for m in guild.members if role in m.roles]
             no = len(partcipants)
