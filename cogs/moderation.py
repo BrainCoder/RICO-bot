@@ -1,10 +1,15 @@
 import discord
 from discord.ext import commands
+from discord.ext.commands import Cog
+
+from better_profanity import profanity
 import settings
 import sys
 import traceback
 import asyncio
 import re
+
+profanity.load_censor_words_from_file('badwords.txt')
 
 time_regex = re.compile("(?:(\d{1,5})(h|s|m|d))+?")
 time_dict = {"h":3600, "s":1, "m":60, "d":86400}
@@ -180,6 +185,35 @@ class ModCommands(commands.Cog):
         embed.set_author(name="Ban", icon_url=userAvatarUrl)
         embed.add_field(name=f"{member} has been Banned! ", value=f"**for:** {reason} banned by: <@{ctx.author.id}>.")
         await channel.send(embed=embed)
+    
+    @commands.command(name="automod")
+    @commands.has_any_role('Moderator')
+    async def automod_edit(self, ctx, arg=None, *words):
+        invarg = 'please clarify if you are adding or removing a word. Type `!automod add {word}` to add the word, or `!automod remove {word}` to remove the word'
+        if arg == None:
+            await ctx.send(invarg)
+        elif arg == 'add':
+            with open('badwords.txt', "a", encoding="utf-8") as f:
+                f.write("".join([f"{w}\n" for w in words]))
+            emoji = '✅'
+            await ctx.message.add_reaction(emoji)
+            profanity.load_censor_words_from_file('badwords.txt')
+        elif arg == 'remove':
+            with open('badwords.txt', "r", encoding="utf-8") as f:
+                stored = [w.strip() for w in f.readlines()]
+            with open('badwords.txt', "w", encoding="utf-8") as f:
+                f.write("".join([f"{w}\n" for w in stored if w not in words]))
+                profanity.load_censor_words_from_file('badwords.txt')
+            emoji = '✅'
+            await ctx.message.add_reaction(emoji)
+        else:
+            await ctx.send(invarg)
+        
+    @Cog.listener()
+    async def on_message(self, message):
+        if not message.author.bot:
+            if profanity.contains_profanity(message.content):
+                await message.delete()
 
 def setup(client):
     client.add_cog(ModCommands(client))
