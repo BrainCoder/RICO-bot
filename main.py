@@ -3,6 +3,7 @@ from discord.ext import commands, tasks
 import os
 import sys
 import settings
+from datetime import datetime
 
 import utils
 from streak import reset
@@ -51,11 +52,18 @@ for filename in os.listdir('./cogs'):
         client.load_extension(f'cogs.{filename[:-3]}')
 #/Cogs
 
+#Devlogs setup
+today = datetime.now()
+ctoday = today.strftime("%d/%m/%Y")
+ctime = today.strftime("%H:%M")
+timestr = f'**[{ctoday}] [{ctime}] -**'
+#Devlogs setup
+
 #Member count plus game status
 @tasks.loop(minutes = 15)
 async def mcount_update():
-    logs = client.get_channel(settings.config["channels"]["log"])
-    await logs.send('Attempted to update member count channel')
+    devlogs = client.get_channel(settings.config["channels"]["devlog"])
+    await devlogs.send(f'{timestr}Attempted to update member count channel')
     for guild in client.guilds:
         if guild.id != settings.config["serverId"]:
             continue
@@ -67,11 +75,11 @@ async def mcount_update():
 
 @client.event
 async def on_ready():
-    logs_channel = client.get_channel(settings.config["channels"]["log"]) 
+    devlogs = client.get_channel(settings.config["channels"]["devlog"]) 
     print('Bot is active')
     mcount_update.start()
     await client.change_presence(status=discord.Status.online, activity=discord.Game('DM me with complaints!'))
-    await logs_channel.send(f'Bot is online')
+    await devlogs.send(f'{timestr}Bot is online')
 #/Member count plus game status
 
 #Welcome message
