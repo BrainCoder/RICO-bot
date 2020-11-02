@@ -95,14 +95,6 @@ async def on_member_join(member):
 
 @client.event
 async def on_message(message):
-    with open ('badWords.txt', 'r') as file:
-        content = file.read()
-    badWordsArr = content.split(',\n')
-    for word in badWordsArr:
-        if word in message.content.lower():
-            await message.delete()
-            #TODO: Warn/mute the user here
-            break
     channel = client.get_channel(settings.config["channels"]["complaints"])     #-- Complaints part starts here
     if message.guild is None and message.author != client.user:
         await channel.send(f"<@{message.author.id}> said: {message.content}")
