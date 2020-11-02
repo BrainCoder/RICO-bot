@@ -52,8 +52,10 @@ for filename in os.listdir('./cogs'):
 #/Cogs
 
 #Member count plus game status
-@tasks.loop(minutes = 900)
+@tasks.loop(minutes = 15)
 async def mcount_update():
+    logs = client.get_channel(settings.config["channels"]["log"])
+    await logs.send('Attempted to update member count channel')
     for guild in client.guilds:
         if guild.id != settings.config["serverId"]:
             continue
