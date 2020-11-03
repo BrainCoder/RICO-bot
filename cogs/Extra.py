@@ -1,5 +1,7 @@
 import discord
 from discord.ext import commands
+from discord.ext.commands import cooldown
+
 import random
 import sys
 import traceback
@@ -65,6 +67,7 @@ class Extra(commands.Cog):
                 await logs_channel.send(embed=embed)'''
     
     @commands.command(name="8ball", aliases=['8b'])
+    @cooldown(1, 60)
     async def _8ball(self, ctx, *, question):
         """standard 8ball command"""
         responses=[
