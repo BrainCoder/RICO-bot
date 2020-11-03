@@ -27,13 +27,6 @@ def getStreakString(total_streak_length):
     hoursStr = f'{hours} hour{"s" if hours != 1 else ""}' if hours > 0 else ''
     return [daysStr, middleStr, hoursStr]
 
-@commands.command(checks=[utils.is_in_streak_channel()])
-async def reset(ctx, *args):
-    query = (utils.userdata
-    .delete()
-    .where(utils.userdata.c.id == ctx.author.id))
-    utils.conn.execute(query)
-
 @commands.command(name="relapse", checks=[utils.is_in_streak_channel()])
 async def relapse(ctx, *args):
     """resets the users streak to day 0"""

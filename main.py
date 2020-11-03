@@ -6,7 +6,6 @@ import settings
 from datetime import datetime
 
 import utils
-from streak import reset
 from streak import relapse
 from streak import update
 
@@ -27,7 +26,6 @@ intents.presences = True
 client=commands.Bot(command_prefix='!', intents=intents)
 mCount = 0
 
-client.add_command(reset)
 client.add_command(relapse)
 client.add_command(update)
 client.remove_command('help')
