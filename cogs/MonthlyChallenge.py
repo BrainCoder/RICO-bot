@@ -15,7 +15,8 @@ class MonthlyChallenge(commands.Cog):
     #@commands.Cog.listener()
 
     @commands.command(name="startchallenge", pass_context=True)
-    @commands.has_permissions(ban_members=True)
+    @commands.has_any_role(
+        settings.config["statusRoles"]["developer"])
     async def startChallenge(self, ctx):
         """starts that months monthly challenge"""
         newParticipants = []
@@ -35,7 +36,8 @@ class MonthlyChallenge(commands.Cog):
         print(len(newParticipants))
 
     @commands.command(name="endchallenge", pass_context=True)
-    @commands.has_permissions(ban_members=True)
+    @commands.has_any_role(
+        settings.config["statusRoles"]["developer"])
     async def endChallenge(self, ctx):
         """ends that monthly challenge"""
         newParticipants = []
@@ -58,7 +60,6 @@ class MonthlyChallenge(commands.Cog):
 
 
     @commands.command(name="participation", pass_context=True)
-    @commands.has_any_role('NNN-Challenge_Participant', 'owners', 'Developer')
     async def participation_amount(self, ctx):
         """sends the current number of users with the M-Challenge participant role"""
         guild = ctx.guild

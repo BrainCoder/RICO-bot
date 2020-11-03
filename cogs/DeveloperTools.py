@@ -17,20 +17,24 @@ class DeveloperTools(commands.Cog):
         self._last_member = None
 
     @client.command(name="checklist", aliases=['cl'])
-    @commands.has_any_role('Moderator', 'Developer')
+    @commands.has_any_role(
+        settings.config["statusRoles"]["moderator"],
+        settings.config["statusRoles"]["developer"])
     async def cl(self, ctx, *, message):
         """Add the message to the dev team job-board"""
         channel = self.client.get_channel(settings.config["channels"]["job-board"])
         await channel.send(f"<@{ctx.author.id}>: \n{message}")
 
     @client.command(name="ping")
-    @commands.has_any_role('Developer')
+    @commands.has_any_role(
+        settings.config["statusRoles"]["developer"])
     async def ping(self, ctx):
         """Check the latency of the bot"""
         await ctx.send(f'pong! Latency is {self.client.latency * 1000}ms')
 
     @client.command(name="getchannel")
-    @commands.has_any_role('Developer')
+    @commands.has_any_role(
+        settings.config["statusRoles"]["developer"])
     async def getchannel(self, ctx, id):
         """Find a channel with the channel ID"""
         channel = ctx.guild.get_channel(int(id))
@@ -63,7 +67,8 @@ class DeveloperTools(commands.Cog):
             traceback.print_exception(type(error), error, error.__traceback__, file=sys.stderr)
 
     @commands.command(name='repeat', aliases=['mimic', 'copy'])
-    @commands.has_any_role('Developer')
+    @commands.has_any_role(
+        settings.config["statusRoles"]["developer"])
     async def do_repeat(self, ctx, *, inp: str):
         """repeats the input you give it"""
         await ctx.send(inp)
@@ -75,7 +80,8 @@ class DeveloperTools(commands.Cog):
                 await ctx.send("You forgot to give me input to repeat!")
 
     @client.command()
-    @commands.has_any_role(settings.config["statusRoles"]["developer"])
+    @commands.has_any_role(
+        settings.config["statusRoles"]["developer"])
     async def verifyintegrityofdb(self, ctx):
         new_entries = 0
         current_users = len(utils.conn.execute(utils.userdata.select()).fetchall())
@@ -90,26 +96,6 @@ class DeveloperTools(commands.Cog):
         new_count = len(utils.conn.execute(utils.userdata.select()).fetchall())
         await ctx.channel.send("The old amount of users was " + str(current_users) + \
                                "\nThe new amount of users is " + str(new_count))
-
-
-'''    @client.command()
-    @commands.has_any_role('Developer')
-    async def test(self, ctx, harg=None, *, member: discord.Member = None):
-        help = False
-        if harg == 'h':
-            help = True
-        if help:
-            await ctx.send('This is is the help explanation')
-        else:
-            DateCreated = member.created_at.strftime("%A, %B %d %Y at %H:%M:%S %p")
-            MemberJoinedAt = member.joined_at.strftime("%A, %B %d %Y at %H:%M:%S %p")
-            userAvatarUrl = member.avatar_url
-            embed = discord.Embed(color=ctx.author.color, timestamp=ctx.message.created_at)
-            embed.set_author(name="UI", icon_url=userAvatarUrl)
-            embed.add_field(name='Account was created at: ', value=f"{DateCreated}.")
-            embed.add_field(name="Member joined at: ", value=f"{MemberJoinedAt}.")
-            await ctx.send(embed=embed)'''
-
 
 def setup(client):
     client.add_cog(DeveloperTools(client))

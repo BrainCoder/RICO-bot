@@ -103,6 +103,11 @@ class Extra(commands.Cog):
 
     @client.command(name="userinfo", aliases=["ui"])
     @commands.has_any_role('💎 VIP', '💎 Booster VIP', 'Moderator', 'Semi-Moderator')
+    @commands.has_any_role(
+        settings.config["statusRoles"]["vip"],
+        settings.config["statusRoles"]["boost-vip"],
+        settings.config["statusRoles"]["moderator"],
+        settings.config["statusRoles"]["semi-moderator"])
     async def ui(self, ctx, *, member: discord.Member = None):
         """gives basic info on the user tagged in the arg"""
         DateCreated = member.created_at.strftime("%A, %B %d %Y at %H:%M:%S %p")
@@ -115,7 +120,11 @@ class Extra(commands.Cog):
         await ctx.send(embed=embed)
 
     @client.command(name="avatar", aliases=["av"])
-    @commands.has_any_role('💎 VIP', '💎 Booster VIP', 'Moderator', 'Semi-Moderator')
+    @commands.has_any_role(
+        settings.config["statusRoles"]["vip"],
+        settings.config["statusRoles"]["boost-vip"],
+        settings.config["statusRoles"]["moderator"],
+        settings.config["statusRoles"]["semi-moderator"])
     async def avatar(self, ctx, *, avamember: discord.Member = None):
         """sends a link of the users avatar"""
         userAvatarUrl = avamember.avatar_url
