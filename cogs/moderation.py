@@ -9,7 +9,11 @@ import utils
 import asyncio
 import re
 
-profanity.load_censor_words_from_file('badwords.txt')
+whitelist= []
+with open('whitelist.txt', 'r') as f:
+    whitelist = [line.strip() for line in f]
+
+profanity.load_censor_words_from_file('blacklist.txt', whitelist_words = whitelist)
 
 time_regex = re.compile("(?:(\d{1,5})(h|s|m|d))+?")
 time_dict = {"h": 3600, "s": 1, "m": 60, "d": 86400}
@@ -194,17 +198,17 @@ class ModCommands(commands.Cog):
         if arg == None:
             await ctx.send(invarg)
         elif arg == 'add':
-            with open('badwords.txt', "a", encoding="utf-8") as f:
+            with open('blacklist.txt', "a", encoding="utf-8") as f:
                 f.write("".join([f"{w}\n" for w in words]))
             emoji = '✅'
             await ctx.message.add_reaction(emoji)
-            profanity.load_censor_words_from_file('badwords.txt')
+            profanity.load_censor_words_from_file('blacklist.txt', whitelist_words = whitelist)
         elif arg == 'remove':
-            with open('badwords.txt', "r", encoding="utf-8") as f:
+            with open('blacklist.txt', "r", encoding="utf-8") as f:
                 stored = [w.strip() for w in f.readlines()]
-            with open('badwords.txt', "w", encoding="utf-8") as f:
+            with open('blacklist.txt', "w", encoding="utf-8") as f:
                 f.write("".join([f"{w}\n" for w in stored if w not in words]))
-                profanity.load_censor_words_from_file('badwords.txt')
+                profanity.load_censor_words_from_file('blacklist.txt', whitelist_words = whitelist)
             emoji = '✅'
             await ctx.message.add_reaction(emoji)
         else:
