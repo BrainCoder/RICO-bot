@@ -10,6 +10,17 @@ from streak import reset
 from streak import relapse
 from streak import update
 
+if len(sys.argv) < 3:
+    print("Need config file and database url in order to run. Example: python config.json "
+          "mysql+pymysql://user(:password if present)@localhost/database_name")
+    sys.exit(0)
+
+with open (sys.argv[1], 'rt') as conf_file:
+    settings.init()
+    settings.config = utils.json.load(conf_file)
+    settings.config["databaseUrl"] = sys.argv[2]
+    utils.init()
+
 intents = discord.Intents.all()
 intents.members = True
 intents.presences = True
@@ -75,7 +86,7 @@ async def mcount_update():
 
 @client.event
 async def on_ready():
-    devlogs = client.get_channel(settings.config["channels"]["devlog"]) 
+    devlogs = client.get_channel(settings.config["channels"]["devlog"])
     print('Bot is active')
     mcount_update.start()
     await client.change_presence(status=discord.Status.online, activity=discord.Game('DM me with complaints!'))
@@ -88,6 +99,12 @@ async def on_ready():
 async def on_member_join(member):
     channel = client.get_channel(settings.config["channels"]["welcome"])
     await channel.send(f'{member.mention} welcome! Please go to <#519455164894019584> to read an overview of what this server is about. Go to <#767871942056869938> and <#767742624739622932> to see the commands that you can use to assign yourself.')
+    verify_previous_query = utils.userdata.select().where(utils.userdata.c.id == member.id)
+    result = utils.conn.execute(verify_previous_query).fetchone()
+    if not result:
+        query = utils.userdata.insert(). \
+            values(id=member.id)
+        utils.conn.execute(query)
 
 #/Welcome message
 
@@ -150,15 +167,13 @@ async def hourly():
 #            else:
 #                del banDict[key]
 
-if (len(sys.argv) < 3):
-    print("Need config file and database url in order to run. Example: python config.json "
-          "mysql+pymysql://user(:password if present)@localhost/database_name")
-else:
-    with open (sys.argv[1], 'rt') as conf_file:
-        settings.init()
-        settings.config = utils.json.load(conf_file)
-        settings.config["databaseUrl"] = sys.argv[2]
-        utils.init()
-    with open ('token.txt', 'rt') as myfile:
-        contents = myfile.read()
-        client.run(f'{contents}')
+
+#@client.event
+#async def on_command_error(ctx, error):
+#    if isinstance(error, CommandNotFound) or isinstance(error, CheckFailure):
+#        return
+#    raise error
+
+with open ('token.txt', 'rt') as myfile:
+    contents = myfile.read()
+    client.run(f'{contents}')

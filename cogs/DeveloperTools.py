@@ -3,9 +3,12 @@ import settings
 import traceback
 import sys
 from discord.ext import commands
+import utils
+from sqlalchemy import insert, select
+from utils import is_in_checklist_channel
 
+client = commands.Bot(command_prefix='!')
 
-client=commands.Bot(command_prefix='!')
 
 class DeveloperTools(commands.Cog):
 
@@ -15,24 +18,24 @@ class DeveloperTools(commands.Cog):
 
     @client.command(name="checklist", aliases=['cl'])
     @commands.has_any_role('Moderator', 'Developer')
-    async def cl(self, ctx,*,message):
+    async def cl(self, ctx, *, message):
         """Add the message to the dev team job-board"""
         channel = self.client.get_channel(settings.config["channels"]["job-board"])
         await channel.send(f"<@{ctx.author.id}>: \n{message}")
-    
+
     @client.command(name="ping")
     @commands.has_any_role('Developer')
     async def ping(self, ctx):
         """Check the latency of the bot"""
-        await ctx.send(f'pong! Latency is {self.client.latency*1000}ms')
-    
+        await ctx.send(f'pong! Latency is {self.client.latency * 1000}ms')
+
     @client.command(name="getchannel")
     @commands.has_any_role('Developer')
     async def getchannel(self, ctx, id):
         """Find a channel with the channel ID"""
         channel = ctx.guild.get_channel(int(id))
         await ctx.send(f'{channel}')
-    
+
     @commands.Cog.listener()
     async def on_command_error(self, ctx, error):
         if hasattr(ctx.command, 'on_error'):
@@ -41,7 +44,7 @@ class DeveloperTools(commands.Cog):
         if cog:
             if cog._get_overridden_method(cog.cog_command_error) is not None:
                 return
-        ignored = (commands.CommandNotFound, )
+        ignored = (commands.CommandNotFound,)
         error = getattr(error, 'original', error)
         if isinstance(error, ignored):
             return
@@ -70,7 +73,25 @@ class DeveloperTools(commands.Cog):
         if isinstance(error, commands.MissingRequiredArgument):
             if error.param.name == 'inp':
                 await ctx.send("You forgot to give me input to repeat!")
-    
+
+    @client.command()
+    @commands.has_any_role(settings.config["statusRoles"]["developer"])
+    async def verifyintegrityofdb(self, ctx):
+        new_entries = 0
+        current_users = len(utils.conn.execute(utils.userdata.select()).fetchall())
+        for user in ctx.guild.members:
+            query = utils.userdata.select().where(utils.userdata.c.id == user.id)
+            result = utils.conn.execute(query).fetchone()
+            if not result and not user.bot:
+                query = utils.userdata.insert(). \
+                    values(id=user.id)
+                utils.conn.execute(query)
+                new_entries += 1
+        new_count = len(utils.conn.execute(utils.userdata.select()).fetchall())
+        await ctx.channel.send("The old amount of users was " + str(current_users) + \
+                               "\nThe new amount of users is " + str(new_count))
+
+
 '''    @client.command()
     @commands.has_any_role('Developer')
     async def test(self, ctx, harg=None, *, member: discord.Member = None):
@@ -88,6 +109,7 @@ class DeveloperTools(commands.Cog):
             embed.add_field(name='Account was created at: ', value=f"{DateCreated}.")
             embed.add_field(name="Member joined at: ", value=f"{MemberJoinedAt}.")
             await ctx.send(embed=embed)'''
+
 
 def setup(client):
     client.add_cog(DeveloperTools(client))
