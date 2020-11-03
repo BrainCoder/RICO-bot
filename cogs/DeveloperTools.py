@@ -26,8 +26,6 @@ class DeveloperTools(commands.Cog):
         await channel.send(f"<@{ctx.author.id}>: \n{message}")
 
     @client.command(name="ping")
-    @commands.has_any_role(
-        settings.config["statusRoles"]["developer"])
     async def ping(self, ctx):
         """Check the latency of the bot"""
         await ctx.send(f'pong! Latency is {self.client.latency * 1000}ms')
