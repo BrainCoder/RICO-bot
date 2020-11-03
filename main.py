@@ -76,7 +76,6 @@ timestr = f'**[{ctoday}] [{ctime}] -**'
 async def mcount_update():
     devlogs = client.get_channel(settings.config["channels"]["devlog"])
     await devlogs.send(f'{timestr}Attempted to update member count channel')
-    await devlogs.send(f'{timestr}Loaded `blacklist.txt` & `whitelist.txt` due to startup')
     for guild in client.guilds:
         if guild.id != settings.config["serverId"]:
             continue
@@ -93,6 +92,7 @@ async def on_ready():
     mcount_update.start()
     await client.change_presence(status=discord.Status.online, activity=discord.Game('DM me with complaints!'))
     await devlogs.send(f'{timestr}Bot is online')
+    await devlogs.send(f'{timestr}Loaded `blacklist.txt` & `whitelist.txt` due to startup')
 #/Member count plus game status
 
 #Welcome message
