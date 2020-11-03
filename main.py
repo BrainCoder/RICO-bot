@@ -32,7 +32,8 @@ client.remove_command('help')
 
 #Cogs
 @client.command(name="load")
-@commands.has_permissions(ban_members=True)
+@commands.has_any_role(
+    settings.config["statusRoles"]["developer"])
 async def load(ctx, extension):
     """loads the identified cog"""
     client.load_extension(f'cogs.{extension}')
@@ -40,7 +41,8 @@ async def load(ctx, extension):
     await ctx.message.add_reaction(emoji)
 
 @client.command(name="unload")
-@commands.has_permissions(ban_members=True)
+@commands.has_any_role(
+    settings.config["statusRoles"]["developer"])
 async def unload(ctx, extension):
     """unloads the identified cog"""
     client.unload_extension(f'cogs.{extension}')
@@ -48,7 +50,8 @@ async def unload(ctx, extension):
     await ctx.message.add_reaction(emoji)
 
 @client.command(name="reload")
-@commands.has_permissions(ban_members=True)
+@commands.has_any_role(
+    settings.config["statusRoles"]["developer"])
 async def reload(ctx, extension):
     """reloads the identified cog"""
     client.unload_extension(f'cogs.{extension}')
@@ -128,7 +131,9 @@ async def dm(ctx, member: discord.Member, *, content):
 
 #Self destruct
 @client.command(name="logout", aliases=["killswitch"])
-@commands.has_permissions(administrator=True)
+@commands.has_any_role(
+    settings.config["statusRoles"]["admin"],
+    settings.config["statusRoles"]["developer"])
 async def logout(ctx):
     """kills the bot and all its processes"""
     await ctx.message.delete()

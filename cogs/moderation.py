@@ -49,7 +49,8 @@ class ModCommands(commands.Cog):
         self._last_member = None
 
     @commands.command(name="purge", aliases=["clear"])
-    @commands.has_any_role(settings.config["statusRoles"]["moderator"])
+    @commands.has_any_role(
+        settings.config["statusRoles"]["moderator"])
     async def purge(self, ctx, amount=5):
         """clears messages in the given channel"""
         if amount > 50:
@@ -59,8 +60,9 @@ class ModCommands(commands.Cog):
             await ctx.channel.purge(limit=amount)
 
     @commands.command(name="nmember")
-    @commands.has_any_role(settings.config["statusRoles"]["moderator"],
-                           settings.config["statusRoles"]["semi-moderator"])
+    @commands.has_any_role(
+        settings.config["statusRoles"]["moderator"],
+        settings.config["statusRoles"]["semi-moderator"])
     async def member(self, ctx, user: discord.Member):
         await self.client.wait_until_ready()
         channel = self.client.get_channel(settings.config["channels"]["log"])
@@ -74,8 +76,9 @@ class ModCommands(commands.Cog):
         await channel.send(embed=embed)
 
     @commands.command(name="mute")
-    @commands.has_any_role(settings.config["statusRoles"]["moderator"],
-                           settings.config["statusRoles"]["semi-moderator"])
+    @commands.has_any_role(
+        settings.config["statusRoles"]["moderator"],
+        settings.config["statusRoles"]["semi-moderator"])
     async def mute(self, ctx, user: discord.Member, *, reason=None):
         """mutes the user and puts a strike against their name"""
         await self.client.wait_until_ready()
@@ -95,8 +98,9 @@ class ModCommands(commands.Cog):
             await channel.send(embed=embed)
 
     @commands.command(name="cooldown")
-    @commands.has_any_role(settings.config["statusRoles"]["moderator"],
-                           settings.config["statusRoles"]["semi-moderator"])
+    @commands.has_any_role(
+        settings.config["statusRoles"]["moderator"],
+        settings.config["statusRoles"]["semi-moderator"])
     async def cooldown(self, ctx, user: discord.Member, *, time: TimeConverter = None):
         """takes the user out of the general channel for a specific amount of time"""
         cooldown_role = user.guild.get_role(settings.config["statusRoles"]["cooldown"])
@@ -120,7 +124,9 @@ class ModCommands(commands.Cog):
             await ctx.send(f'Please give a timer for the cooldown')
 
     @commands.command(name="nunmute")
-    @commands.has_any_role('Moderator', 'Semi-Moderator')
+    @commands.has_any_role(
+        settings.config["statusRoles"]["moderator"],
+        settings.config["statusRoles"]["semi-moderator"])
     async def nunmute(self, ctx, user: discord.Member, *, time: TimeConverter = None):
         """unmute the user"""
         await self.client.wait_until_ready()
@@ -162,7 +168,8 @@ class ModCommands(commands.Cog):
         #    await ctx.send(f'{user} cannot be unmuted')
 
     @commands.command(name="kick")
-    @commands.has_any_role(settings.config["statusRoles"]["moderator"])
+    @commands.has_any_role(
+        settings.config["statusRoles"]["moderator"])
     async def kick(self, ctx, member: discord.User = None, *, reason=None):
         """kicks the user from the server"""
         if member == None or member == ctx.message.author:
@@ -181,7 +188,8 @@ class ModCommands(commands.Cog):
         await channel.send(embed=embed)
 
     @commands.command(name="ban")
-    @commands.has_any_role(settings.config["statusRoles"]["moderator"])
+    @commands.has_any_role(
+        settings.config["statusRoles"]["moderator"])
     async def ban(self, ctx, member: discord.User = None, *, reason=None):
         """bans the user from the server"""
         if member == None or member == ctx.message.author:
@@ -200,7 +208,8 @@ class ModCommands(commands.Cog):
         await channel.send(embed=embed)
 
     @commands.command(name="automod")
-    @commands.has_any_role('Moderator')
+    @commands.has_any_role(
+        settings.config["statusRoles"]["moderator"])
     async def automod_edit(self, ctx, arg=None, *words):
         invarg = 'please clarify if you are adding or removing a word. Type `!automod add {word}` to add the word, or `!automod remove {word}` to remove the word'
         if arg == None:
@@ -231,9 +240,10 @@ class ModCommands(commands.Cog):
                 await message.delete()
 
     @commands.command()
-    @commands.has_any_role(settings.config["statusRoles"]["member"],
-                           settings.config["statusRoles"]["moderator"],
-                           settings.config["statusRoles"]["semi-moderator"])
+    @commands.has_any_role(
+        settings.config["statusRoles"]["member"],
+        settings.config["statusRoles"]["moderator"],
+        settings.config["statusRoles"]["semi-moderator"])
     async def lynch(self, ctx, member: discord.Member):
         if ctx.author == member:
             await ctx.channel.send("You can't lynch yourself!")
