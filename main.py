@@ -73,6 +73,7 @@ timestr = f'**[{ctoday}] [{ctime}] -**'
 async def mcount_update():
     devlogs = client.get_channel(settings.config["channels"]["devlog"])
     await devlogs.send(f'{timestr}Attempted to update member count channel')
+    await devlogs.send(f'{timestr}Loaded `blacklist.txt` & `whitelist.txt` due to startup')
     for guild in client.guilds:
         if guild.id != settings.config["serverId"]:
             continue
