@@ -126,14 +126,6 @@ async def kick (ctx, member:discord.User=None, reason =None):
             await member.ban(reason=reason)
 
 
-
-
-
-@commands.command()
-async def lynch(ctx, member : discord.Member):
-    await ctx.channel.send("This command hasn't been coded yet")
-
-
 """
 async def getMemberLevel(member):
     memberLevel = None
