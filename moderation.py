@@ -126,30 +126,6 @@ async def kick (ctx, member:discord.User=None, reason =None):
             await member.ban(reason=reason)
 
 
-"""
-async def getMemberLevel(member):
-    memberLevel = None
-    if(member.roles.has(statusRoles.get('Admin'))):
-        memberLevel = Perm.ADMIN
-    elif(member.roles.has(statusRoles.get('Manager'))):
-        memberLevel = Perm.HMOD
-    elif(member.roles.has(statusRoles.get('Moderator'))):
-        memberLevel = Perm.MOD
-    elif(member.roles.has(statusRoles.get('Honorable'))):
-        memberLevel = Perm.SMOD
-    elif(member.roles.has(statusRoles.get('Member'))):
-        memberLevel = Perm.MEMBER
-    else:
-        memberLevel = Perm.GUEST
-    return memberLevel
-<<<<<<< HEAD
-
-=======
-"""
-
-
-
-
 
 #
 #       if(appliedMember !== undefined && member.joinedTimestamp < appliedMember.joinedTimestamp){
