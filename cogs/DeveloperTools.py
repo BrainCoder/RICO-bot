@@ -19,7 +19,7 @@ class DeveloperTools(commands.Cog):
     @client.command(name="checklist", aliases=['cl'])
     @commands.has_any_role(
         settings.config["statusRoles"]["moderator"],
-        settings.config["statusRoles"]["developer"])
+                           settings.config["statusRoles"]["developer"])
     async def cl(self, ctx, *, message):
         """Add the message to the dev team job-board"""
         channel = self.client.get_channel(settings.config["channels"]["job-board"])
@@ -81,6 +81,7 @@ class DeveloperTools(commands.Cog):
     @commands.has_any_role(
         settings.config["statusRoles"]["developer"])
     async def verifyintegrityofdb(self, ctx):
+        """Ensures that all users currently in the server are inside the database, and adds them if not."""
         new_entries = 0
         current_users = len(utils.conn.execute(utils.userdata.select()).fetchall())
         for user in ctx.guild.members:
@@ -94,6 +95,8 @@ class DeveloperTools(commands.Cog):
         new_count = len(utils.conn.execute(utils.userdata.select()).fetchall())
         await ctx.channel.send("The old amount of users was " + str(current_users) + \
                                "\nThe new amount of users is " + str(new_count))
+
+
 
 def setup(client):
     client.add_cog(DeveloperTools(client))
