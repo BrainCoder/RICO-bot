@@ -265,13 +265,18 @@ class ModCommands(commands.Cog):
                            issuer_id=ctx.author.id, historical=0)
                 utils.conn.execute(mod_query)
                 find_lynches_query = text(f'select issuer_id from mod_event where recipient_id = {member.id} '
-                                          f'and historical = 0')
+                                          f'and event_type = 6 and historical = 0')
                 lynchers = utils.conn.execute(find_lynches_query)
                 lyncher_list = ""
                 for lyncher in lynchers:
                     lyncher_list += self.client.get_user(lyncher[0]).mention + " "
                 channel = self.client.get_channel(settings.config["channels"]["log"])  # log
-                await channel.send(f'User {member} was lynched by: {lyncher_list}')
+                userAvatarUrl = 'https://cdn.discordapp.com/avatars/749836263955103774/d95c04a16c2bad01a4451c97fae42766.webp?size=1024'
+                bot_role = ctx.guild.get_role(settings.config["statusRoles"]["bot-role"])
+                embed = discord.Embed(color=bot_role.color, timestamp=ctx.message.created_at)
+                embed.set_author(name="Lynch", icon_url=userAvatarUrl)
+                embed.add_field(name=f"User {member} was lynched! ", value=f"lynched by: {lyncher_list}")
+                await channel.send(embed=embed)
             else:
                 await ctx.channel.send(f'lynch acknowledged')
                 query = update(utils.userdata).where(utils.userdata.c.id == member.id) \
