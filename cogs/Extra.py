@@ -35,12 +35,14 @@ class Extra(commands.Cog):
         self._last_member = None
 
     
-    '''@commands.command()
-    @commands.has_any_role('Member')
+    @commands.command()
+    @commands.has_any_role(
+        settings.config["statusRoles"]["member"])
     async def selfmute(self, ctx, *, time:TimeConverter = None):
+        """Lets the user selfmute taking them out of the server"""
         InSelfMute = False
         member = ctx.author
-        Selfmute_Role = member.guild.get_role(settings.config["statusRoles"]["selfmute"])
+        Selfmute_Role = member.guild.get_role(settings.config["statusRoles"]["self-mute"])
         logs_channel = self.client.get_channel(settings.config["channels"]["log"])
         userAvatarUrl = member.avatar_url
         if ctx.channel.id == settings.config["channels"]["selfmute"]:
@@ -64,7 +66,7 @@ class Extra(commands.Cog):
                 embed.set_author(name="Member", icon_url=userAvatarUrl)
                 embed.add_field(name=f'{member} selfmuted indefinitely!', value='A moderator will be required to remove the selfmute role.')
                 await logs_channel.send(embed=embed)
-                await logs_channel.send(embed=embed)'''
+                await logs_channel.send(embed=embed)
     
     @commands.command(name="8ball", aliases=['8b'])
     @cooldown(1, 60)
