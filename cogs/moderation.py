@@ -207,6 +207,7 @@ class ModCommands(commands.Cog):
         settings.config["statusRoles"]["moderator"])
     async def automod_edit(self, ctx, arg=None, *words):
         invarg = 'please clarify if you are adding or removing a word. Type `!automod add {word}` to add the word, or `!automod remove {word}` to remove the word'
+        devlogs = self.client.get_channel(settings.config["channels"]["devlog"])
         if arg == None:
             await ctx.send(invarg)
         elif arg == 'add':
