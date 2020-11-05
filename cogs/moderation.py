@@ -3,6 +3,7 @@ from discord import File
 from discord.ext import commands
 from discord.ext.commands import Cog
 
+from re import search
 from datetime import datetime
 from better_profanity import profanity
 from sqlalchemy import text, update
@@ -14,6 +15,8 @@ import re
 whitelist= []
 with open('whitelist.txt', 'r') as f:
     whitelist = [line.strip() for line in f]
+
+url_regex = r"(?i)\b((?:https?://|www\d{0,3}[.]|[a-z0-9.\-]+[.][a-z]{2,4}/)(?:[^\s()<>]+|\(([^\s()<>]+|(\([^\s()<>]+\)))*\))+(?:\(([^\s()<>]+|(\([^\s()<>]+\)))*\)|[^\s`!()\[\]{};:'\".,<>?«»“”‘’]))"
 
 profanity.load_censor_words_from_file('blacklist.txt', whitelist_words = whitelist)
 
@@ -232,18 +235,13 @@ class ModCommands(commands.Cog):
         else:
             await ctx.send(invarg)
 
-    @Cog.listener()
-    async def on_message(self, message):
-        if not message.author.bot:
-            if profanity.contains_profanity(message.content):
-                await message.delete()
-
-    @commands.command()
+    @commands.command(name="nlynch")
     @commands.has_any_role(
         settings.config["statusRoles"]["member"],
         settings.config["statusRoles"]["moderator"],
         settings.config["statusRoles"]["semi-moderator"])
-    async def lynch(self, ctx, member: discord.Member):
+    async def nlynch(self, ctx, member: discord.Member):
+        """A command to be used if there is no staff present, where three members can type in `!lynch` in order to mute a user"""
         if ctx.author == member:
             await ctx.channel.send("You can't lynch yourself!")
             return
@@ -294,6 +292,18 @@ class ModCommands(commands.Cog):
             member_role = ctx.guild.get_role(settings.config["statusRoles"]["member"])
             await ctx.author.remove_roles(member_role)
 
+    @Cog.listener()
+    async def on_message(self, message):
+        member = False
+        member_role = message.guild.get_role(settings.config["statusRoles"]["member"])
+        for role in message.author.roles:
+            if role.id == member_role.id:
+                member = True
+        if not message.author.bot:
+            if profanity.contains_profanity(message.content):
+                await message.delete()
+            elif not member and search(url_regex, message.content):
+                await message.delete()
 
 def setup(client):
     client.add_cog(ModCommands(client))
