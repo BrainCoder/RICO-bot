@@ -74,8 +74,6 @@ timestr = f'**[{ctoday}] [{ctime}] -**'
 #Member count plus game status
 @tasks.loop(minutes = 15)
 async def mcount_update():
-    devlogs = client.get_channel(settings.config["channels"]["devlog"])
-    await devlogs.send(f'{timestr}Attempted to update member count channel')
     for guild in client.guilds:
         if guild.id != settings.config["serverId"]:
             continue
