@@ -2,6 +2,8 @@ import discord
 import settings
 import traceback
 import sys
+
+from discord import File
 from discord.ext import commands
 import utils
 from sqlalchemy import insert, select
@@ -95,6 +97,10 @@ class DeveloperTools(commands.Cog):
         new_count = len(utils.conn.execute(utils.userdata.select()).fetchall())
         await ctx.channel.send("The old amount of users was " + str(current_users) + \
                                "\nThe new amount of users is " + str(new_count))
+    
+    @commands.command()
+    async def test(self, ctx):
+        await ctx.send(file = File('blacklist.txt'))
 
 
 

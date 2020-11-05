@@ -1,4 +1,5 @@
 import discord
+from discord import File
 from discord.ext import commands
 from discord.ext.commands import Cog
 
@@ -206,7 +207,7 @@ class ModCommands(commands.Cog):
     @commands.has_any_role(
         settings.config["statusRoles"]["moderator"])
     async def automod_edit(self, ctx, arg=None, *words):
-        invarg = 'please clarify if you are adding or removing a word. Type `!automod add {word}` to add the word, or `!automod remove {word}` to remove the word'
+        invarg = 'Please use the corect arguments\n```!automod add - add word to blacklist\n!automod remove - remove word from blacklist\n!automod blacklist - to see the blacklist```'
         devlogs = self.client.get_channel(settings.config["channels"]["devlog"])
         if arg == None:
             await ctx.send(invarg)
@@ -226,6 +227,8 @@ class ModCommands(commands.Cog):
                 await devlogs.send(f'{timestr}Reloaded `blacklist.txt` and `whitelist.txt` due to edit')
             emoji = '✅'
             await ctx.message.add_reaction(emoji)
+        elif arg == 'blacklist':
+            await ctx.send(file = File('blacklist.txt'))
         else:
             await ctx.send(invarg)
 
