@@ -2,9 +2,9 @@ module.exports = {
   apps : [{
     name: 'NPC',
     script: 'main.py',
-    watch: '.',
+    watch: ['main.py','streak.py','utils.py'],
     interpreter: '/usr/bin/python3.8',
-    args: '/home/ubuntu/Documents/NP_C/ids/noporn.json'
+    args: '/home/ubuntu/Documents/NP_C/ids/noporn.json mysql+pymysql://bot:Genesis_Affair1998@192.168.1.180/np_db'
   }],
 
   deploy : {
