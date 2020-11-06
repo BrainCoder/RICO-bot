@@ -28,6 +28,7 @@ def getStreakString(total_streak_length):
     return [daysStr, middleStr, hoursStr]
 
 @commands.command(name="relapse", checks=[utils.is_in_streak_channel()])
+@commands.cooldown(1, 60, commands.BucketType.user)
 async def relapse(ctx, *args):
     """resets the users streak to day 0"""
     Anon = False
@@ -123,6 +124,7 @@ async def relapse(ctx, *args):
 
 
 @commands.command(name="update", checks=[utils.is_in_streak_channel()])
+@commands.cooldown(1, 900, commands.BucketType.user)
 async def update(ctx):
     """updates the users streak"""
     Anon = False
@@ -172,9 +174,6 @@ async def updateStreakRole(member, startingDate):
         await member.remove_roles(roleObj)
     roleObj = member.guild.get_role(deserved)
     await member.add_roles(roleObj)
-
-
-
 
 
 url = "https://emergency.nofap.com/director.php?cat=em&religious=false"
