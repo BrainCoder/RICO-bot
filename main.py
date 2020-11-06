@@ -100,13 +100,25 @@ async def on_ready():
 @client.event
 async def on_member_join(member):
     channel = client.get_channel(settings.config["channels"]["welcome"])
-    await channel.send(f'{member.mention} welcome! Please go to <#519455164894019584> to read an overview of what this server is about. Go to <#767871942056869938> and <#767742624739622932> to see the commands that you can use to assign yourself.')
     verify_previous_query = utils.userdata.select().where(utils.userdata.c.id == member.id)
     result = utils.conn.execute(verify_previous_query).fetchone()
     if not result:
+        await channel.send(
+            f'{member.mention} Welcome! Please go to <#{settings.config["channels"]["rules"]}> to read'
+            f' an overview of what this server is about. Go to <#{settings.config["channels"]["streak-guide"]}> '
+            f'and <#{settings.config["channels"]["roles-and-access"]}>'
+            f' to see the commands that you can use to assign yourself.')
         query = utils.userdata.insert(). \
             values(id=member.id)
         utils.conn.execute(query)
+    else:
+        await channel.send(
+            f'{member.mention} Welcome back! In case you need a reminder, you can go to '
+            f'<#{settings.config["channels"]["rules"]}> to read an overview of what this server is about. '
+            f'You can go to <#{settings.config["channels"]["streak-guide"]}> '
+            f'and <#{settings.config["channels"]["roles-and-access"]}>'
+            f' to see the commands that you can use to assign yourself.')
+
 
 #/Welcome message
 
