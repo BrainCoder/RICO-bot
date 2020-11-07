@@ -37,6 +37,7 @@ async def relapse(ctx, *args):
         if role.id == anon_role.id:
             Anon = True
             await ctx.message.delete()
+            await removeStreakRoles(ctx.author)
     members = await ctx.guild.fetch_members(limit=None).flatten()
     for role in ctx.author.roles:
         if role.id == settings.config["statusRoles"]["monthly-challenge-participant"]:
@@ -133,6 +134,7 @@ async def update(ctx):
         if role.id == anon_role.id:
             Anon = True
             await ctx.message.delete()
+            await removeStreakRoles(ctx.author)
     query = utils.userdata.select().where(utils.userdata.c.id == ctx.author.id)
     rows = utils.conn.execute(query).fetchall()
     if(len(rows) and rows[0]['last_relapse'] is not None):
@@ -175,6 +177,12 @@ async def updateStreakRole(member, startingDate):
     roleObj = member.guild.get_role(deserved)
     await member.add_roles(roleObj)
 
+async def removeStreakRoles(author):
+    for role in author.roles:
+        id = author.guild.get_role(role.id).id
+        if id in settings.config["streakRoles"].values():
+            await author.remove_roles(role)
+            return
 
 url = "https://emergency.nofap.com/director.php?cat=em&religious=false"
 async def getEmergencyPicture():
