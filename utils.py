@@ -34,7 +34,13 @@ def init():
         Column('points', BIGINT),
         Column('lynch_count', INTEGER, nullable=False, default=0),
         Column('successful_lynch_count', INTEGER, nullable=False, default=0),
-        Column('lynch_expiration_time', BIGINT)
+        Column('lynch_expiration_time', BIGINT, nullable=False, default=0),
+        Column('mute', TINYINT, nullable=False, default=0),
+        Column('double_mute', TINYINT, nullable=False, default=0),
+        Column('cooldown', TINYINT, nullable=False, default=0),
+        Column('member', TINYINT, nullable=0, default=0),
+        Column('kicked', TINYINT, nullable=0, default=0),
+        Column('banned', TINYINT, nullable=0, default=0)
     )
 
     mod_event_type = Table(

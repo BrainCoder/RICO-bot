@@ -4,25 +4,46 @@ from discord.ext import commands
 from sqlalchemy import text
 import utils
 import settings
-from tabulate import tabulate  # TODO: Mention IN PR That this is a new library that must be installed.
+from tabulate import tabulate
 
 
 class ModeratorTools(commands.Cog):
 
+    def __init__(self, client):
+        self.client = client
+        self._last_member = None
+
     @commands.command()
     @commands.has_any_role(settings.config["statusRoles"]["moderator"])
-    async def report(self, ctx, user: discord.User):
+    async def report(self, ctx, user: discord.User = None, historical = 0):
+        user_clause = ""
+        if user is not None:
+            user_clause = f' and recipient_id = {user.id}'
         prior_mute_queries = text(
-            f'select me.recipient_id, met.mod_action_type, me.event_time, me.reason from mod_event me inner join mod_event_type met on me.event_type = met.mod_type_id where'
-            f' historical = 1 and recipient_id = 103128485295316992 limit 10')
+            f'select me.recipient_id, met.mod_action_type, me.event_time, me.issuer_id, me.reason '
+            f'from mod_event me '
+            f'inner join mod_event_type met on me.event_type = met.mod_type_id where historical = {historical}'
+            f' {user_clause} order by me.event_time desc limit 10')
         results = utils.conn.execute(prior_mute_queries)
         table = []
         for result in results:
             output = result.values()
-            output[0] = self.client.get_user(output[0]).name
+            if user is not None and self.client.get_user(user.id) is not None:
+                output[0] = self.client.get_user(output[0]).name
+            else:
+                name = await self.client.fetch_user(output[0])
+                output[0] = name
+            output[2] = output[2].date()
+            if self.client.get_user(output[3]) is not None:
+                output[3] = self.client.get_user(output[3]).name
+            else:
+                name = await self.client.fetch_user(output[3])
+                output[3] = name
+
             table.append(output)
-        len_of_tabulate = len(tabulate(table))
-        await ctx.send("```" + tabulate(table, headers=["username", "action", "datetime", "reason"]) + "```")
+        await ctx.send("```" + tabulate(table,
+                                        headers=["username", "action", "datetime", "moderator","reason"],
+                                        ) + "```")
 
 
 def setup(client):
