@@ -62,6 +62,8 @@ class DeveloperTools(commands.Cog):
         elif isinstance(error, commands.BadArgument):
             if ctx.command.qualified_name == 'tag list':
                 await ctx.send('I could not find that member. Please try again.')
+        elif isinstance(error, commands.CommandOnCooldown):
+            await ctx.send(f'This command is on cooldown. Please wait {error.retry_after}s')
         else:
             print('Ignoring exception in command {}:'.format(ctx.command), file=sys.stderr)
             traceback.print_exception(type(error), error, error.__traceback__, file=sys.stderr)
