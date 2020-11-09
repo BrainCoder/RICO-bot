@@ -101,8 +101,8 @@ class ModCommands(commands.Cog):
             userAvatarUrl = user.avatar_url
             for discord.guild in self.client.guilds:
                 Mute_role = user.guild.get_role(settings.config["statusRoles"]["muted"])
-            await user.send(
-                f"Muted for '{reason}' by <@{ctx.author.id}>\nTo resolve this mute please communicate with the memeber of staff who muted you")
+            #await user.send(
+            #    f"Muted for '{reason}' by <@{ctx.author.id}>\nTo resolve this mute please communicate with the memeber of staff who muted you")
             await user.add_roles(Mute_role)
             embed = discord.Embed(color=ctx.author.color, timestamp=ctx.message.created_at)
             embed.set_author(name="Mute", icon_url=userAvatarUrl)
