@@ -13,9 +13,13 @@ class ModeratorTools(commands.Cog):
         self.client = client
         self._last_member = None
 
-    @commands.command()
-    @commands.has_any_role(settings.config["statusRoles"]["head-moderator"])
+    @commands.command(name="ngetstrikes", aliases=['sr', 'report'])
+    @commands.has_any_role(
+        settings.config["statusRoles"]["moderator"],
+        settings.config["statusRoles"]["semi-moderator"]
+        )
     async def report(self, ctx, user: discord.User = None, historical = 0):
+        """NPC replacement for the !getstrikes command"""
         user_clause = ""
         if user is not None:
             user_clause = f' and recipient_id = {user.id}'
