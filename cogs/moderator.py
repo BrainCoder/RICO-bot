@@ -14,7 +14,7 @@ class ModeratorTools(commands.Cog):
         self._last_member = None
 
     @commands.command()
-    @commands.has_any_role(settings.config["statusRoles"]["moderator"])
+    @commands.has_any_role(settings.config["statusRoles"]["head-moderator"])
     async def report(self, ctx, user: discord.User = None, historical = 0):
         user_clause = ""
         if user is not None:
