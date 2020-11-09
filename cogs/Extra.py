@@ -66,8 +66,7 @@ class Extra(commands.Cog):
                 embed.set_author(name="Member", icon_url=userAvatarUrl)
                 embed.add_field(name=f'{member} selfmuted indefinitely!', value='A moderator will be required to remove the selfmute role.')
                 await logs_channel.send(embed=embed)
-                await logs_channel.send(embed=embed)
-    
+
     @commands.command(name="8ball", aliases=['8b'])
     @cooldown(1, 60)
     async def _8ball(self, ctx, *, question):

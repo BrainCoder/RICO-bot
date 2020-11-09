@@ -78,6 +78,14 @@ class ModCommands(commands.Cog):
         embed.set_author(name="Member", icon_url=userAvatarUrl)
         embed.add_field(name=f"{user} has been given member! ", value=f"Member given by: <@{ctx.author.id}>.")
         await channel.send(embed=embed)
+        mod_query = utils.mod_event.insert(). \
+            values(recipient_id=user.id, event_type=8, event_time=utils.datetime.now(),
+                   issuer_id=ctx.author.id, historical=0)
+        utils.conn.execute(mod_query)
+        user_data_query = update(utils.userdata).where(utils.userdata.c.id == user.id) \
+            .values(member=1)
+        utils.conn.execute(user_data_query)
+
 
     @commands.command(name="mute")
     @commands.has_any_role(
@@ -100,6 +108,13 @@ class ModCommands(commands.Cog):
             embed.set_author(name="Mute", icon_url=userAvatarUrl)
             embed.add_field(name=f"{user} has been Muted! ", value=f"**for:** {reason} Muted by: <@{ctx.author.id}>.")
             await channel.send(embed=embed)
+            mod_query = utils.mod_event.insert(). \
+                values(recipient_id=user.id, event_type=3, event_time=utils.datetime.now(), reason=reason,
+                       issuer_id=ctx.author.id, historical=0)
+            utils.conn.execute(mod_query)
+            user_data_query = update(utils.userdata).where(utils.userdata.c.id == user.id) \
+                    .values(mute=1)
+            utils.conn.execute(user_data_query)
 
     @commands.command(name="cooldown")
     @commands.has_any_role(
@@ -117,6 +132,14 @@ class ModCommands(commands.Cog):
             embed.add_field(name=f'{user} cooled-down by {ctx.author}',
                             value=f'The cooldown will be removed in {time}s, or a moderator will have to remove it manually')
             await logs_channel.send(embed=embed)
+            time_of_cooldown = utils.datetime.now()
+            mod_query = utils.mod_event.insert(). \
+                values(recipient_id=user.id, event_type=5, event_time=time_of_cooldown,
+                       issuer_id=ctx.author.id, historical=0)
+            utils.conn.execute(mod_query)
+            user_data_query = update(utils.userdata).where(utils.userdata.c.id == user.id) \
+                    .values(cooldown=1)
+            utils.conn.execute(user_data_query)
             await asyncio.sleep(time)
             await user.remove_roles(cooldown_role)
             embed = discord.Embed(color=ctx.author.color, timestamp=ctx.message.created_at)
@@ -124,6 +147,12 @@ class ModCommands(commands.Cog):
             embed.add_field(name=f'{user} is no longer cooled-down',
                             value=f'The cooldown was removed automatically by the bot')
             await logs_channel.send(embed=embed)
+            make_historical_query = text(f'update mod_event set historical = 1 '
+                                         f'where recipient_id = {user.id} and event_type = 5')
+            utils.conn.execute(make_historical_query)
+            user_data_query = update(utils.userdata).where(utils.userdata.c.id == user.id) \
+                    .values(cooldown=0)
+            utils.conn.execute(user_data_query)
         else:
             await ctx.send(f'Please give a timer for the cooldown')
 
@@ -165,6 +194,9 @@ class ModCommands(commands.Cog):
                 prior_mute_queries = text(f'update mod_event set historical = 1 where recipient_id = {user.id} '
                                           f'and event_type = 3 and historical = 0')
                 utils.conn.execute(prior_mute_queries)
+                user_data_query = update(utils.userdata).where(utils.userdata.c.id == user.id) \
+                    .values(mute=0)
+                utils.conn.execute(user_data_query)
 
     @commands.command(name="kick")
     @commands.has_any_role(
@@ -185,6 +217,13 @@ class ModCommands(commands.Cog):
         embed.set_author(name="Kick", icon_url=userAvatarUrl)
         embed.add_field(name=f"{member} has been Kicked! ", value=f"**for:** {reason} Kicked by: <@{ctx.author.id}>.")
         await channel.send(embed=embed)
+        mod_query = utils.mod_event.insert(). \
+            values(recipient_id=member.id, event_type=2, event_time=utils.datetime.now(), reason=reason,
+                   issuer_id=ctx.author.id, historical=0)
+        utils.conn.execute(mod_query)
+        user_data_query = update(utils.userdata).where(utils.userdata.c.id == member.id) \
+            .values(kicked=1)
+        utils.conn.execute(user_data_query)
 
     @commands.command(name="ban")
     @commands.has_any_role(
@@ -205,6 +244,13 @@ class ModCommands(commands.Cog):
         embed.set_author(name="Ban", icon_url=userAvatarUrl)
         embed.add_field(name=f"{member} has been Banned! ", value=f"**for:** {reason} banned by: <@{ctx.author.id}>.")
         await channel.send(embed=embed)
+        mod_query = utils.mod_event.insert(). \
+            values(recipient_id=member.id, event_type=1, event_time=utils.datetime.now(), reason=reason,
+                   issuer_id=ctx.author.id, historical=0)
+        utils.conn.execute(mod_query)
+        user_data_query = update(utils.userdata).where(utils.userdata.c.id == member.id) \
+            .values(banned=1)
+        utils.conn.execute(user_data_query)
 
     @commands.command(name="automod")
     @commands.has_any_role(
