@@ -2,6 +2,7 @@ import discord
 import settings
 import traceback
 import sys
+import asyncio
 
 from discord import File
 from discord.ext import commands
