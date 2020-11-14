@@ -342,7 +342,10 @@ class ModCommands(commands.Cog):
     async def on_message(self, message):
         member = False
         member_role = message.guild.get_role(settings.config["statusRoles"]["member"])
-        for role in message.author.roles:
+        author = message.author
+        if type(author) is discord.User:
+            return
+        for role in author.roles:
             if role.id == member_role.id:
                 member = True
         if not message.author.bot:
