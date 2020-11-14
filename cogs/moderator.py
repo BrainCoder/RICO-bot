@@ -6,7 +6,6 @@ import utils
 import settings
 from tabulate import tabulate
 
-
 class ModeratorTools(commands.Cog):
 
     def __init__(self, client):
@@ -48,6 +47,51 @@ class ModeratorTools(commands.Cog):
         await ctx.send("```" + tabulate(table,
                                         headers=["username", "action", "datetime", "moderator","reason"],
                                         ) + "```")
+    @commands.command()
+    @commands.has_any_role(
+        settings.config["statusRoles"]["head-moderator"],
+        settings.config["statusRoles"]["moderator"],
+        )
+    async def offline(self, ctx, role):
+        """Lets you check which users are offline given the name of a role.
+        If you want to check for a user with no roles, the phrase is \"empty\".
+        This will then search for users with the default @everyone role.
+        This is to ensure that @everyone is not mentioned.
+        The command will also not take any roles with \"@\" symbols inside of them as a precaution."""
+        everyone = False
+        if '@' in role:
+            await ctx.send(f'Please use the non-mentionable version of that role. '
+                           f'If you\'re trying to check all offline users, unfortunately you can not.')
+            return
+        role_to_index = None
+        roles = ctx.guild.roles
+        for role_in_guild in roles:
+            if role.lower() == role_in_guild.name.lower():
+                role_to_index = role_in_guild
+                break
+        if role == "empty":
+            everyone = True
+            role = "everyone"
+            role_to_index = ctx.guild.roles[0]
+        if role_to_index is None:
+            await ctx.send(f'No role found named "{role}"')
+            return
+        members_with_role = []
+        for member in ctx.guild.members:
+            if role_to_index in member.roles and member.status is discord.Status.offline and not everyone:
+                members_with_role.append(member)
+            elif everyone and len(member.roles) == 1:
+                members_with_role.append(member)
+        if len(members_with_role) > 50:
+            await ctx.send(f'Members offline with role "{role}": {len(members_with_role)}')
+        elif len(members_with_role) == 0:
+            await ctx.send(f'No members offline with role "{role}"')
+        else:
+            nicks = ""
+            for member in members_with_role:
+                nicks += member.display_name + "#" + member.discriminator + "\n"
+            await ctx.send(f'Users offline:\n{nicks}')
+
 
 
 def setup(client):
