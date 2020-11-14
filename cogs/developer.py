@@ -12,8 +12,6 @@ from utils import is_in_checklist_channel
 
 client = commands.Bot(command_prefix='!')
 
-devlogs = client.get_channel(settings.config["channels"]["devlog"])
-
 
 class DeveloperTools(commands.Cog):
 
@@ -70,9 +68,8 @@ class DeveloperTools(commands.Cog):
             await asyncio.sleep(5)
             await message.delete()
         else:
-            x = f'Ignoring exception in command {ctx.command}:'.join(traceback.format_exception(type(error), error, error.__traceback__))
-            print(x)
-            devlogs.send(f'```{x}```')
+            print('Ignoring exception in command {}:'.format(ctx.command), file=sys.stderr)
+            traceback.print_exception(type(error), error, error.__traceback__, file=sys.stderr)
 
     @commands.command(name='repeat', aliases=['mimic', 'copy'])
     @commands.has_any_role(
