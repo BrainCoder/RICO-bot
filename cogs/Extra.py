@@ -140,7 +140,7 @@ class Extra(commands.Cog):
             if role.id == HDev.id:
                 Hound = True
         if not Hound:
-            await sctx.send(f'Ur not my dad :c')
+            await ctx.send(f'Ur not my dad :c')
         else:
             await ctx.send(f'uwu what kinda of sandwich does daddy want =^.^=')
 
