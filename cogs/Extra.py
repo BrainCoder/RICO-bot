@@ -130,6 +130,19 @@ class Extra(commands.Cog):
         """sends a link of the users avatar"""
         userAvatarUrl = avamember.avatar_url
         await ctx.send(f"{avamember}'s avatar is: {userAvatarUrl}")
+    
+    @commands.command(name="gfsandwich")
+    async def _8ball(self, ctx):
+        """Evidence that the bot is hounds gf"""
+        Hound = False
+        HDev = ctx.guild.get_role(settings.config["statusRoles"]["headdev"])
+        for role in ctx.author.roles:
+            if role.id == HDev.id:
+                Hound = True
+        if not Hound:
+            await sctx.send(f'Ur not my dad :c')
+        else:
+            await ctx.send(f'uwu what kinda of sandwich does daddy want =^.^=')
 
 def setup(client):
     client.add_cog(Extra(client))
