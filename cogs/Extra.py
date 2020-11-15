@@ -132,7 +132,7 @@ class Extra(commands.Cog):
         await ctx.send(f"{avamember}'s avatar is: {userAvatarUrl}")
     
     @commands.command(name="gfsandwich")
-    async def _8ball(self, ctx):
+    async def gfsandwich(self, ctx):
         """Evidence that the bot is hounds gf"""
         Hound = False
         HDev = ctx.guild.get_role(settings.config["statusRoles"]["headdev"])
