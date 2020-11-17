@@ -225,6 +225,14 @@ class ModCommands(commands.Cog):
             .values(kicked=1)
         utils.conn.execute(user_data_query)
 
+    @commands.command(name='nunderage')
+    @commands.has_any_role(
+        settings.config["statusRoles"]["moderator"],
+        settings.config["statusRoles"]["semi-moderator"])
+    async def underage(self, ctx, member: discord.Member):
+        underage_role = ctx.guild.get_role(settings.config["statusRoles"]["underage"])
+        await member.add_roles(underage_role)
+
     @commands.command(name="ban")
     @commands.has_any_role(
         settings.config["statusRoles"]["moderator"])
