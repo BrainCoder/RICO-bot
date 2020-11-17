@@ -17,6 +17,7 @@ with open('whitelist.txt', 'r') as f:
     whitelist = [line.strip() for line in f]
 
 url_regex = r"(?i)\b((?:https?://|www\d{0,3}[.]|[a-z0-9.\-]+[.][a-z]{2,4}/)(?:[^\s()<>]+|\(([^\s()<>]+|(\([^\s()<>]+\)))*\))+(?:\(([^\s()<>]+|(\([^\s()<>]+\)))*\)|[^\s`!()\[\]{};:'\".,<>?«»“”‘’]))"
+invite_regex = r"(?:https?://)?discord(?:(?:app)?\.com/invite|\.gg)/?[a-zA-Z0-9]+/?"
 
 profanity.load_censor_words_from_file('blacklist.txt', whitelist_words = whitelist)
 
@@ -349,7 +350,9 @@ class ModCommands(commands.Cog):
     @Cog.listener()
     async def on_message(self, message):
         member = False
+        #I would like to add a staff check to allow staff memebers to post invite links however i dont know how to do this, this is a job for the future
         member_role = message.guild.get_role(settings.config["statusRoles"]["member"])
+        logs_channel = message.guild.get_channel(settings.config["channels"]["log"])
         author = message.author
         if type(author) is discord.User:
             return
@@ -363,7 +366,7 @@ class ModCommands(commands.Cog):
                 await message.delete()
             elif search(invite_regex, message.content):
                 await message.delete()
-                #make it so it sends the link to logs or staff lounge idk
+                await logs_channel.send(f'<@{message.author.id}> tried to post:\n{message.content}') #This works but there is currently a conflict with manger in logs channel, this will be fixed when manager is removed
 
 def setup(client):
     client.add_cog(ModCommands(client))
