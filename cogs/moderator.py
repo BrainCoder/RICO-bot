@@ -114,6 +114,7 @@ class ModeratorTools(commands.Cog):
     @commands.has_any_role(
         settings.config["statusRoles"]["head-moderator"],
         settings.config["statusRoles"]["moderator"],
+        settings.config["statusRoles"]["semi-moderator"]
     )
     async def offline(self, ctx, role):
         """Lets you check which users are offline given the name of a role.
