@@ -18,7 +18,7 @@ class ModeratorTools(commands.Cog):
         settings.config["statusRoles"]["moderator"],
         settings.config["statusRoles"]["semi-moderator"]
     )
-    async def report(self, ctx, user: discord.User = None, historical="historical", output_format="table",
+    async def report(self, ctx, user: discord.User = None, output_format="raw", historical="historical",
                      action="mute"):
         """NPC replacement for the !getstrikes command
         You can view a report for the most recent moderation actions on any user by just entering the command by itself.
