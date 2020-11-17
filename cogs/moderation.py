@@ -361,6 +361,9 @@ class ModCommands(commands.Cog):
                 await message.delete()
             elif not member and search(url_regex, message.content):
                 await message.delete()
+            elif search(invite_regex, message.content):
+                await message.delete()
+                #make it so it sends the link to logs or staff lounge idk
 
 def setup(client):
     client.add_cog(ModCommands(client))
