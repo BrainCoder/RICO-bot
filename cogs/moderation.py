@@ -352,21 +352,33 @@ class ModCommands(commands.Cog):
         member = False
         #I would like to add a staff check to allow staff memebers to post invite links however i dont know how to do this, this is a job for the future
         member_role = message.guild.get_role(settings.config["statusRoles"]["member"])
+        muted_role = message.guild.get_role(settings.config["statusRoles"]["muted"])
         logs_channel = message.guild.get_channel(settings.config["channels"]["log"])
         author = message.author
+        userAvatarUrl = author.avatar_url
+        def _check(m):
+            return (m.author == author and len(m.mentions) and (datetime.utcnow()-m.created_at).seconds < 60)
         if type(author) is discord.User:
             return
         for role in author.roles:
             if role.id == member_role.id:
                 member = True
-        if not message.author.bot:
+        if not author.bot:
+
+            if len((list(filter(lambda m: _check(m), self.client.cached_messages)))) >=3:
+                await author.add_roles(muted_role)
+                embed = discord.Embed(color=author.color, timestamp=message.created_at)
+                embed.set_author(name="Mute", icon_url=userAvatarUrl)
+                embed.add_field(name=f"{author} has been Muted! ", value=f"muted for mention spamming")
+                await logs_channel.send(embed=embed)
+                #I want to add in a database entry if they get muted for this
             if profanity.contains_profanity(message.content):
                 await message.delete()
             elif not member and search(url_regex, message.content):
                 await message.delete()
             elif search(invite_regex, message.content):
                 await message.delete()
-                await logs_channel.send(f'<@{message.author.id}> tried to post:\n{message.content}') #This works but there is currently a conflict with manger in logs channel, this will be fixed when manager is removed
+                await logs_channel.send(f'<@{author.id}> tried to post:\n{message.content}') #This works but there is currently a conflict with manger in logs channel, this will be fixed when manager is removed
 
 def setup(client):
     client.add_cog(ModCommands(client))
