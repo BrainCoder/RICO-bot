@@ -97,9 +97,10 @@ async def on_ready():
 
 @client.event
 async def on_member_join(member):
+    conn = utils.engine.connect()
     channel = client.get_channel(settings.config["channels"]["welcome"])
     verify_previous_query = utils.userdata.select().where(utils.userdata.c.id == member.id)
-    result = utils.conn.execute(verify_previous_query).fetchone()
+    result = conn.execute(verify_previous_query).fetchone()
     if not result:
         await channel.send(
             f'{member.mention} Welcome! Please go to <#{settings.config["channels"]["rules"]}> to read'
