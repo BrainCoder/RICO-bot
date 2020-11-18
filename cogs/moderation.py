@@ -349,6 +349,7 @@ class ModCommands(commands.Cog):
 
     @Cog.listener()
     async def on_message(self, message):
+        bot_id = settings.config["botId"]
         member = False
         #I would like to add a staff check to allow staff memebers to post invite links however i dont know how to do this, this is a job for the future
         member_role = message.guild.get_role(settings.config["statusRoles"]["member"])
@@ -371,7 +372,15 @@ class ModCommands(commands.Cog):
                 embed.set_author(name="Mute", icon_url=userAvatarUrl)
                 embed.add_field(name=f"{author} has been Muted! ", value=f"muted for mention spamming")
                 await logs_channel.send(embed=embed)
-                #I want to add in a database entry if they get muted for this
+                reason = 'auto muted for spam pinging'
+                mod_query = utils.mod_event.insert(). \
+                    values(recipient_id=author.id, event_type=3, event_time=utils.datetime.now(), reason=reason,
+                        issuer_id=bot_id, historical=0)
+                utils.conn.execute(mod_query)
+                user_data_query = update(utils.userdata).where(utils.userdata.c.id == author.id) \
+                        .values(mute=1)
+                utils.conn.execute(user_data_query)
+   
             if profanity.contains_profanity(message.content):
                 await message.delete()
             elif not member and search(url_regex, message.content):
