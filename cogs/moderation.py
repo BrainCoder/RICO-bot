@@ -349,7 +349,7 @@ class ModCommands(commands.Cog):
 
     @Cog.listener()
     async def on_message(self, message):
-        bot_id = 749836263955103774
+        bot_id = settings.config["botId"]
         member = False
         #I would like to add a staff check to allow staff memebers to post invite links however i dont know how to do this, this is a job for the future
         member_role = message.guild.get_role(settings.config["statusRoles"]["member"])
