@@ -30,68 +30,59 @@ client.add_command(relapse)
 client.add_command(update)
 client.remove_command('help')
 
-#Cogs
-@client.command(name="load")
-@commands.has_any_role(
-    settings.config["statusRoles"]["developer"])
-async def load(ctx, extension):
-    """loads the identified cog"""
-    client.load_extension(f'cogs.{extension}')
-    emoji = '✅'
-    await ctx.message.add_reaction(emoji)
-
-@client.command(name="unload")
-@commands.has_any_role(
-    settings.config["statusRoles"]["developer"])
-async def unload(ctx, extension):
-    """unloads the identified cog"""
-    client.unload_extension(f'cogs.{extension}')
-    emoji = '✅'
-    await ctx.message.add_reaction(emoji)
-
-@client.command(name="reload")
-@commands.has_any_role(
-    settings.config["statusRoles"]["developer"])
-async def reload(ctx, extension):
-    """reloads the identified cog"""
-    client.unload_extension(f'cogs.{extension}')
-    client.load_extension(f'cogs.{extension}')
-    emoji = '✅'
-    await ctx.message.add_reaction(emoji)
-
-for filename in os.listdir('./cogs'):
-    if filename.endswith('.py'):
-        client.load_extension(f'cogs.{filename[:-3]}')
-#/Cogs
-
 #Devlogs setup
 today = datetime.now()
 ctoday = today.strftime("%d/%m/%Y")
 ctime = today.strftime("%H:%M")
-timestr = f'**[{ctoday}] [{ctime}] -**'
-#Devlogs setup
+timestr = f'**[{ctoday}] [{ctime}] - **'
+#/Devlogd setup
 
-#Member count plus game status
-@tasks.loop(minutes = 15)
-async def mcount_update():
-    for guild in client.guilds:
-        if guild.id != settings.config["serverId"]:
-            continue
-        mCount = guild.member_count
-        channel = client.get_channel(settings.config["channels"]["memberscount"])
-        break
-    print(f'There are now {mCount} members of this server')
-    await channel.edit(name=(f'[{mCount} members]'))
-
+#Bot launch
 @client.event
 async def on_ready():
-    devlogs = client.get_channel(settings.config["channels"]["devlog"])
     print('Bot is active')
-    mcount_update.start()
+    await client.wait_until_ready()
+    devlogs = client.get_channel(settings.config["channels"]["devlog"])
     await client.change_presence(status=discord.Status.online, activity=discord.Game('DM me with complaints!'))
     await devlogs.send(f'{timestr}Bot is online')
     await devlogs.send(f'{timestr}Loaded `blacklist.txt` & `whitelist.txt` due to startup')
-#/Member count plus game status
+    await cogs_load()
+#/Bot launch
+
+#Cogs
+@client.command(name="cog", aliases=["cogs", "c"])
+@commands.has_any_role(
+    settings.config["statusRoles"]["developer"])
+async def cog(ctx, action, extension):
+    """Command to manually toggle cogs. For action use either\n**load** - load the cog\n**unload** - unload the cog\n**reload** - reload the cog"""
+    today = datetime.now()
+    ctoday = today.strftime("%d/%m/%Y")
+    ctime = today.strftime("%H:%M")
+    timestr = f'**[{ctoday}] [{ctime}] - **'
+    devlogs = client.get_channel(settings.config["channels"]["devlog"])
+    emoji = '✅'
+    log = f'{timestr}`{extension}` {action}ed manually'
+    if action == 'load':
+        client.load_extension(f'cogs.{extension}')
+        await ctx.message.add_reaction(emoji)
+        await devlogs.send(log)
+    elif action == 'unload':
+        client.unload_extension(f'cogs.{extension}')
+        await ctx.message.add_reaction(emoji)
+        await devlogs.send(log)
+    elif action == 'reload':
+        client.unload_extension(f'cogs.{extension}')
+        client.load_extension(f'cogs.{extension}')
+        await ctx.message.add_reaction(emoji)
+        await devlogs.send(log)
+
+async def cogs_load():
+    devlogs = client.get_channel(settings.config["channels"]["devlog"])
+    for filename in os.listdir('./cogs'):
+        if filename.endswith('.py'):
+            client.load_extension(f'cogs.{filename[:-3]}')
+            await devlogs.send(f'{timestr}`{filename}` loadeded due to startup')
+#/Cogs
 
 #Self destruct
 @client.command(name="logout", aliases=["killswitch"])
