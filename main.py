@@ -24,20 +24,16 @@ intents = discord.Intents.all()
 intents.members = True
 intents.presences = True
 client=commands.Bot(command_prefix='!', intents=intents)
-mCount = 0
 
 client.add_command(relapse)
 client.add_command(update)
 client.remove_command(help)
 
-#Devlogs setup
 today = datetime.now()
 ctoday = today.strftime("%d/%m/%Y")
 ctime = today.strftime("%H:%M")
 timestr = f'**[{ctoday}] [{ctime}] - **'
-#/Devlogd setup
 
-#Bot launch
 @client.event
 async def on_ready():
     print('Bot is active')
@@ -47,9 +43,7 @@ async def on_ready():
     await devlogs.send(f'{timestr}Bot is online')
     await devlogs.send(f'{timestr}Loaded `blacklist.txt` & `whitelist.txt` due to startup')
     await cogs_load()
-#/Bot launch
 
-#Cogs
 @client.command(name="cog", aliases=["cogs", "c"])
 @commands.has_any_role(
     settings.config["statusRoles"]["developer"])
@@ -78,9 +72,7 @@ async def cogs_load():
         if filename.endswith('.py'):
             client.load_extension(f'cogs.{filename[:-3]}')
             await devlogs.send(f'{timestr}`{filename}` loadeded due to startup')
-#/Cogs
 
-#Self destruct
 @client.command(name="logout", aliases=["killswitch"])
 @commands.has_any_role(
     settings.config["statusRoles"]["admin"])
@@ -88,7 +80,6 @@ async def logout(ctx):
     """kills the bot and all its processes"""
     await ctx.send("logging out")
     exit()
-#/Self destruct
 
 with open ('token.txt', 'rt') as myfile:
     contents = myfile.read()
