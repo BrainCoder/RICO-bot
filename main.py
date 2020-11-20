@@ -125,31 +125,6 @@ async def on_member_join(member):
                 await member.add_roles(double_mute_role)
 #/Welcome message
 
-#Complaints DM code
-
-@client.event
-async def on_message(message):
-    channel = client.get_channel(settings.config["channels"]["complaints"])     #-- Complaints part starts here
-    if message.guild is None and message.author != client.user:
-        await channel.send(f"<@{message.author.id}> said: {message.content}")
-    await client.process_commands(message)
-
-@client.command(name="dm", aliases=['message'])
-@commands.check(utils.is_in_complaint_channel)
-async def dm(ctx, member: discord.Member, *, content):
-    """messages the given user through the bot"""
-    channel = await member.create_dm()
-    await channel.send(content)
-    emoji = '✅'
-    await ctx.message.add_reaction(emoji)
-@dm.error
-async def dm_handler(ctx, error):
-    emoji = '❌'
-    if isinstance(error, commands.CheckFailure):
-        await ctx.message.add_reaction(emoji)
-
-#/Complaints DM code
-
 #Self destruct
 @client.command(name="logout", aliases=["killswitch"])
 @commands.has_any_role(
