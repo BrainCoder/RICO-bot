@@ -28,7 +28,7 @@ mCount = 0
 
 client.add_command(relapse)
 client.add_command(update)
-client.remove_command('help')
+client.remove_command(help)
 
 #Devlogs setup
 today = datetime.now()
@@ -55,10 +55,6 @@ async def on_ready():
     settings.config["statusRoles"]["developer"])
 async def cog(ctx, action, extension):
     """Command to manually toggle cogs. For action use either\n**load** - load the cog\n**unload** - unload the cog\n**reload** - reload the cog"""
-    today = datetime.now()
-    ctoday = today.strftime("%d/%m/%Y")
-    ctime = today.strftime("%H:%M")
-    timestr = f'**[{ctoday}] [{ctime}] - **'
     devlogs = client.get_channel(settings.config["channels"]["devlog"])
     emoji = '✅'
     log = f'{timestr}`{extension}` {action}ed manually'
@@ -87,11 +83,9 @@ async def cogs_load():
 #Self destruct
 @client.command(name="logout", aliases=["killswitch"])
 @commands.has_any_role(
-    settings.config["statusRoles"]["admin"],
-    settings.config["statusRoles"]["developer"])
+    settings.config["statusRoles"]["admin"])
 async def logout(ctx):
     """kills the bot and all its processes"""
-    await ctx.message.delete()
     await ctx.send("logging out")
     exit()
 #/Self destruct
