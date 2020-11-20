@@ -136,7 +136,7 @@ class Extra(commands.Cog):
     async def gfsandwich(self, ctx):
         """Evidence that the bot is hounds gf"""
         Hound = False
-        HDev = ctx.guild.get_role(settings.config["statusRoles"]["headdev"])
+        HDev = ctx.guild.get_role(settings.config["statusRoles"]["head-dev"])
         for role in ctx.author.roles:
             if role.id == HDev.id:
                 Hound = True
