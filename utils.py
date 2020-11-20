@@ -76,31 +76,12 @@ async def waitThenRun(seconds, fn):
 
 
 # Main Streak
-def is_in_streak_channel():
-    def inside_fn(ctx):
-        #channelName = 760244981838512158
-        if ctx.channel.id == settings.config["channels"]["streaks"]:
-            return True
-        return False
-    return inside_fn
+def is_in_streak_channel(ctx):
+    return ctx.channel.id == settings.config["channels"]["streaks"]
 
 # Complaints Channel
-def is_in_complaint_channel():
-    def inside_fn(ctx):
-        #channelName = 760244981838512158
-        if ctx.channel.id == settings.config["channels"]["complaints"]:
-            return True
-        return False
-    return inside_fn
-
-# Checklist Channel
-def is_in_checklist_channel():
-    def inside_fn(ctx):
-        #channelName = 760244981838512158
-        if ctx.channel.id == settings.config["channels"]["checklist"]:
-            return True
-        return False
-    return inside_fn
+async def is_in_complaint_channel(ctx):
+    return ctx.channel.id == settings.config["channels"]["complaints"]
 
 """
 def hasPerms(ctx, requiredLevel):

@@ -1,14 +1,17 @@
 import discord
+from discord.ext import commands
+from discord.ext.commands import cooldown
+
+from utils import idData
+
 import aiohttp
 import io
 import utils
 import settings
 import asyncio
-
+import sys
 from datetime import timedelta
-from utils import idData
-from discord.ext import commands
-from discord.ext.commands import cooldown
+
 
 
 intents = discord.Intents.all()
@@ -27,7 +30,8 @@ def getStreakString(total_streak_length):
     hoursStr = f'{hours} hour{"s" if hours != 1 else ""}' if hours > 0 else ''
     return [daysStr, middleStr, hoursStr]
 
-@commands.command(name="relapse", checks=[utils.is_in_streak_channel()])
+@commands.command(name="relapse")
+@commands.check(utils.is_in_streak_channel)
 @commands.cooldown(1, 60, commands.BucketType.user)
 async def relapse(ctx, *args):
     """resets the users streak to day 0"""
@@ -121,10 +125,15 @@ async def relapse(ctx, *args):
             message = await ctx.channel.send('Streak set successfully.')
             if Anon:
                 await asyncio.sleep(5)
-                await message.delete() 
+                await message.delete()
+@relapse.error
+async def relapse_handler(ctx, error):
+    if isinstance(error, commands.CheckFailure):
+        await ctx.send('That command cannot be used in this channel')
 
 
-@commands.command(name="update", checks=[utils.is_in_streak_channel()])
+@commands.command(name="update")
+@commands.check(utils.is_in_streak_channel)
 @commands.cooldown(1, 900, commands.BucketType.user)
 async def update(ctx):
     """updates the users streak"""
@@ -152,6 +161,10 @@ async def update(ctx):
         if Anon:
             await asyncio.sleep(5)
             await message.delete()
+@update.error
+async def update_handler(ctx, error):
+    if isinstance(error, commands.CheckFailure):
+        await ctx.send('That command cannot be used in this channel')
 
 def getOwnedStreakRole(member):
     for role in idData[member.guild.id]['streakRoles']:
