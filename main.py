@@ -27,7 +27,6 @@ client=commands.Bot(command_prefix='!', intents=intents)
 
 client.add_command(relapse)
 client.add_command(update)
-client.remove_command(help)
 
 today = datetime.now()
 ctoday = today.strftime("%d/%m/%Y")
@@ -43,28 +42,6 @@ async def on_ready():
     await devlogs.send(f'{timestr}Bot is online')
     await devlogs.send(f'{timestr}Loaded `blacklist.txt` & `whitelist.txt` due to startup')
     await cogs_load()
-
-@client.command(name="cog", aliases=["cogs", "c"])
-@commands.has_any_role(
-    settings.config["statusRoles"]["developer"])
-async def cog(ctx, action, extension):
-    """Command to manually toggle cogs. For action use either\n**load** - load the cog\n**unload** - unload the cog\n**reload** - reload the cog"""
-    devlogs = client.get_channel(settings.config["channels"]["devlog"])
-    emoji = '✅'
-    log = f'{timestr}`{extension}` {action}ed manually'
-    if action == 'load':
-        client.load_extension(f'cogs.{extension}')
-        await ctx.message.add_reaction(emoji)
-        await devlogs.send(log)
-    elif action == 'unload':
-        client.unload_extension(f'cogs.{extension}')
-        await ctx.message.add_reaction(emoji)
-        await devlogs.send(log)
-    elif action == 'reload':
-        client.unload_extension(f'cogs.{extension}')
-        client.load_extension(f'cogs.{extension}')
-        await ctx.message.add_reaction(emoji)
-        await devlogs.send(log)
 
 async def cogs_load():
     devlogs = client.get_channel(settings.config["channels"]["devlog"])
