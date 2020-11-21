@@ -93,7 +93,8 @@ class Extra(commands.Cog):
                     'Very doubtful'
                     ]
         if '@everyone' in question or '@here' in question:
-            await ctx.send(f'Questions contains illegal tag')
+            emoji = '❌'
+            await ctx.message.add_reaction(emoji)
         else:
             await ctx.send(f' **Question:** {question}\n**Answer:** {random.choice(responses)}')
             
