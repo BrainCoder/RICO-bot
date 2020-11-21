@@ -24,180 +24,39 @@ intents = discord.Intents.all()
 intents.members = True
 intents.presences = True
 client=commands.Bot(command_prefix='!', intents=intents)
-mCount = 0
 
 client.add_command(relapse)
 client.add_command(update)
-client.remove_command('help')
 
-#Cogs
-@client.command(name="load")
-@commands.has_any_role(
-    settings.config["statusRoles"]["developer"])
-async def load(ctx, extension):
-    """loads the identified cog"""
-    client.load_extension(f'cogs.{extension}')
-    emoji = '✅'
-    await ctx.message.add_reaction(emoji)
-
-@client.command(name="unload")
-@commands.has_any_role(
-    settings.config["statusRoles"]["developer"])
-async def unload(ctx, extension):
-    """unloads the identified cog"""
-    client.unload_extension(f'cogs.{extension}')
-    emoji = '✅'
-    await ctx.message.add_reaction(emoji)
-
-@client.command(name="reload")
-@commands.has_any_role(
-    settings.config["statusRoles"]["developer"])
-async def reload(ctx, extension):
-    """reloads the identified cog"""
-    client.unload_extension(f'cogs.{extension}')
-    client.load_extension(f'cogs.{extension}')
-    emoji = '✅'
-    await ctx.message.add_reaction(emoji)
-
-for filename in os.listdir('./cogs'):
-    if filename.endswith('.py'):
-        client.load_extension(f'cogs.{filename[:-3]}')
-#/Cogs
-
-#Devlogs setup
 today = datetime.now()
 ctoday = today.strftime("%d/%m/%Y")
 ctime = today.strftime("%H:%M")
-timestr = f'**[{ctoday}] [{ctime}] -**'
-#Devlogs setup
-
-#Member count plus game status
-@tasks.loop(minutes = 15)
-async def mcount_update():
-    for guild in client.guilds:
-        if guild.id != settings.config["serverId"]:
-            continue
-        mCount = guild.member_count
-        channel = client.get_channel(settings.config["channels"]["memberscount"])
-        break
-    print(f'There are now {mCount} members of this server')
-    await channel.edit(name=(f'[{mCount} members]'))
+timestr = f'**[{ctoday}] [{ctime}] - **'
 
 @client.event
 async def on_ready():
-    devlogs = client.get_channel(settings.config["channels"]["devlog"])
     print('Bot is active')
-    mcount_update.start()
+    await client.wait_until_ready()
+    devlogs = client.get_channel(settings.config["channels"]["devlog"])
     await client.change_presence(status=discord.Status.online, activity=discord.Game('DM me with complaints!'))
     await devlogs.send(f'{timestr}Bot is online')
     await devlogs.send(f'{timestr}Loaded `blacklist.txt` & `whitelist.txt` due to startup')
-#/Member count plus game status
+    await cogs_load()
 
-#Welcome message
+async def cogs_load():
+    devlogs = client.get_channel(settings.config["channels"]["devlog"])
+    for filename in os.listdir('./cogs'):
+        if filename.endswith('.py'):
+            client.load_extension(f'cogs.{filename[:-3]}')
+            await devlogs.send(f'{timestr}`{filename}` loadeded due to startup')
 
-@client.event
-async def on_member_join(member):
-    with utils.engine.connect() as conn:
-        channel = client.get_channel(settings.config["channels"]["welcome"])
-        verify_previous_query = utils.userdata.select().where(utils.userdata.c.id == member.id)
-        result = conn.execute(verify_previous_query).fetchone()
-        if not result:
-            await channel.send(
-                f'{member.mention} Welcome! Please go to <#{settings.config["channels"]["rules"]}> to read'
-                f' an overview of what this server is about. Go to <#{settings.config["channels"]["streak-guide"]}> '
-                f'and <#{settings.config["channels"]["roles-and-access"]}>'
-                f' to see the commands that you can use to assign yourself.')
-            query = utils.userdata.insert(). \
-                values(id=member.id)
-            utils.conn.execute(query)
-        else:
-            await channel.send(
-                f'{member.mention} Welcome back! In case you need a reminder, you can go to '
-                f'<#{settings.config["channels"]["rules"]}> to read an overview of what this server is about. '
-                f'You can go to <#{settings.config["channels"]["streak-guide"]}> '
-                f'and <#{settings.config["channels"]["roles-and-access"]}>'
-                f' to see the commands that you can use to assign yourself.')
-            if result[8] == 1: # muted
-                mute_role = member.guild.get_role(settings.config["statusRoles"]["muted"])
-                await member.add_roles(mute_role)
-            elif result[9] == 1: #double-muted
-                double_mute_role = member.guild.get_role(settings.config["statusRoles"]["double-muted"])
-                await member.add_roles(double_mute_role)
-#/Welcome message
-
-#Complaints DM code
-
-@client.event
-async def on_message(message):
-    channel = client.get_channel(settings.config["channels"]["complaints"])     #-- Complaints part starts here
-    if message.guild is None and message.author != client.user:
-        await channel.send(f"<@{message.author.id}> said: {message.content}")
-    await client.process_commands(message)
-
-@client.command(name="dm", aliases=['message'])
-@commands.check(utils.is_in_complaint_channel)
-async def dm(ctx, member: discord.Member, *, content):
-    """messages the given user through the bot"""
-    channel = await member.create_dm()
-    await channel.send(content)
-    emoji = '✅'
-    await ctx.message.add_reaction(emoji)
-@dm.error
-async def dm_handler(ctx, error):
-    emoji = '❌'
-    if isinstance(error, commands.CheckFailure):
-        await ctx.message.add_reaction(emoji)
-
-#/Complaints DM code
-
-#Self destruct
 @client.command(name="logout", aliases=["killswitch"])
 @commands.has_any_role(
-    settings.config["statusRoles"]["admin"],
-    settings.config["statusRoles"]["developer"])
+    settings.config["statusRoles"]["admin"])
 async def logout(ctx):
     """kills the bot and all its processes"""
-    await ctx.message.delete()
     await ctx.send("logging out")
     exit()
-#/Self destruct
-"""
-async def monthStart():
-    while True:
-        now = datetime.today()
-        y = now.year if now.month < 12 else now.year+1
-        m = (now.month+1) if now.month < 12 else 1
-        secondsToSleep = (datetime(y, m, 1) - datetime.today()).total_seconds()
-        channel = client.get_channel(582650072672632833)
-        await asyncio.sleep(secondsToSleep)
-        await startChallenge()
-"""
-"""
-async def hourly():
-    while True:
-        await asyncio.sleep(60*60)
-        for key in banDict:
-            if banDict[key] > 0:
-                banDict[key] -= 1
-            else:
-                del banDict[key]
-"""
-
-#async def hourly():
-#    while True:
-#        await asyncio.sleep(60*60)
-#        for key in banDict:
-#            if banDict[key] > 0:
-#                banDict[key] -= 1
-#            else:
-#                del banDict[key]
-
-
-#@client.event
-#async def on_command_error(ctx, error):
-#    if isinstance(error, CommandNotFound) or isinstance(error, CheckFailure):
-#        return
-#    raise error
 
 with open ('token.txt', 'rt') as myfile:
     contents = myfile.read()
