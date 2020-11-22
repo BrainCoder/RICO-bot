@@ -1,6 +1,6 @@
 import discord
 from discord import File
-from discord.ext import commands
+from discord.ext import commands, tasks
 from discord.ext.commands import Cog
 
 from re import search
@@ -84,6 +84,7 @@ class ModCommands(commands.Cog):
     def __init__(self, client):
         self.client = client
         self._last_member = None
+        self.check_member_status.start()
 
     @commands.command(name="purge", aliases=["clear"])
     @commands.has_any_role(
@@ -433,6 +434,33 @@ class ModCommands(commands.Cog):
                 elif search(invite_regex, message.content):
                     await message.delete()
                     await logs_channel.send(f'<@{author.id}> tried to post:\n{message.content}') #This works but there is currently a conflict with manger in logs channel, this will be fixed when manager is removed
+
+    @tasks.loop(hours=settings.config["memberUpdateInterval"])
+    async def check_member_status(self):
+        make_historical_query = text(f'select id, member_activation_date from userdata')
+        results = utils.conn.execute(make_historical_query)
+        current_guild = self.client.get_guild(settings.config["serverId"])
+        for result in results:
+            user = current_guild.get_member(result[0])
+            if user is not None and \
+                result[1] != 0 and \
+                    (utils.datetime.fromtimestamp(result[1])) < utils.datetime.now() < (
+                    utils.datetime.fromtimestamp(result[1]) +
+                    utils.timedelta(hours=settings.config["memberUpdateInterval"])):
+                member_role = current_guild.get_role(settings.config["statusRoles"]["member"])
+                await user.add_roles(member_role)
+                mod_query = utils.mod_event.insert(). \
+                    values(recipient_id=user.id, event_type=8, event_time=utils.datetime.now(),
+                           issuer_id=settings.config["botId"], historical=0)
+                utils.conn.execute(mod_query)
+                user_data_query = update(utils.userdata).where(utils.userdata.c.id == user.id) \
+                    .values(member=1)
+                utils.conn.execute(user_data_query)
+                # user_data_query = update(utils.userdata).where(utils.userdata.c.id == result[0]) \
+                #     .values(member_activation_date=0)
+                # utils.conn.execute(user_data_query)
+                # Discuss idea of zeroing out instead so that anomalies don't occur but data will be lost.
+
 
 def setup(client):
     client.add_cog(ModCommands(client))

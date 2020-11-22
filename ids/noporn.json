@@ -1,6 +1,7 @@
 {
     "serverId":519330541720436736,
     "botId":749836263955103774,
+    "memberUpdateInterval":168,
     "websiteBlacklistFilePath":"website-blacklist.txt",
     "streakRoles":{
         "1":756719859802308708,
@@ -106,7 +107,6 @@
         "streaks":760427949421363230,
         "checklist":761118232161157152,
         "job-board":761759598419640341,
-        "selfmute":769386790569902140,
-        "staff-lounge":526417286219825152
+        "selfmute":769386790569902140
     }
 }
