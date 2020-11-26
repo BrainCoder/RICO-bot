@@ -1,6 +1,6 @@
 import discord
 from discord import File
-from discord.ext import commands
+from discord.ext import commands, tasks
 from discord.ext.commands import Cog
 
 from re import search
@@ -47,11 +47,44 @@ class TimeConverter(commands.Converter):
         return time
 
 
+async def remove_member_role(self, ctx, user, member_role):
+    await user.remove_roles(member_role)
+    embed = discord.Embed(color=ctx.author.color, timestamp=ctx.message.created_at)
+    embed.set_author(name="Member", icon_url=user.avatar_url)
+    embed.add_field(name=f"{user} has had their member role removed! ", value=f"Member removed by: <@{ctx.author.id}>.")
+    channel = self.client.get_channel(settings.config["channels"]["log"])
+    await channel.send(embed=embed)
+    mod_query = utils.mod_event.insert(). \
+        values(recipient_id=user.id, event_type=9, event_time=utils.datetime.now(),
+               issuer_id=ctx.author.id, historical=0)
+    utils.conn.execute(mod_query)
+    user_data_query = update(utils.userdata).where(utils.userdata.c.id == user.id) \
+        .values(member=0)
+    utils.conn.execute(user_data_query)
+
+
+async def add_member_role(self, ctx, user, member_role):
+    await user.add_roles(member_role)
+    embed = discord.Embed(color=ctx.author.color, timestamp=ctx.message.created_at)
+    embed.set_author(name="Member", icon_url=user.avatar_url)
+    embed.add_field(name=f"{user} has been given member! ", value=f"Member given by: <@{ctx.author.id}>.")
+    channel = self.client.get_channel(settings.config["channels"]["log"])
+    await channel.send(embed=embed)
+    mod_query = utils.mod_event.insert(). \
+        values(recipient_id=user.id, event_type=8, event_time=utils.datetime.now(),
+               issuer_id=ctx.author.id, historical=0)
+    utils.conn.execute(mod_query)
+    user_data_query = update(utils.userdata).where(utils.userdata.c.id == user.id) \
+        .values(member=1)
+    utils.conn.execute(user_data_query)
+
+
 class ModCommands(commands.Cog):
 
     def __init__(self, client):
         self.client = client
         self._last_member = None
+        self.check_member_status.start()
 
     @commands.command(name="purge", aliases=["clear"])
     @commands.has_any_role(
@@ -70,23 +103,11 @@ class ModCommands(commands.Cog):
         settings.config["statusRoles"]["semi-moderator"])
     async def member(self, ctx, user: discord.Member):
         await self.client.wait_until_ready()
-        channel = self.client.get_channel(settings.config["channels"]["log"])
-        userAvatarUrl = user.avatar_url
-        for discord.guild in self.client.guilds:
-            Member_role = user.guild.get_role(settings.config["statusRoles"]["member"])
-        await user.add_roles(Member_role)
-        embed = discord.Embed(color=ctx.author.color, timestamp=ctx.message.created_at)
-        embed.set_author(name="Member", icon_url=userAvatarUrl)
-        embed.add_field(name=f"{user} has been given member! ", value=f"Member given by: <@{ctx.author.id}>.")
-        await channel.send(embed=embed)
-        mod_query = utils.mod_event.insert(). \
-            values(recipient_id=user.id, event_type=8, event_time=utils.datetime.now(),
-                   issuer_id=ctx.author.id, historical=0)
-        utils.conn.execute(mod_query)
-        user_data_query = update(utils.userdata).where(utils.userdata.c.id == user.id) \
-            .values(member=1)
-        utils.conn.execute(user_data_query)
-
+        member_role = ctx.guild.get_role(settings.config["statusRoles"]["member"])
+        if member_role in user.roles:
+            await remove_member_role(self, ctx, user, member_role)
+        else:
+            await add_member_role(self, ctx, user, member_role)
 
     @commands.command(name="mute")
     @commands.has_any_role(
@@ -413,6 +434,33 @@ class ModCommands(commands.Cog):
                 elif search(invite_regex, message.content):
                     await message.delete()
                     await logs_channel.send(f'<@{author.id}> tried to post:\n{message.content}') #This works but there is currently a conflict with manger in logs channel, this will be fixed when manager is removed
+
+    @tasks.loop(hours=settings.config["memberUpdateInterval"])
+    async def check_member_status(self):
+        make_historical_query = text(f'select id, member_activation_date from userdata')
+        results = utils.conn.execute(make_historical_query)
+        current_guild = self.client.get_guild(settings.config["serverId"])
+        for result in results:
+            user = current_guild.get_member(result[0])
+            if user is not None and \
+                result[1] != 0 and \
+                    (utils.datetime.fromtimestamp(result[1])) < utils.datetime.now() < (
+                    utils.datetime.fromtimestamp(result[1]) +
+                    utils.timedelta(hours=settings.config["memberUpdateInterval"])):
+                member_role = current_guild.get_role(settings.config["statusRoles"]["member"])
+                await user.add_roles(member_role)
+                mod_query = utils.mod_event.insert(). \
+                    values(recipient_id=user.id, event_type=8, event_time=utils.datetime.now(),
+                           issuer_id=settings.config["botId"], historical=0)
+                utils.conn.execute(mod_query)
+                user_data_query = update(utils.userdata).where(utils.userdata.c.id == user.id) \
+                    .values(member=1)
+                utils.conn.execute(user_data_query)
+                # user_data_query = update(utils.userdata).where(utils.userdata.c.id == result[0]) \
+                #     .values(member_activation_date=0)
+                # utils.conn.execute(user_data_query)
+                # Discuss idea of zeroing out instead so that anomalies don't occur but data will be lost.
+
 
 def setup(client):
     client.add_cog(ModCommands(client))
