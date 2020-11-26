@@ -38,7 +38,6 @@ async def on_ready():
     print('Bot is active')
     await client.wait_until_ready()
     devlogs = client.get_channel(settings.config["channels"]["devlog"])
-    await client.change_presence(status=discord.Status.online, activity=discord.Game('DM me with complaints!'))
     await devlogs.send(f'{timestr}Bot is online')
     await devlogs.send(f'{timestr}Loaded `blacklist.txt` & `whitelist.txt` due to startup')
     await cogs_load()

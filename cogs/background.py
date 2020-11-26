@@ -1,13 +1,17 @@
 from discord.ext import commands, tasks
 
 import settings
+from itertools import cycle
 
-class SetReaction(commands.Cog):
+status = cycle(['DM me with complaints!', 'Version 1.0.0'])
+
+class background(commands.Cog):
 
     def __init__(self, client):
         self.client = client
         self._last_member = None
         self.mcount_update.start()
+        self.activity_cycle.start()
 
     @tasks.loop(minutes = 15)
     async def mcount_update(self):
@@ -17,6 +21,10 @@ class SetReaction(commands.Cog):
         channel = self.client.get_channel(settings.config["channels"]["memberscount"])
         print(f'There are now {mCount} members of this server')
         await channel.edit(name=(f'[{mCount} members]'))
+    
+    @tasks.loop(minutes=1)
+    async def activity_cycle(self):
+        await self.client.change_presence(status=discord.Status.online, activity=discord.Game(next(status)))
 
 def setup(client):
-    client.add_cog(SetReaction(client))
+    client.add_cog(background(client))
