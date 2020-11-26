@@ -3,8 +3,7 @@ from discord.ext import commands
 from discord.ext.commands import cooldown
 
 import random
-import sys
-import traceback
+import aiohttp
 import asyncio
 import re
 import settings
@@ -144,6 +143,16 @@ class Extra(commands.Cog):
             await ctx.send(f'Ur not my dad :c')
         else:
             await ctx.send(f'uwu what kinda of sandwich does daddy want =^.^=')
+
+    @commands.command(name="nm")
+    async def emergency(self, ctx):
+        """Gets an emergency link from emergency.nofap.com website."""
+        url = "https://emergency.nofap.com/director.php?cat=em&religious=false"
+        async with aiohttp.ClientSession() as cs:
+            async with cs.get(url) as response:
+                link_decoded = (await response.read()).decode()
+                await ctx.send(link_decoded)
+
 
 def setup(client):
     client.add_cog(Extra(client))

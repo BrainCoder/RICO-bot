@@ -4,12 +4,9 @@ from discord.ext.commands import cooldown
 
 from utils import idData
 
-import aiohttp
-import io
 import utils
 import settings
 import asyncio
-import sys
 from datetime import timedelta
 
 
@@ -196,19 +193,3 @@ async def removeStreakRoles(author):
         if id in settings.config["streakRoles"].values():
             await author.remove_roles(role)
             return
-
-url = "https://emergency.nofap.com/director.php?cat=em&religious=false"
-async def getEmergencyPicture():
-    async with aiohttp.ClientSession() as cs:
-        async with cs.get(url) as response:
-            #res = await r.json()  # returns dict
-            #await ctx.send(res['slideshow']['author'])
-            print(response.content)
-            result = await response.read()
-            print(response)
-    #response = requests.get(url).content
-    #img = BytesIO(response.content) #Image.open(
-            r = discord.File(io.BytesIO(result),filename="pic"+url[-4:])
-            return r
-#ioloop = asyncio.get_event_loop()
-#ioloop.run_until_complete(getEmergencyPicture())
