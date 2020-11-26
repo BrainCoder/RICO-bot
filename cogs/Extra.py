@@ -8,12 +8,11 @@ import asyncio
 import re
 import settings
 
-client=commands.Bot(command_prefix='!')
-
 time_regex = re.compile("(?:(\d{1,5})(h|s|m|d))+?")
 time_dict = {"h":3600, "s":1, "m":60, "d":86400}
 
 class TimeConverter(commands.Converter):
+
     async def convert(self, ctx, argument):
         args = argument.lower()
         matches = re.findall(time_regex, args)
@@ -27,14 +26,14 @@ class TimeConverter(commands.Converter):
                 raise commands.BadArgument("{} is not a number!".format(v))
         return time
 
+
 class Extra(commands.Cog):
 
     def __init__(self, client):
         self.client = client
         self._last_member = None
 
-    
-    @commands.command()
+    @commands.command(name='selfmute')
     @commands.has_any_role(
         settings.config["statusRoles"]["member"])
     async def selfmute(self, ctx, *, time:TimeConverter = None):
@@ -97,13 +96,12 @@ class Extra(commands.Cog):
         else:
             await ctx.send(f' **Question:** {question}\n**Answer:** {random.choice(responses)}')
             
-    @client.command(name="dosomething")
+    @commands.command(name="dosomething")
     async def dosomething(self, ctx):
         """try it and find out ;)"""
         await ctx.channel.send("*Does your mum*")
 
-    @client.command(name="userinfo", aliases=["ui"])
-    @commands.has_any_role('💎 VIP', '💎 Booster VIP', 'Moderator', 'Semi-Moderator')
+    @commands.command(name="userinfo", aliases=["ui"])
     @commands.has_any_role(
         settings.config["statusRoles"]["vip"],
         settings.config["statusRoles"]["boost-vip"],
@@ -120,7 +118,7 @@ class Extra(commands.Cog):
         embed.add_field(name="Member joined at: ", value=f"{MemberJoinedAt}.")
         await ctx.send(embed=embed)
 
-    @client.command(name="avatar", aliases=["av"])
+    @commands.command(name="avatar", aliases=["av"])
     @commands.has_any_role(
         settings.config["statusRoles"]["vip"],
         settings.config["statusRoles"]["boost-vip"],
@@ -144,7 +142,7 @@ class Extra(commands.Cog):
         else:
             await ctx.send(f'uwu what kinda of sandwich does daddy want =^.^=')
 
-    @commands.command(name="nm")
+    @commands.command(name="emergency", aliases=['m'])
     async def emergency(self, ctx):
         """Gets an emergency link from emergency.nofap.com website."""
         url = "https://emergency.nofap.com/director.php?cat=em&religious=false"

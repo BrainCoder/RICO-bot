@@ -52,7 +52,7 @@ class Help(commands.Cog):
         embed.add_field(name='Command description', value=command.help)
         await ctx.send(embed=embed)
 
-    @commands.command(name="help")
+    @commands.command(name="help", aliases=['h'])
     async def show_help(self, ctx, cmd: Optional[str]):
         """Im not explaining this, if you do not know what this command does then I cannot help you"""
         if cmd is None:

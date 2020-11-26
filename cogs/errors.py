@@ -6,8 +6,6 @@ import traceback
 import sys
 import asyncio
 
-client=commands.Bot(command_prefix='!')
-
 class ErrorHandler(commands.Cog):
 
     def __init__(self, client):

@@ -97,7 +97,7 @@ class ModCommands(commands.Cog):
             await ctx.message.delete()
             await ctx.channel.purge(limit=amount)
 
-    @commands.command(name="nmember")
+    @commands.command(name="member")
     @commands.has_any_role(
         settings.config["statusRoles"]["moderator"],
         settings.config["statusRoles"]["semi-moderator"])
@@ -109,7 +109,7 @@ class ModCommands(commands.Cog):
         else:
             await add_member_role(self, ctx, user, member_role)
 
-    @commands.command(name="mute")
+    @commands.command(name="mute", aliases=['s', 'strike'])
     @commands.has_any_role(
         settings.config["statusRoles"]["moderator"],
         settings.config["statusRoles"]["semi-moderator"])
@@ -138,7 +138,7 @@ class ModCommands(commands.Cog):
                     .values(mute=1)
             utils.conn.execute(user_data_query)
 
-    @commands.command(name="cooldown")
+    @commands.command(name="cooldown", aliases=['c'])
     @commands.has_any_role(
         settings.config["statusRoles"]["moderator"],
         settings.config["statusRoles"]["semi-moderator"])
@@ -178,7 +178,7 @@ class ModCommands(commands.Cog):
         else:
             await ctx.send(f'Please give a timer for the cooldown')
 
-    @commands.command(name="nunmute")
+    @commands.command(name="unmute")
     @commands.has_any_role(
         settings.config["statusRoles"]["moderator"],
                            settings.config["statusRoles"]["semi-moderator"])
@@ -247,7 +247,7 @@ class ModCommands(commands.Cog):
             .values(kicked=1)
         utils.conn.execute(user_data_query)
 
-    @commands.command(name='nunderage')
+    @commands.command(name='underage')
     @commands.has_any_role(
         settings.config["statusRoles"]["moderator"],
         settings.config["statusRoles"]["semi-moderator"])
@@ -311,7 +311,7 @@ class ModCommands(commands.Cog):
         else:
             await ctx.send(invarg)
 
-    @commands.command(name="nlynch")
+    @commands.command(name="lynch")
     @commands.has_any_role(
         settings.config["statusRoles"]["member"],
         settings.config["statusRoles"]["moderator"],

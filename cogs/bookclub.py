@@ -1,9 +1,6 @@
 import discord
 from discord.ext import commands
 import settings
-intents = discord.Intents.all()
-intents.members = True 
-client=commands.Bot(command_prefix='!', intients=intents)
 
 class BookClub(commands.Cog):
 
@@ -11,7 +8,7 @@ class BookClub(commands.Cog):
         self.client = client
         self._last_member = None
 
-    @commands.command(name="BC Members", pass_context=True)
+    @commands.command(name="bc_members", pass_context=True)
     @commands.has_any_role(
         settings.config["statusRoles"]["bc-facilitator"],
         settings.config["statusRoles"]["moderator"],

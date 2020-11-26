@@ -9,8 +9,6 @@ from discord.ext import commands
 import utils
 from sqlalchemy import insert, select, update
 
-client = commands.Bot(command_prefix='!')
-
 
 class DeveloperTools(commands.Cog):
 
@@ -18,7 +16,7 @@ class DeveloperTools(commands.Cog):
         self.client = client
         self._last_member = None
 
-    @client.command(name="checklist", aliases=['cl'])
+    @commands.command(name="checklist", aliases=['cl'])
     @commands.has_any_role(
         settings.config["statusRoles"]["moderator"],
         settings.config["statusRoles"]["developer"])
@@ -29,12 +27,12 @@ class DeveloperTools(commands.Cog):
         await asyncio.sleep(5)
         await message.delete()
 
-    @client.command(name="ping")
+    @commands.command(name="ping")
     async def ping(self, ctx):
         """Check the latency of the bot"""
         await ctx.send(f'pong! Latency is {self.client.latency * 1000}ms')
 
-    @client.command(name="getchannel")
+    @commands.command(name="getchannel")
     @commands.has_any_role(
         settings.config["statusRoles"]["developer"])
     async def getchannel(self, ctx, id):
@@ -53,7 +51,6 @@ class DeveloperTools(commands.Cog):
         if isinstance(error, commands.MissingRequiredArgument):
             if error.param.name == 'inp':
                 await ctx.send("You forgot to give me input to repeat!")
-
 
     @commands.command()
     @commands.has_any_role(settings.config["statusRoles"]["head-dev"],
@@ -89,7 +86,8 @@ class DeveloperTools(commands.Cog):
                                        f'{missing_members.join()}')
         await ctx.send(f'Amount of users added: {str(len(members_added))}\n'
                        f'Amount of users lost: {str(len(members_lost))}')
-    @client.command()
+
+    @commands.command(name='verifyintegrityofdb')
     @commands.has_any_role(
         settings.config["statusRoles"]["developer"])
     async def verifyintegrityofdb(self, ctx):

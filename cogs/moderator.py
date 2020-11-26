@@ -13,7 +13,7 @@ class ModeratorTools(commands.Cog):
         self.client = client
         self._last_member = None
 
-    @commands.command(name="ngetstrikes", aliases=['sr', 'report'])
+    @commands.command(name="getstrikes", aliases=['sr', 'report'])
     @commands.has_any_role(
         settings.config["statusRoles"]["moderator"],
         settings.config["statusRoles"]["semi-moderator"]
@@ -110,7 +110,7 @@ class ModeratorTools(commands.Cog):
             raw_output += "\n"
         return raw_output
 
-    @commands.command()
+    @commands.command(name="offline")
     @commands.has_any_role(
         settings.config["statusRoles"]["head-moderator"],
         settings.config["statusRoles"]["moderator"],
