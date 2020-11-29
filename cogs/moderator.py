@@ -13,7 +13,7 @@ class ModeratorTools(commands.Cog):
         self.client = client
         self._last_member = None
 
-    @commands.command(name="getstrikes", aliases=['sr', 'report'])
+    @commands.command(name="getstrikes", aliases=['sr', 'gs', 'report'])
     @commands.has_any_role(
         settings.config["statusRoles"]["moderator"],
         settings.config["statusRoles"]["semi-moderator"]
