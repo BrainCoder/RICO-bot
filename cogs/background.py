@@ -23,9 +23,9 @@ class background(commands.Cog):
         print(f'There are now {mCount} members of this server')
         await channel.edit(name=(f'[{mCount} members]'))
     
-    @tasks.loop(minutes=1)
+"""    @tasks.loop(minutes=1)
     async def activity_cycle(self):
-        await self.client.change_presence(status=discord.Status.online, activity=discord.Game(next(status)))
+        await self.client.change_presence(status=discord.Status.online, activity=discord.Game(next(status)))"""
 
 def setup(client):
     client.add_cog(background(client))
