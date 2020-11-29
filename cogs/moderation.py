@@ -413,7 +413,7 @@ class ModCommands(commands.Cog):
                 if role.id == member_role.id:
                     member = True
             if not author.bot:
-                if len((list(filter(lambda m: _check(m), self.client.cached_messages)))) >=3:
+                if len((list(filter(lambda m: _check(m), self.client.cached_messages)))) >=5:
                     await author.add_roles(muted_role)
                     embed = discord.Embed(color=author.color, timestamp=message.created_at)
                     embed.set_author(name="Mute", icon_url=userAvatarUrl)
