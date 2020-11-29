@@ -1,7 +1,6 @@
 import discord
 from discord.ext import commands
 
-import settings
 import traceback
 import sys
 import asyncio
@@ -38,6 +37,8 @@ class ErrorHandler(commands.Cog):
             message = await ctx.send(f'This command is on cooldown. Please wait {error.retry_after}s')
             await asyncio.sleep(5)
             await message.delete()
+        elif isinstance(error, commands.MissingAnyRole):
+            pass
         else:
             print('Ignoring exception in command {}:'.format(ctx.command), file=sys.stderr)
             traceback.print_exception(type(error), error, error.__traceback__, file=sys.stderr)
