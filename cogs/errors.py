@@ -3,7 +3,6 @@ from discord.ext import commands
 
 import traceback
 import sys
-import asyncio
 
 class ErrorHandler(commands.Cog):
 
@@ -34,9 +33,7 @@ class ErrorHandler(commands.Cog):
             if ctx.command.qualified_name == 'tag list':
                 await ctx.send('I could not find that member. Please try again.')
         elif isinstance(error, commands.CommandOnCooldown):
-            message = await ctx.send(f'This command is on cooldown. Please wait {error.retry_after}s')
-            await asyncio.sleep(5)
-            await message.delete()
+            await ctx.send(content=f'This command is on cooldown. Please wait {error.retry_after}s', delete_after=5)
         elif isinstance(error, commands.MissingAnyRole):
             pass
         else:
