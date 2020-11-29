@@ -16,7 +16,7 @@ class cogs(commands.Cog):
         self.client = client
         self._last_member = None
 
-    @commands.command(name="cog", aliases=["cogs", "c"])
+    @commands.command(name="cog", aliases=["cogs"])
     @commands.has_any_role(
         settings.config["statusRoles"]["developer"])
     async def cog(self, ctx, action, extension):
