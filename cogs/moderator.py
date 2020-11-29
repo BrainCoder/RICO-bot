@@ -28,6 +28,7 @@ class ModeratorTools(commands.Cog):
         The moderation action it queries against will be mutes(strikes) by default,
         but it can take the arguments of ban, kick,
         or will post all moderation actions if any other value is filled in there."""
+        channel = self.client.get_channel(settings.config["channels"]["strike-board"])
         if historical.lower() == "historical":
             historical = 1
         elif historical.lower() == "current":
@@ -82,7 +83,7 @@ class ModeratorTools(commands.Cog):
                     await ctx.send(first_half)
                     await ctx.send(last_half)
             else:
-                await ctx.send(raw_output)
+                await channel.send(raw_output)
 
     async def extract_table_from_results(self, results, table, user):
         for result in results:
