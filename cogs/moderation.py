@@ -406,7 +406,7 @@ class ModCommands(commands.Cog):
             author = message.author
             userAvatarUrl = author.avatar_url
             def _check(m):
-                return (m.author == author and len(m.mentions) and (datetime.utcnow()-m.created_at).seconds < 60)
+                return (m.author == author and len(m.mentions) and (datetime.utcnow()-m.created_at).seconds < 15)
             if type(author) is discord.User:
                 return
             for role in author.roles:

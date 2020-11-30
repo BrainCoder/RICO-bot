@@ -52,7 +52,7 @@ class DeveloperTools(commands.Cog):
             if error.param.name == 'inp':
                 await ctx.send("You forgot to give me input to repeat!")
 
-    @commands.command()
+    @commands.command(nam='verifymemberintegrity')
     @commands.has_any_role(settings.config["statusRoles"]["head-dev"],
                            settings.config["statusRoles"]["developer"])
     async def verifymemberintegrity(self, ctx):
@@ -106,9 +106,11 @@ class DeveloperTools(commands.Cog):
         await ctx.channel.send("The old amount of users was " + str(current_users) + \
                                "\nThe new amount of users is " + str(new_count))
 
-    @commands.command()
-    async def test(self, ctx):
-        pass
+    @commands.command(name="errorlog", aliases=['error'])
+    @commands.has_any_role(
+        settings.config["statusRoles"]["developer"])
+    async def errorlog(self, ctx):
+        await ctx.send(file = File('/root/.pm2/logs/NPC-error.log'))
 
 def setup(client):
     client.add_cog(DeveloperTools(client))

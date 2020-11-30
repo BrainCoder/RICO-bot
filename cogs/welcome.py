@@ -29,7 +29,8 @@ class welcome(commands.Cog):
                 query = utils.userdata.insert(). \
                     values(id=member.id,
                            member_activation_date=
-                           utils.datetime.now() + utils.timedelta(hours=settings.config["memberUpdateInterval"]))
+                           int((utils.datetime.now() +
+                                utils.timedelta(hours=settings.config["memberUpdateInterval"])).timestamp()))
                 utils.conn.execute(query)
             else:
                 await channel.send(
