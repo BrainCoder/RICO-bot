@@ -23,8 +23,8 @@ class ModeratorTools(commands.Cog):
         """NPC replacement for the !getstrikes command
         You can view a report for the most recent moderation actions on any user by just entering the command by itself.
         You can also choose either historical or current as the third argument to view acting strikes against a user.
-        Format will default to table, but if greater than 2000 characters, it will go to raw output.
-        You can also request that the format be raw, but will require prior arguments to also be filled in.
+        Format will default to raw output, but table option is avaliable
+        You can also request that the format be table, but will require prior arguments to also be filled in.
         The moderation action it queries against will be mutes(strikes) by default,
         but it can take the arguments of ban, kick,
         or will post all moderation actions if any other value is filled in there."""
