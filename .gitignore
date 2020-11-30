@@ -5,3 +5,4 @@ main.db
 ids/test.json
 .idea/*
 ecosystem.config.js
+website-blacklist.txt
