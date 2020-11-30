@@ -69,7 +69,7 @@ class ModeratorTools(commands.Cog):
             raw_output = f'For {user}:\n'
         raw_output = await self.build_raw_output(raw_output, table)
         if output_format == "table" and len(table_output) < 2000:
-            await ctx.send(table_output)
+            await channel.send(table_output)
         else:
             if len(raw_output) > 2000:
                 await ctx.send(f'Message exceeds 2,000 characters. Attempting to break into two messages.')
@@ -80,8 +80,8 @@ class ModeratorTools(commands.Cog):
                 if len(first_half) > 2000 or len(last_half) > 2000:
                     await ctx.send(f'Output is too long. Please contact a developer to see transcript.')
                 else:
-                    await ctx.send(first_half)
-                    await ctx.send(last_half)
+                    await channel.send(first_half)
+                    await channel.send(last_half)
             else:
                 await channel.send(raw_output)
 
