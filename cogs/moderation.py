@@ -316,9 +316,11 @@ class ModCommands(commands.Cog):
         settings.config["statusRoles"]["member"],
         settings.config["statusRoles"]["moderator"],
         settings.config["statusRoles"]["semi-moderator"])
-    async def nlynch(self, ctx, member: discord.Member):
+    async def nlynch(self, ctx, member: discord.Member = None):
         """A command to be used if there is no staff present, where three members can type in `!lynch` in order to mute a user"""
-        if ctx.author == member:
+        if member == None:
+            await ctx.send('please tag the user you want to lynch', delete_after=5)
+        elif ctx.author == member:
             await ctx.channel.send("You can't lynch yourself!")
             return
         query = utils.userdata.select().where(utils.userdata.c.id == member.id)
@@ -356,7 +358,7 @@ class ModCommands(commands.Cog):
                 embed.add_field(name=f"User {member} was lynched! ", value=f"lynched by: {lyncher_list}")
                 await channel.send(embed=embed)
             else:
-                await ctx.channel.send(f'lynch acknowledged')
+                await ctx.channel.send(f'lynch acknowledged', delete_after=5)
                 query = update(utils.userdata).where(utils.userdata.c.id == member.id) \
                     .values(lynch_count=current_lynches,
                             lynch_expiration_time=(utils.datetime.now() + utils.timedelta(hours=8)).timestamp())
