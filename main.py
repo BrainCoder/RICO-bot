@@ -9,7 +9,7 @@ import utils
 from streak import relapse
 from streak import update
 
-prefix = '>>'
+prefix = '!'
 
 if len(sys.argv) < 3:
     print("Need config file and database url in order to run. Example: python config.json "
