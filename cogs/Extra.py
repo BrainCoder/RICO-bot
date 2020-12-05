@@ -33,11 +33,11 @@ class Extra(commands.Cog):
         self.client = client
         self._last_member = None
 
-    @commands.command(name='selfmute')
+    """@commands.command(name='selfmute')
     @commands.has_any_role(
         settings.config["statusRoles"]["member"])
     async def selfmute(self, ctx, *, time:TimeConverter = None):
-        """Lets the user selfmute taking them out of the server"""
+        Lets the user selfmute taking them out of the server #adress this description before bringing this command back
         InSelfMute = False
         member = ctx.author
         Selfmute_Role = member.guild.get_role(settings.config["statusRoles"]["self-mute"])
@@ -63,7 +63,7 @@ class Extra(commands.Cog):
                 embed = discord.Embed(color=ctx.author.color, timestamp=ctx.message.created_at)
                 embed.set_author(name="Member", icon_url=userAvatarUrl)
                 embed.add_field(name=f'{member} selfmuted indefinitely!', value='A moderator will be required to remove the selfmute role.')
-                await logs_channel.send(embed=embed)
+                await logs_channel.send(embed=embed)"""
 
     @commands.command(name="8ball", aliases=['8b'])
     @cooldown(1, 60)
