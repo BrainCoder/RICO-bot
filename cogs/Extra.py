@@ -126,8 +126,12 @@ class Extra(commands.Cog):
         settings.config["statusRoles"]["semi-moderator"])
     async def avatar(self, ctx, *, avamember: discord.Member = None):
         """sends a link of the users avatar"""
-        userAvatarUrl = avamember.avatar_url
-        await ctx.send(f"{avamember}'s avatar is: {userAvatarUrl}")
+        if avamember == None:
+            userAvatarUrl = ctx.author.avatar_url
+            await ctx.send(f'<@{ctx.author.id}>s avatar is:\n{userAvatarUrl}')
+        else:
+            userAvatarUrl = avamember.avatar_url
+            await ctx.send(f"<@{avamember.id}>s avatar is:\n{userAvatarUrl}")
     
     @commands.command(name="gfsandwich")
     async def gfsandwich(self, ctx):
