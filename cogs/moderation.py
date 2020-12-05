@@ -117,7 +117,7 @@ class ModCommands(commands.Cog):
         """mutes the user and puts a strike against their name"""
         await self.client.wait_until_ready()
         if reason == None:
-            await ctx.channel.send('please give reason for mute')
+            await ctx.channel.send('please give reason for mute', delete_after=5)
         elif reason != None:
             channel = self.client.get_channel(settings.config["channels"]["log"])
             userAvatarUrl = user.avatar_url
@@ -182,43 +182,46 @@ class ModCommands(commands.Cog):
     @commands.has_any_role(
         settings.config["statusRoles"]["moderator"],
                            settings.config["statusRoles"]["semi-moderator"])
-    async def nunmute(self, ctx, user: discord.Member, *, time: TimeConverter = None):
+    async def nunmute(self, ctx, user: discord.Member = None, *, time: TimeConverter = None):
         """unmute the user"""
         await self.client.wait_until_ready()
-        muted = False
-        self_muted = False
-        self_mute_role = ctx.guild.get_role(settings.config["statusRoles"]["self-mute"])
-        muted_role = ctx.guild.get_role(settings.config["statusRoles"]["muted"])
-        channel = self.client.get_channel(settings.config["channels"]["log"])
-        userAvatarUrl = user.avatar_url
-        if time:
-            embed = discord.Embed(color=ctx.author.color, timestamp=ctx.message.created_at)
-            embed.set_author(name="Unmute", icon_url=userAvatarUrl)
-            embed.add_field(name=f"{user} will be unmuted in {time}s! ", value=f"Unmuted by: <@{ctx.author.id}>.")
-            await channel.send(embed=embed)
-            await asyncio.sleep(time)
-        if muted_role in user.roles:
-            await user.remove_roles(muted_role)
-            muted = True
-        if self_mute_role in user.roles:
-            await user.remove_roles(self_mute_role)
-            self_muted = True
-        if muted or self_muted:
-            embed = discord.Embed(color=ctx.author.color, timestamp=ctx.message.created_at)
-            embed.set_author(name="Unmute", icon_url=userAvatarUrl)
-            embed.add_field(name=f"{user} has been Unmuted! ", value=f"Unmuted by: <@{ctx.author.id}>.")
-            await channel.send(embed=embed)
-            if not self_muted:
-                unmute_query = utils.mod_event.insert(). \
-                    values(recipient_id=user.id, event_type=4, event_time=utils.datetime.now(),
-                           issuer_id=ctx.author.id, historical=0)
-                utils.conn.execute(unmute_query)
-                prior_mute_queries = text(f'update mod_event set historical = 1 where recipient_id = {user.id} '
-                                          f'and event_type = 3 and historical = 0')
-                utils.conn.execute(prior_mute_queries)
-                user_data_query = update(utils.userdata).where(utils.userdata.c.id == user.id) \
-                    .values(mute=0)
-                utils.conn.execute(user_data_query)
+        if user == None:
+            await ctx.send('Please tag the user you want to unmute', delete_after=5)
+        else:
+            muted = False
+            self_muted = False
+            self_mute_role = ctx.guild.get_role(settings.config["statusRoles"]["self-mute"])
+            muted_role = ctx.guild.get_role(settings.config["statusRoles"]["muted"])
+            channel = self.client.get_channel(settings.config["channels"]["log"])
+            userAvatarUrl = user.avatar_url
+            if time:
+                embed = discord.Embed(color=ctx.author.color, timestamp=ctx.message.created_at)
+                embed.set_author(name="Unmute", icon_url=userAvatarUrl)
+                embed.add_field(name=f"{user} will be unmuted in {time}s! ", value=f"Unmuted by: <@{ctx.author.id}>.")
+                await channel.send(embed=embed)
+                await asyncio.sleep(time)
+            if muted_role in user.roles:
+                await user.remove_roles(muted_role)
+                muted = True
+            if self_mute_role in user.roles:
+                await user.remove_roles(self_mute_role)
+                self_muted = True
+            if muted or self_muted:
+                embed = discord.Embed(color=ctx.author.color, timestamp=ctx.message.created_at)
+                embed.set_author(name="Unmute", icon_url=userAvatarUrl)
+                embed.add_field(name=f"{user} has been Unmuted! ", value=f"Unmuted by: <@{ctx.author.id}>.")
+                await channel.send(embed=embed)
+                if not self_muted:
+                    unmute_query = utils.mod_event.insert(). \
+                        values(recipient_id=user.id, event_type=4, event_time=utils.datetime.now(),
+                            issuer_id=ctx.author.id, historical=0)
+                    utils.conn.execute(unmute_query)
+                    prior_mute_queries = text(f'update mod_event set historical = 1 where recipient_id = {user.id} '
+                                            f'and event_type = 3 and historical = 0')
+                    utils.conn.execute(prior_mute_queries)
+                    user_data_query = update(utils.userdata).where(utils.userdata.c.id == user.id) \
+                        .values(mute=0)
+                    utils.conn.execute(user_data_query)
 
     @commands.command(name="kick")
     @commands.has_any_role(
@@ -316,9 +319,11 @@ class ModCommands(commands.Cog):
         settings.config["statusRoles"]["member"],
         settings.config["statusRoles"]["moderator"],
         settings.config["statusRoles"]["semi-moderator"])
-    async def nlynch(self, ctx, member: discord.Member):
+    async def nlynch(self, ctx, member: discord.Member = None):
         """A command to be used if there is no staff present, where three members can type in `!lynch` in order to mute a user"""
-        if ctx.author == member:
+        if member == None:
+            await ctx.send('please tag the user you want to lynch', delete_after=5)
+        elif ctx.author == member:
             await ctx.channel.send("You can't lynch yourself!")
             return
         query = utils.userdata.select().where(utils.userdata.c.id == member.id)
@@ -356,7 +361,7 @@ class ModCommands(commands.Cog):
                 embed.add_field(name=f"User {member} was lynched! ", value=f"lynched by: {lyncher_list}")
                 await channel.send(embed=embed)
             else:
-                await ctx.channel.send(f'lynch acknowledged')
+                await ctx.channel.send(f'lynch acknowledged', delete_after=5)
                 query = update(utils.userdata).where(utils.userdata.c.id == member.id) \
                     .values(lynch_count=current_lynches,
                             lynch_expiration_time=(utils.datetime.now() + utils.timedelta(hours=8)).timestamp())

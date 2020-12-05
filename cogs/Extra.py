@@ -33,11 +33,11 @@ class Extra(commands.Cog):
         self.client = client
         self._last_member = None
 
-    @commands.command(name='selfmute')
+    """@commands.command(name='selfmute')
     @commands.has_any_role(
         settings.config["statusRoles"]["member"])
     async def selfmute(self, ctx, *, time:TimeConverter = None):
-        """Lets the user selfmute taking them out of the server"""
+        Lets the user selfmute taking them out of the server #adress this description before bringing this command back
         InSelfMute = False
         member = ctx.author
         Selfmute_Role = member.guild.get_role(settings.config["statusRoles"]["self-mute"])
@@ -63,7 +63,7 @@ class Extra(commands.Cog):
                 embed = discord.Embed(color=ctx.author.color, timestamp=ctx.message.created_at)
                 embed.set_author(name="Member", icon_url=userAvatarUrl)
                 embed.add_field(name=f'{member} selfmuted indefinitely!', value='A moderator will be required to remove the selfmute role.')
-                await logs_channel.send(embed=embed)
+                await logs_channel.send(embed=embed)"""
 
     @commands.command(name="8ball", aliases=['8b'])
     @cooldown(1, 60)
@@ -108,15 +108,26 @@ class Extra(commands.Cog):
         settings.config["statusRoles"]["moderator"],
         settings.config["statusRoles"]["semi-moderator"])
     async def ui(self, ctx, *, member: discord.Member = None):
+        #this definatley can be tidied in the future
         """gives basic info on the user tagged in the arg"""
-        DateCreated = member.created_at.strftime("%A, %B %d %Y at %H:%M:%S %p")
-        MemberJoinedAt = member.joined_at.strftime("%A, %B %d %Y at %H:%M:%S %p")
-        userAvatarUrl = member.avatar_url
-        embed = discord.Embed(color=ctx.author.color, timestamp=ctx.message.created_at)
-        embed.set_author(name="UI", icon_url=userAvatarUrl)
-        embed.add_field(name='Account was created at: ', value=f"{DateCreated}.")
-        embed.add_field(name="Member joined at: ", value=f"{MemberJoinedAt}.")
-        await ctx.send(embed=embed)
+        if member == None:
+            DateCreated = ctx.author.created_at.strftime("%A, %B %d %Y at %H:%M:%S %p")
+            MemberJoinedAt = ctx.author.joined_at.strftime("%A, %B %d %Y at %H:%M:%S %p")
+            userAvatarUrl = ctx.author.avatar_url
+            embed = discord.Embed(color=ctx.author.color, timestamp=ctx.message.created_at)
+            embed.set_author(name="UI", icon_url=userAvatarUrl)
+            embed.add_field(name='Account was created at: ', value=f"{DateCreated}.")
+            embed.add_field(name="Member joined at: ", value=f"{MemberJoinedAt}.")
+            await ctx.send(embed=embed) 
+        else:
+            DateCreated = member.created_at.strftime("%A, %B %d %Y at %H:%M:%S %p")
+            MemberJoinedAt = member.joined_at.strftime("%A, %B %d %Y at %H:%M:%S %p")
+            userAvatarUrl = member.avatar_url
+            embed = discord.Embed(color=ctx.author.color, timestamp=ctx.message.created_at)
+            embed.set_author(name="UI", icon_url=userAvatarUrl)
+            embed.add_field(name='Account was created at: ', value=f"{DateCreated}.")
+            embed.add_field(name="Member joined at: ", value=f"{MemberJoinedAt}.")
+            await ctx.send(embed=embed)
 
     @commands.command(name="avatar", aliases=["av"])
     @commands.has_any_role(
@@ -126,8 +137,12 @@ class Extra(commands.Cog):
         settings.config["statusRoles"]["semi-moderator"])
     async def avatar(self, ctx, *, avamember: discord.Member = None):
         """sends a link of the users avatar"""
-        userAvatarUrl = avamember.avatar_url
-        await ctx.send(f"{avamember}'s avatar is: {userAvatarUrl}")
+        if avamember == None:
+            userAvatarUrl = ctx.author.avatar_url
+            await ctx.send(f'<@{ctx.author.id}>s avatar is:\n{userAvatarUrl}')
+        else:
+            userAvatarUrl = avamember.avatar_url
+            await ctx.send(f"<@{avamember.id}>s avatar is:\n{userAvatarUrl}")
     
     @commands.command(name="gfsandwich")
     async def gfsandwich(self, ctx):
