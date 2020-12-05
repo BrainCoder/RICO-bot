@@ -9,6 +9,8 @@ import utils
 from streak import relapse
 from streak import update
 
+prefix = '>>'
+
 if len(sys.argv) < 3:
     print("Need config file and database url in order to run. Example: python config.json "
           "mysql+pymysql://user(:password if present)@localhost/database_name")
@@ -23,7 +25,7 @@ with open (sys.argv[1], 'rt') as conf_file:
 intents = discord.Intents.all()
 intents.members = True
 intents.presences = True
-client=commands.Bot(command_prefix='!', intents=intents)
+client=commands.Bot(command_prefix=prefix, intents=intents)
 
 client.add_command(relapse)
 client.add_command(update)
@@ -38,8 +40,9 @@ async def on_ready():
     print('Bot is active')
     await client.wait_until_ready()
     devlogs = client.get_channel(settings.config["channels"]["devlog"])
-    await devlogs.send(f'{timestr}Bot is online')
-    await devlogs.send(f'{timestr}Loaded `blacklist.txt` & `whitelist.txt` due to startup')
+    if prefix == '!':
+        await devlogs.send(f'{timestr}Bot is online')
+        await devlogs.send(f'{timestr}Loaded `blacklist.txt` & `whitelist.txt` due to startup')
     await cogs_load()
 
 async def cogs_load():
@@ -47,7 +50,8 @@ async def cogs_load():
     for filename in os.listdir('./cogs'):
         if filename.endswith('.py'):
             client.load_extension(f'cogs.{filename[:-3]}')
-            await devlogs.send(f'{timestr}`{filename}` loadeded due to startup')
+            if prefix == '!':
+                await devlogs.send(f'{timestr}`{filename}` loadeded due to startup')
 
 @client.command(name="logout", aliases=["killswitch"])
 @commands.has_any_role(
