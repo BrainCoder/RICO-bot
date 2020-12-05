@@ -108,15 +108,26 @@ class Extra(commands.Cog):
         settings.config["statusRoles"]["moderator"],
         settings.config["statusRoles"]["semi-moderator"])
     async def ui(self, ctx, *, member: discord.Member = None):
+        #this definatley can be tidied in the future
         """gives basic info on the user tagged in the arg"""
-        DateCreated = member.created_at.strftime("%A, %B %d %Y at %H:%M:%S %p")
-        MemberJoinedAt = member.joined_at.strftime("%A, %B %d %Y at %H:%M:%S %p")
-        userAvatarUrl = member.avatar_url
-        embed = discord.Embed(color=ctx.author.color, timestamp=ctx.message.created_at)
-        embed.set_author(name="UI", icon_url=userAvatarUrl)
-        embed.add_field(name='Account was created at: ', value=f"{DateCreated}.")
-        embed.add_field(name="Member joined at: ", value=f"{MemberJoinedAt}.")
-        await ctx.send(embed=embed)
+        if member == None:
+            DateCreated = ctx.author.created_at.strftime("%A, %B %d %Y at %H:%M:%S %p")
+            MemberJoinedAt = ctx.author.joined_at.strftime("%A, %B %d %Y at %H:%M:%S %p")
+            userAvatarUrl = ctx.author.avatar_url
+            embed = discord.Embed(color=ctx.author.color, timestamp=ctx.message.created_at)
+            embed.set_author(name="UI", icon_url=userAvatarUrl)
+            embed.add_field(name='Account was created at: ', value=f"{DateCreated}.")
+            embed.add_field(name="Member joined at: ", value=f"{MemberJoinedAt}.")
+            await ctx.send(embed=embed) 
+        else:
+            DateCreated = member.created_at.strftime("%A, %B %d %Y at %H:%M:%S %p")
+            MemberJoinedAt = member.joined_at.strftime("%A, %B %d %Y at %H:%M:%S %p")
+            userAvatarUrl = member.avatar_url
+            embed = discord.Embed(color=ctx.author.color, timestamp=ctx.message.created_at)
+            embed.set_author(name="UI", icon_url=userAvatarUrl)
+            embed.add_field(name='Account was created at: ', value=f"{DateCreated}.")
+            embed.add_field(name="Member joined at: ", value=f"{MemberJoinedAt}.")
+            await ctx.send(embed=embed)
 
     @commands.command(name="avatar", aliases=["av"])
     @commands.has_any_role(
