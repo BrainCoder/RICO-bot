@@ -4,7 +4,7 @@ from discord.ext import commands, tasks
 import settings
 from itertools import cycle
 
-status = cycle(['DM me with complaints!', 'Version 1.0.4'])
+status = cycle(['DM me with complaints!', 'Version 1.1.0'])
 
 class background(commands.Cog):
 

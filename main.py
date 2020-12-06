@@ -61,6 +61,17 @@ async def logout(ctx):
     await ctx.send("logging out")
     exit()
 
+@client.command(name="creset")
+@commands.has_any_role(
+    settings.config["statusRoles"]["developer"])
+async def creset(ctx):
+    devlogs = client.get_channel(settings.config["channels"]["devlog"])
+    emoji = '✅'
+    log = f'{timestr}`cogs` loaded manually using !creset command'
+    await ctx.message.add_reaction(emoji)
+    if prefix == '!':
+        await devlogs.send(log)
+
 with open ('token.txt', 'rt') as myfile:
     contents = myfile.read()
     client.run(f'{contents}')

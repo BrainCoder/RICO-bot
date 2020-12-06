@@ -24,17 +24,18 @@ class cogs(commands.Cog):
         devlogs = self.client.get_channel(settings.config["channels"]["devlog"])
         emoji = '✅'
         log = f'{timestr}`{extension}` {action}ed manually'
-        if extension == 'cogs':
-            emoji = '❌'
-            await ctx.message.add_reaction(emoji)
-        elif action == 'load':
+        if action == 'load':
             self.client.load_extension(f'cogs.{extension}')
             await ctx.message.add_reaction(emoji)
             await devlogs.send(log)
         elif action == 'unload':
-            self.client.unload_extension(f'cogs.{extension}')
-            await ctx.message.add_reaction(emoji)
-            await devlogs.send(log)
+            if extension == 'cogs':
+                emoji = '❌'
+                await ctx.message.add_reaction(emoji)
+            else:
+                self.client.unload_extension(f'cogs.{extension}')
+                await ctx.message.add_reaction(emoji)
+                await devlogs.send(log)
         elif action == 'reload':
             self.client.unload_extension(f'cogs.{extension}')
             self.client.load_extension(f'cogs.{extension}')
@@ -44,6 +45,8 @@ class cogs(commands.Cog):
     async def cog_handler(self, ctx, error):
         emoji = '❌'
         if isinstance(error, commands.ExtensionNotLoaded):
+            await ctx.message.add_reaction(emoji)
+        elif isinstance(error, commands.CommandInvokeError):
             await ctx.message.add_reaction(emoji)
         else:
             print('Ignoring exception in command {}:'.format(ctx.command), file=sys.stderr)
