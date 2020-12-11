@@ -1,9 +1,6 @@
 import discord
 from discord.ext import commands
 import settings
-intents = discord.Intents.all()
-intents.members = True 
-client=commands.Bot(command_prefix='!', intients=intents)
 
 class MonthlyChallenge(commands.Cog):
 
@@ -11,13 +8,31 @@ class MonthlyChallenge(commands.Cog):
         self.client = client
         self._last_member = None
 
-    #Events
-    #@commands.Cog.listener()
+    @commands.command(name="participation", pass_context=True)
+    async def participation_amount(self, ctx):
+        """sends the current number of users with the M-Challenge participant role"""
+        #add make it so it sends how many people are in the yearly challenge too
+        guild = ctx.guild
+        userAvatarUrl = ctx.author.avatar_url
+        mrole = guild.get_role(settings.config["statusRoles"]["monthly-challenge-participant"])
+        yrole = guild.get_role(settings.config["statusRoles"]["yearly-challenge-participant"])
+        mpartcipants = [m for m in guild.members if mrole in m.roles]
+        ypartcipants = [m for m in guild.members if yrole in m.roles]
+        mno = len(mpartcipants)
+        yno = len(ypartcipants)
+        print(f'{mno}')
+        print(f'{yno}')
+        embed = discord.Embed(color=ctx.author.color, timestamp=ctx.message.created_at)
+        embed.set_author(name="Challenge statistics", icon_url=userAvatarUrl)
+        embed.add_field(name=f"Participation", value=f"\nMonthly Challenge Memebers left: {mno}\n Yearly Challenge Members left: {yno}")
+        await ctx.send(embed=embed)
 
-    @commands.command(name="startchallenge", pass_context=True)
+    #Monthly Challenge
+
+    @commands.command(name="mstartchallenge", pass_context=True)
     @commands.has_any_role(
         settings.config["statusRoles"]["developer"])
-    async def startChallenge(self, ctx):
+    async def mstartChallenge(self, ctx):
         """starts that months monthly challenge"""
         newParticipants = []
         print('Starting new month now.')
@@ -35,17 +50,16 @@ class MonthlyChallenge(commands.Cog):
         await ctx.send(f"Challenge participants {len(newParticipants)}")
         print(len(newParticipants))
 
-    @commands.command(name="endchallenge", pass_context=True)
+    @commands.command(name="mendchallenge", pass_context=True)
     @commands.has_any_role(
         settings.config["statusRoles"]["developer"])
-    async def endChallenge(self, ctx):
+    async def mendChallenge(self, ctx):
         """ends that monthly challenge"""
         newParticipants = []
         print('Ending challenge now.')
         for discord.guild in self.client.guilds:
             participationrole = discord.guild.get_role(settings.config["statusRoles"]["monthly-challenge-participant"])  # monthly-challenge-participant
             winnerrole = discord.guild.get_role(settings.config["statusRoles"]["monthly-challenge-winner"])  # Challenge Winner
-            nnn2020 = discord.guild.get_role(settings.config["statusRoles"]["nnn2020"])  # Challenge Winner
             members = await discord.guild.fetch_members(limit=None).flatten()
             for member in members:
                 for role in member.roles:
@@ -53,42 +67,26 @@ class MonthlyChallenge(commands.Cog):
                         self.client.loop.create_task(member.remove_roles(participationrole))
                         newParticipants.append(member)
                         self.client.loop.create_task(member.add_roles(winnerrole))
-                        self.client.loop.create_task(member.add_roles(nnn2020))
                         break
         await ctx.send(f"Challenge Winners {len(newParticipants)}")
         print(len(newParticipants))
 
-    @commands.command(name="restart challenge", pass_context=True)
+    #Yearly challenge
+
+    @commands.command(name="ystartchallenge", pass_context=True)
     @commands.has_any_role(
         settings.config["statusRoles"]["developer"])
-    async def restartchallenge(self, ctx):
-        """restarts the monthly challenge"""
-        newParticipants = []
-        print('Ending challenge now.')
-        for discord.guild in self.client.guilds:
-            participationrole = discord.guild.get_role(settings.config["statusRoles"]["monthly-challenge-participant"])  # monthly-challenge-participant
-            winnerrole = discord.guild.get_role(settings.config["statusRoles"]["monthly-challenge-winner"])  # Challenge Winner
-            nnn2020 = discord.guild.get_role(settings.config["statusRoles"]["nnn2020"])  # Challenge Winner
-            members = await discord.guild.fetch_members(limit=None).flatten()
-            for member in members:
-                for role in member.roles:
-                    if role.id == settings.config["statusRoles"]["monthly-challenge-participant"]:  # monthly-challenge-participant
-                        self.client.loop.create_task(member.remove_roles(participationrole))
-                        newParticipants.append(member)
-                        self.client.loop.create_task(member.add_roles(winnerrole))
-                        self.client.loop.create_task(member.add_roles(nnn2020))
-                        break
-        await ctx.send(f"Challenge Winners {len(newParticipants)}")
-        print(len(newParticipants))
+    async def ystartChallenge(self, ctx):
+        """starts that months monthly challenge"""
         newParticipants = []
         print('Starting new month now.')
         for discord.guild in self.client.guilds:
-            signupRole = discord.guild.get_role(settings.config["otherRoles"]["monthly-challenge"])  # M-Challenge-Signup
-            participationRole = discord.guild.get_role(settings.config["statusRoles"]["monthly-challenge-participant"])  # monthly-challenge-participant
+            signupRole = discord.guild.get_role(settings.config["otherRoles"]["yearly-challenge"])  # M-Challenge-Signup
+            participationRole = discord.guild.get_role(settings.config["statusRoles"]["yearly-challenge-participant"])  # monthly-challenge-participant
             members = await discord.guild.fetch_members(limit=None).flatten()
             for member in members:
                 for role in member.roles:
-                    if role.id == settings.config["otherRoles"]["monthly-challenge"]:  # M-Challenge-Signup
+                    if role.id == settings.config["otherRoles"]["yearly-challenge"]:  # M-Challenge-Signup
                         self.client.loop.create_task(member.remove_roles(signupRole))
                         newParticipants.append(member)
                         self.client.loop.create_task(member.add_roles(participationRole))
@@ -96,16 +94,27 @@ class MonthlyChallenge(commands.Cog):
         await ctx.send(f"Challenge participants {len(newParticipants)}")
         print(len(newParticipants))
 
+    @commands.command(name="yendchallenge", pass_context=True)
+    @commands.has_any_role(
+        settings.config["statusRoles"]["developer"])
+    async def yendChallenge(self, ctx):
+        """ends that monthly challenge"""
+        newParticipants = []
+        print('Ending challenge now.')
+        for discord.guild in self.client.guilds:
+            participationrole = discord.guild.get_role(settings.config["statusRoles"]["yearly-challenge-participant"])  # monthly-challenge-participant
+            winnerrole = discord.guild.get_role(settings.config["statusRoles"]["2021-challenge-winner"])  # Challenge Winner
+            members = await discord.guild.fetch_members(limit=None).flatten()
+            for member in members:
+                for role in member.roles:
+                    if role.id == settings.config["statusRoles"]["yearly-challenge-participant"]:  # monthly-challenge-participant
+                        self.client.loop.create_task(member.remove_roles(participationrole))
+                        newParticipants.append(member)
+                        self.client.loop.create_task(member.add_roles(winnerrole))
+                        break
+        await ctx.send(f"Challenge Winners {len(newParticipants)}")
+        print(len(newParticipants))
 
-    @commands.command(name="participation", pass_context=True)
-    async def participation_amount(self, ctx):
-        """sends the current number of users with the M-Challenge participant role"""
-        guild = ctx.guild
-        role = guild.get_role(settings.config["statusRoles"]["monthly-challenge-participant"]) # monthly-challenge-participant
-        partcipants = [m for m in guild.members if role in m.roles]
-        no = len(partcipants)
-        print(f'{no}')
-        await ctx.send(f'Monthly Challenge members left: {no}')
 
 def setup(client):
     client.add_cog(MonthlyChallenge(client))

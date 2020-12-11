@@ -7,14 +7,9 @@ from utils import idData
 import utils
 import settings
 import asyncio
+import traceback
+import sys
 from datetime import timedelta
-
-
-
-intents = discord.Intents.all()
-intents.members = True
-intents.presences = True
-client=commands.Bot(command_prefix='!', intents=intents)
 
 def getStreakString(total_streak_length):
     days, remainder = divmod(total_streak_length, 60*60*24)
@@ -51,6 +46,17 @@ async def relapse(ctx, *args):
             channel = guild.get_channel(settings.config["channels"]["monthly-challenge"])
             print(f'{channel}')
             await channel.send(f'Monthly Challenge members left: {no}')
+    for role in ctx.author.roles:
+        if role.id == settings.config["statusRoles"]["yearly-challenge-participant"]:
+            guild = ctx.guild
+            role = guild.get_role(settings.config["statusRoles"]["yearly-challenge-participant"])
+            await ctx.author.remove_roles(role)
+            partcipants = [m for m in guild.members if role in m.roles]
+            no = len(partcipants)
+            print(f'{no}')
+            channel = guild.get_channel(settings.config["channels"]["yearly-challenge"])
+            print(f'{channel}')
+            await channel.send(f'Monthly Challenge members left: {no}')    
     else:
         maxDays = 365 * 10
         n_days = 0
@@ -127,6 +133,9 @@ async def relapse(ctx, *args):
 async def relapse_handler(ctx, error):
     if isinstance(error, commands.CheckFailure):
         await ctx.send('That command cannot be used in this channel')
+    else:
+        print('Ignoring exception in command {}:'.format(ctx.command), file=sys.stderr)
+        traceback.print_exception(type(error), error, error.__traceback__, file=sys.stderr)
 
 
 @commands.command(name="update")
@@ -162,6 +171,9 @@ async def update(ctx):
 async def update_handler(ctx, error):
     if isinstance(error, commands.CheckFailure):
         await ctx.send('That command cannot be used in this channel')
+    else:
+        print('Ignoring exception in command {}:'.format(ctx.command), file=sys.stderr)
+        traceback.print_exception(type(error), error, error.__traceback__, file=sys.stderr)
 
 def getOwnedStreakRole(member):
     for role in idData[member.guild.id]['streakRoles']:

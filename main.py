@@ -46,12 +46,14 @@ async def on_ready():
     await cogs_load()
 
 async def cogs_load():
-    devlogs = client.get_channel(settings.config["channels"]["devlog"])
-    for filename in os.listdir('./cogs'):
-        if filename.endswith('.py'):
-            client.load_extension(f'cogs.{filename[:-3]}')
-            if prefix == '!':
+    if prefix == '!':
+        devlogs = client.get_channel(settings.config["channels"]["devlog"])
+        for filename in os.listdir('./cogs'):
+            if filename.endswith('.py'):
+                client.load_extension(f'cogs.{filename[:-3]}')
                 await devlogs.send(f'{timestr}`{filename}` loadeded due to startup')
+    else:
+        client.load_extension(f'cogs.cogs')
 
 @client.command(name="logout", aliases=["killswitch"])
 @commands.has_any_role(
@@ -68,6 +70,7 @@ async def creset(ctx):
     devlogs = client.get_channel(settings.config["channels"]["devlog"])
     emoji = '✅'
     log = f'{timestr}`cogs` loaded manually using !creset command'
+    client.load_extension(f'cogs.cogs')
     await ctx.message.add_reaction(emoji)
     if prefix == '!':
         await devlogs.send(log)
