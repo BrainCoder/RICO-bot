@@ -73,6 +73,14 @@ class MonthlyChallenge(commands.Cog):
 
     #Yearly challenge
 
+    @commands.command(name="yearlychallenge")
+    async def yearlychallenge(self, ctx):
+        """gives the user the yearly challenge role"""
+        signup_role = ctx.guild.get_role(settings.config["otherRoles"]["yearly-challenge"])
+        emoji = '✅'
+        await ctx.author.add_roles(signup_role)
+        await ctx.message.add_reaction(emoji)
+
     @commands.command(name="ystartchallenge", pass_context=True)
     @commands.has_any_role(
         settings.config["statusRoles"]["developer"])
