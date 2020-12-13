@@ -24,10 +24,12 @@ class cogs(commands.Cog):
         devlogs = self.client.get_channel(settings.config["channels"]["devlog"])
         emoji = '✅'
         log = f'{timestr}`{extension}` {action}ed manually'
+        prefix = settings.config["prefix"]
         if action == 'load':
             self.client.load_extension(f'cogs.{extension}')
             await ctx.message.add_reaction(emoji)
-            await devlogs.send(log)
+            if prefix == "!":
+                await devlogs.send(log)
         elif action == 'unload':
             if extension == 'cogs':
                 emoji = '❌'
@@ -35,12 +37,14 @@ class cogs(commands.Cog):
             else:
                 self.client.unload_extension(f'cogs.{extension}')
                 await ctx.message.add_reaction(emoji)
-                await devlogs.send(log)
+                if prefix == "!":
+                    await devlogs.send(log)
         elif action == 'reload':
             self.client.unload_extension(f'cogs.{extension}')
             self.client.load_extension(f'cogs.{extension}')
             await ctx.message.add_reaction(emoji)
-            await devlogs.send(log)
+            if prefix == "!":
+                await devlogs.send(log)
     @cog.error
     async def cog_handler(self, ctx, error):
         emoji = '❌'

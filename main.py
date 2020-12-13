@@ -9,8 +9,6 @@ import utils
 from streak import relapse
 from streak import update
 
-prefix = '!'
-
 if len(sys.argv) < 3:
     print("Need config file and database url in order to run. Example: python config.json "
           "mysql+pymysql://user(:password if present)@localhost/database_name")
@@ -21,6 +19,8 @@ with open (sys.argv[1], 'rt') as conf_file:
     settings.config = utils.json.load(conf_file)
     settings.config["databaseUrl"] = sys.argv[2]
     utils.init()
+
+prefix = settings.config["prefix"]
 
 intents = discord.Intents.all()
 intents.members = True
