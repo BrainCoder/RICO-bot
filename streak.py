@@ -133,6 +133,8 @@ async def relapse(ctx, *args):
 async def relapse_handler(ctx, error):
     if isinstance(error, commands.CheckFailure):
         await ctx.send('That command cannot be used in this channel')
+    elif isinstance(error, commands.CommandOnCooldown):
+        await ctx.send(content=f'This command is on cooldown. Please wait {error.retry_after}s', delete_after=5)   
     else:
         print('Ignoring exception in command {}:'.format(ctx.command), file=sys.stderr)
         traceback.print_exception(type(error), error, error.__traceback__, file=sys.stderr)
@@ -171,6 +173,8 @@ async def update(ctx):
 async def update_handler(ctx, error):
     if isinstance(error, commands.CheckFailure):
         await ctx.send('That command cannot be used in this channel')
+    elif isinstance(error, commands.CommandOnCooldown):
+        await ctx.send(content=f'This command is on cooldown. Please wait {error.retry_after}s', delete_after=5)        
     else:
         print('Ignoring exception in command {}:'.format(ctx.command), file=sys.stderr)
         traceback.print_exception(type(error), error, error.__traceback__, file=sys.stderr)

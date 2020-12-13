@@ -36,6 +36,10 @@ class ErrorHandler(commands.Cog):
             await ctx.send(content=f'This command is on cooldown. Please wait {error.retry_after}s', delete_after=5)
         elif isinstance(error, commands.MissingAnyRole):
             pass
+        elif isinstance(error, discord.Forbidden):
+           pass
+        elif isinstance(error, discord.NotFound):
+            pass
         else:
             print('Ignoring exception in command {}:'.format(ctx.command), file=sys.stderr)
             traceback.print_exception(type(error), error, error.__traceback__, file=sys.stderr)
