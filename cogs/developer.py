@@ -4,29 +4,42 @@ import traceback
 import sys
 import asyncio
 import os
+import gitlab
+import re
 
 from discord import File
 from discord.ext import commands
 import utils
 from sqlalchemy import insert, select, update
-
+from re import search
 
 class DeveloperTools(commands.Cog):
 
     def __init__(self, client):
         self.client = client
         self._last_member = None
+        self.url = 'https://gitlab.com/'
+        self.authkey = 'X_Jys7DsDuQFyHZy2sQe'
+        self.project_name = 'HellHound0066/noporn-companion'
+        self.project = None
+        server = gitlab.Gitlab(self.url, self.authkey, api_version=4, ssl_verify=True)
+        self.project = server.projects.get(self.project_name)
 
     @commands.command(name="checklist", aliases=['cl'])
     @commands.has_any_role(
         settings.config["statusRoles"]["moderator"],
         settings.config["statusRoles"]["developer"])
-    async def cl(self, ctx, *, message):
+    async def cl(self, ctx, *, raw):
         """Add the message to the dev team job-board"""
-        channel = self.client.get_channel(settings.config["channels"]["job-board"])
-        await channel.send(f"<@{ctx.author.id}>: \n{message}")
-        await asyncio.sleep(5)
-        await message.delete()
+        rawregex = r"[a-zA-Z0-9] - [a-zA-Z0-9]"
+        if search(rawregex, raw):
+            pattern = re.compile(" - ")
+            broken = pattern.split(raw)
+            self.project.issues.create({'title': f'{broken[0]}', 'description': f'{ broken[1]}\n\nIssue created by: {ctx.message.author.name}'})
+            emoji = '✅'
+            await ctx.message.add_reaction(emoji)
+        else:
+            await ctx.send('Please enter your job in the following format\n```!cl {job title} - {job description}```')
 
     @commands.command(name="ping")
     async def ping(self, ctx):
