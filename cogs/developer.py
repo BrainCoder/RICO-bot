@@ -3,6 +3,7 @@ import settings
 import traceback
 import sys
 import asyncio
+import os
 
 from discord import File
 from discord.ext import commands
@@ -107,11 +108,19 @@ class DeveloperTools(commands.Cog):
         else:
             await ctx.send('please specify which verification you want carry out, for more information on how the command works type in `!help verifyintegrity`')    
 
-    @commands.command(name="errorlog", aliases=['error'])
+    @commands.command(name='error')
     @commands.has_any_role(
         settings.config["statusRoles"]["developer"])
-    async def errorlog(self, ctx):
-        await ctx.send(file = File('/root/.pm2/logs/NPC-error.log'))
+    async def errorlog(self, ctx, action=None):
+        emoji = '✅'
+        if action == None:
+            await ctx.send(file = File('/root/.pm2/logs/NPC-error.log'))
+        elif action == 'flush':
+            os.flush()
+            await ctx.message.add_reaction(emoji)
+        elif action == 'delete':
+            os.del_bkup()
+            await ctx.message.add_reaction(emoji)
 
 def setup(client):
     client.add_cog(DeveloperTools(client))
