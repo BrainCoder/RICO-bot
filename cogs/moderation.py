@@ -115,28 +115,51 @@ class ModCommands(commands.Cog):
         settings.config["statusRoles"]["semi-moderator"])
     async def mute(self, ctx, user: discord.Member, *, reason=None):
         """mutes the user and puts a strike against their name"""
-        await self.client.wait_until_ready()
-        if reason == None:
-            await ctx.channel.send('please give reason for mute', delete_after=5)
-        elif reason != None:
+        muted = False
+        Mute_role = ctx.guild.get_role(settings.config["statusRoles"]["muted"])
+        for role in user.roles:
+            if role.id == Mute_role.id:
+                muted = True
+        if muted:
+            await self.client.wait_until_ready()
             channel = self.client.get_channel(settings.config["channels"]["log"])
             userAvatarUrl = user.avatar_url
-            for discord.guild in self.client.guilds:
-                Mute_role = user.guild.get_role(settings.config["statusRoles"]["muted"])
             #await user.send(
             #    f"Muted for '{reason}' by <@{ctx.author.id}>\nTo resolve this mute please communicate with the memeber of staff who muted you")
-            await user.add_roles(Mute_role)
+            double_role = ctx.guild.get_role(settings.config["statusRoles"]["double-muted"])
+            await user.add_roles(double_role)
             embed = discord.Embed(color=ctx.author.color, timestamp=ctx.message.created_at)
-            embed.set_author(name="Mute", icon_url=userAvatarUrl)
-            embed.add_field(name=f"{user} has been Muted! ", value=f"**for:** {reason} Muted by: <@{ctx.author.id}>.")
+            embed.set_author(name="DoubleMute", icon_url=userAvatarUrl)
+            embed.add_field(name=f"{user} has been Double Muted! ", value=f"Muted by: <@{ctx.author.id}>.")
             await channel.send(embed=embed)
             mod_query = utils.mod_event.insert(). \
-                values(recipient_id=user.id, event_type=3, event_time=utils.datetime.now(), reason=reason,
-                       issuer_id=ctx.author.id, historical=0)
+                values(recipient_id=user.id, event_type=10, event_time=utils.datetime.now(), reason=reason,
+                    issuer_id=ctx.author.id, historical=0)
             utils.conn.execute(mod_query)
             user_data_query = update(utils.userdata).where(utils.userdata.c.id == user.id) \
-                    .values(mute=1)
+                    .values(double_mute=1)
             utils.conn.execute(user_data_query)
+        else:
+            await self.client.wait_until_ready()
+            if reason == None:
+                await ctx.channel.send('please give reason for mute', delete_after=5)
+            elif reason != None:
+                channel = self.client.get_channel(settings.config["channels"]["log"])
+                userAvatarUrl = user.avatar_url
+                #await user.send(
+                #    f"Muted for '{reason}' by <@{ctx.author.id}>\nTo resolve this mute please communicate with the memeber of staff who muted you")
+                await user.add_roles(Mute_role)
+                embed = discord.Embed(color=ctx.author.color, timestamp=ctx.message.created_at)
+                embed.set_author(name="Mute", icon_url=userAvatarUrl)
+                embed.add_field(name=f"{user} has been Muted! ", value=f"**for:** {reason} Muted by: <@{ctx.author.id}>.")
+                await channel.send(embed=embed)
+                mod_query = utils.mod_event.insert(). \
+                    values(recipient_id=user.id, event_type=3, event_time=utils.datetime.now(), reason=reason,
+                        issuer_id=ctx.author.id, historical=0)
+                utils.conn.execute(mod_query)
+                user_data_query = update(utils.userdata).where(utils.userdata.c.id == user.id) \
+                        .values(mute=1)
+                utils.conn.execute(user_data_query)
 
     @commands.command(name="cooldown", aliases=['c'])
     @commands.has_any_role(
@@ -190,8 +213,10 @@ class ModCommands(commands.Cog):
         else:
             muted = False
             self_muted = False
+            double = False
             self_mute_role = ctx.guild.get_role(settings.config["statusRoles"]["self-mute"])
             muted_role = ctx.guild.get_role(settings.config["statusRoles"]["muted"])
+            double_role = ctx.guild.get_role(settings.config["statusRoles"]["double-muted"])
             channel = self.client.get_channel(settings.config["channels"]["log"])
             userAvatarUrl = user.avatar_url
             if time:
@@ -201,27 +226,43 @@ class ModCommands(commands.Cog):
                 await channel.send(embed=embed)
                 await asyncio.sleep(time)
             if muted_role in user.roles:
-                await user.remove_roles(muted_role)
-                muted = True
+                if double_role not in user.roles:
+                    await user.remove_roles(muted_role)
+                    muted = True
             if self_mute_role in user.roles:
                 await user.remove_roles(self_mute_role)
                 self_muted = True
-            if muted or self_muted:
+            if double_role in user.roles:
+                await user.remove_roles(double_role)
+                double = True
+            if muted or self_muted or double:
                 embed = discord.Embed(color=ctx.author.color, timestamp=ctx.message.created_at)
                 embed.set_author(name="Unmute", icon_url=userAvatarUrl)
                 embed.add_field(name=f"{user} has been Unmuted! ", value=f"Unmuted by: <@{ctx.author.id}>.")
                 await channel.send(embed=embed)
                 if not self_muted:
-                    unmute_query = utils.mod_event.insert(). \
-                        values(recipient_id=user.id, event_type=4, event_time=utils.datetime.now(),
-                            issuer_id=ctx.author.id, historical=0)
-                    utils.conn.execute(unmute_query)
-                    prior_mute_queries = text(f'update mod_event set historical = 1 where recipient_id = {user.id} '
-                                            f'and event_type = 3 and historical = 0')
-                    utils.conn.execute(prior_mute_queries)
-                    user_data_query = update(utils.userdata).where(utils.userdata.c.id == user.id) \
-                        .values(mute=0)
-                    utils.conn.execute(user_data_query)
+                    if muted and not double:
+                        unmute_query = utils.mod_event.insert(). \
+                            values(recipient_id=user.id, event_type=4, event_time=utils.datetime.now(),
+                                issuer_id=ctx.author.id, historical=0)
+                        utils.conn.execute(unmute_query)
+                        prior_mute_queries = text(f'update mod_event set historical = 1 where recipient_id = {user.id} '
+                                                f'and event_type = 3 and historical = 0')
+                        utils.conn.execute(prior_mute_queries)
+                        user_data_query = update(utils.userdata).where(utils.userdata.c.id == user.id) \
+                            .values(mute=0)
+                        utils.conn.execute(user_data_query)
+                    else:
+                        unmute_query = utils.mod_event.insert(). \
+                            values(recipient_id=user.id, event_type=4, event_time=utils.datetime.now(),
+                                issuer_id=ctx.author.id, historical=0)
+                        utils.conn.execute(unmute_query)
+                        prior_mute_queries = text(f'update mod_event set historical = 1 where recipient_id = {user.id} '
+                                                f'and event_type = 10 and historical = 0')
+                        utils.conn.execute(prior_mute_queries)
+                        user_data_query = update(utils.userdata).where(utils.userdata.c.id == user.id) \
+                            .values(double_mute=0)
+                        utils.conn.execute(user_data_query)  
 
     @commands.command(name="kick")
     @commands.has_any_role(
