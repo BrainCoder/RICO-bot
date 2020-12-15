@@ -389,82 +389,86 @@ class ModCommands(commands.Cog):
 
     @Cog.listener()
     async def on_message(self, message):
+        prefix = settings.config["prefix"]
         bot_id = settings.config["botId"]
-        complaints_channel = self.client.get_channel(settings.config["channels"]["complaints"])
-        if message.guild is None:
-            if message.author.id != bot_id:
-                await complaints_channel.send(f"<@{message.author.id}> said: {message.content}")
-        else:
-            with open(settings.config["websiteBlacklistFilePath"]) as blocked_file:
-                for website in blocked_file:
-                    website = website.replace("\n", "")
-                    if website in message.content:
+        if prefix == "!":
+            complaints_channel = self.client.get_channel(settings.config["channels"]["complaints"])
+            if message.guild is None:
+                if message.author.id != bot_id:
+                    await complaints_channel.send(f"<@{message.author.id}> said: {message.content}")
+            else:
+                with open(settings.config["websiteBlacklistFilePath"]) as blocked_file:
+                    for website in blocked_file:
+                        website = website.replace("\n", "")
+                        if website in message.content:
+                            await message.delete()
+                            staff_chat = self.client.get_channel(settings.config["channels"]["staff-lounge"])
+                            await staff_chat.send(f'{message.author.name} tried to post a link from the blacklist.')
+                            break
+                member = False
+                #I would like to add a staff check to allow staff memebers to post invite links however i dont know how to do this, this is a job for the future
+                member_role = message.guild.get_role(settings.config["statusRoles"]["member"])
+                muted_role = message.guild.get_role(settings.config["statusRoles"]["muted"])
+                logs_channel = message.guild.get_channel(settings.config["channels"]["log"])
+                author = message.author
+                userAvatarUrl = author.avatar_url
+                def _check(m):
+                    return (m.author == author and len(m.mentions) and (datetime.utcnow()-m.created_at).seconds < 15)
+                if type(author) is discord.User:
+                    return
+                for role in author.roles:
+                    if role.id == member_role.id:
+                        member = True
+                if not author.bot:
+                    if len((list(filter(lambda m: _check(m), self.client.cached_messages)))) >=5:
+                        await author.add_roles(muted_role)
+                        embed = discord.Embed(color=author.color, timestamp=message.created_at)
+                        embed.set_author(name="Mute", icon_url=userAvatarUrl)
+                        embed.add_field(name=f"{author} has been Muted! ", value=f"muted for mention spamming")
+                        await logs_channel.send(embed=embed)
+                        reason = 'auto muted for spam pinging'
+                        mod_query = utils.mod_event.insert(). \
+                            values(recipient_id=author.id, event_type=3, event_time=utils.datetime.now(), reason=reason,
+                                issuer_id=bot_id, historical=0)
+                        utils.conn.execute(mod_query)
+                        user_data_query = update(utils.userdata).where(utils.userdata.c.id == author.id) \
+                                .values(mute=1)
+                        utils.conn.execute(user_data_query)
+                    if profanity.contains_profanity(message.content):
                         await message.delete()
-                        staff_chat = self.client.get_channel(settings.config["channels"]["staff-lounge"])
-                        await staff_chat.send(f'{message.author.name} tried to post a link from the blacklist.')
-                        break
-            member = False
-            #I would like to add a staff check to allow staff memebers to post invite links however i dont know how to do this, this is a job for the future
-            member_role = message.guild.get_role(settings.config["statusRoles"]["member"])
-            muted_role = message.guild.get_role(settings.config["statusRoles"]["muted"])
-            logs_channel = message.guild.get_channel(settings.config["channels"]["log"])
-            author = message.author
-            userAvatarUrl = author.avatar_url
-            def _check(m):
-                return (m.author == author and len(m.mentions) and (datetime.utcnow()-m.created_at).seconds < 15)
-            if type(author) is discord.User:
-                return
-            for role in author.roles:
-                if role.id == member_role.id:
-                    member = True
-            if not author.bot:
-                if len((list(filter(lambda m: _check(m), self.client.cached_messages)))) >=5:
-                    await author.add_roles(muted_role)
-                    embed = discord.Embed(color=author.color, timestamp=message.created_at)
-                    embed.set_author(name="Mute", icon_url=userAvatarUrl)
-                    embed.add_field(name=f"{author} has been Muted! ", value=f"muted for mention spamming")
-                    await logs_channel.send(embed=embed)
-                    reason = 'auto muted for spam pinging'
-                    mod_query = utils.mod_event.insert(). \
-                        values(recipient_id=author.id, event_type=3, event_time=utils.datetime.now(), reason=reason,
-                            issuer_id=bot_id, historical=0)
-                    utils.conn.execute(mod_query)
-                    user_data_query = update(utils.userdata).where(utils.userdata.c.id == author.id) \
-                            .values(mute=1)
-                    utils.conn.execute(user_data_query)
-                if profanity.contains_profanity(message.content):
-                    await message.delete()
-                elif not member and search(url_regex, message.content):
-                    await message.delete()
-                elif search(invite_regex, message.content):
-                    await message.delete()
-                    await logs_channel.send(f'<@{author.id}> tried to post:\n{message.content}') #This works but there is currently a conflict with manger in logs channel, this will be fixed when manager is removed
+                    elif not member and search(url_regex, message.content):
+                        await message.delete()
+                    elif search(invite_regex, message.content):
+                        await message.delete()
+                        await logs_channel.send(f'<@{author.id}> tried to post:\n{message.content}') #This works but there is currently a conflict with manger in logs channel, this will be fixed when manager is removed
 
     @tasks.loop(hours=settings.config["memberUpdateInterval"])
     async def check_member_status(self):
-        make_historical_query = text(f'select id, member_activation_date from userdata')
-        results = utils.conn.execute(make_historical_query)
-        current_guild = self.client.get_guild(settings.config["serverId"])
-        for result in results:
-            user = current_guild.get_member(result[0])
-            if user is not None and \
-                result[1] != 0 and \
-                    (utils.datetime.fromtimestamp(result[1])) < utils.datetime.now() < (
-                    utils.datetime.fromtimestamp(result[1]) +
-                    utils.timedelta(hours=settings.config["memberUpdateInterval"])):
-                member_role = current_guild.get_role(settings.config["statusRoles"]["member"])
-                await user.add_roles(member_role)
-                mod_query = utils.mod_event.insert(). \
-                    values(recipient_id=user.id, event_type=8, event_time=utils.datetime.now(),
-                           issuer_id=settings.config["botId"], historical=0)
-                utils.conn.execute(mod_query)
-                user_data_query = update(utils.userdata).where(utils.userdata.c.id == user.id) \
-                    .values(member=1)
-                utils.conn.execute(user_data_query)
-                # user_data_query = update(utils.userdata).where(utils.userdata.c.id == result[0]) \
-                #     .values(member_activation_date=0)
-                # utils.conn.execute(user_data_query)
-                # Discuss idea of zeroing out instead so that anomalies don't occur but data will be lost.
+        prefix = settings.config["prefix"]
+        if prefix == "!":
+            make_historical_query = text(f'select id, member_activation_date from userdata')
+            results = utils.conn.execute(make_historical_query)
+            current_guild = self.client.get_guild(settings.config["serverId"])
+            for result in results:
+                user = current_guild.get_member(result[0])
+                if user is not None and \
+                    result[1] != 0 and \
+                        (utils.datetime.fromtimestamp(result[1])) < utils.datetime.now() < (
+                        utils.datetime.fromtimestamp(result[1]) +
+                        utils.timedelta(hours=settings.config["memberUpdateInterval"])):
+                    member_role = current_guild.get_role(settings.config["statusRoles"]["member"])
+                    await user.add_roles(member_role)
+                    mod_query = utils.mod_event.insert(). \
+                        values(recipient_id=user.id, event_type=8, event_time=utils.datetime.now(),
+                            issuer_id=settings.config["botId"], historical=0)
+                    utils.conn.execute(mod_query)
+                    user_data_query = update(utils.userdata).where(utils.userdata.c.id == user.id) \
+                        .values(member=1)
+                    utils.conn.execute(user_data_query)
+                    # user_data_query = update(utils.userdata).where(utils.userdata.c.id == result[0]) \
+                    #     .values(member_activation_date=0)
+                    # utils.conn.execute(user_data_query)
+                    # Discuss idea of zeroing out instead so that anomalies don't occur but data will be lost.
 
 
 def setup(client):
