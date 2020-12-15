@@ -25,7 +25,7 @@ prefix = settings.config["prefix"]
 intents = discord.Intents.all()
 intents.members = True
 intents.presences = True
-client=commands.Bot(command_prefix=prefix, intents=intents)
+client=commands.Bot(command_prefix=prefix, intents=intents, case_insensitive = True)
 
 client.add_command(relapse)
 client.add_command(update)
