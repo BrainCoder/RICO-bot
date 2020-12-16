@@ -86,6 +86,26 @@ class ModCommands(commands.Cog):
         self._last_member = None
         self.check_member_status.start()
 
+    @commands.command(name='selfmute')
+    @commands.has_any_role(
+        settings.config["statusRoles"]["member"])
+    async def selfmute(self, ctx):
+        """Lets the user selfmute taking them out of the server"""
+        Selfmute_Role = ctx.guild.get_role(settings.config["statusRoles"]["self-mute"])
+        logs_channel = self.client.get_channel(settings.config["channels"]["log"])
+        if Selfmute_Role in ctx.author.roles:
+            await ctx.author.remove_roles(Selfmute_Role)
+            embed = discord.Embed(color=ctx.author.color, timestamp=ctx.message.created_at)
+            embed.set_author(name="Selfmute", icon_url=ctx.author.avatar_url)
+            embed.add_field(name=f'{ctx.author} selfmuted!', value='They shall remain inside the selfmute channel untill they choose to leave')
+            await logs_channel.send(embed=embed)
+        else:
+            await ctx.author.add_roles(Selfmute_Role)
+            embed = discord.Embed(color=ctx.author.color, timestamp=ctx.message.created_at)
+            embed.set_author(name="Selfmute", icon_url=ctx.author.avatar_url)
+            embed.add_field(name=f'{ctx.author} is no longer selfmuted!', value='They may run free amoungst the hills like a wild rabbit')
+            await logs_channel.send(embed=embed)
+
     @commands.command(name="purge", aliases=["clear"])
     @commands.has_any_role(
         settings.config["statusRoles"]["moderator"])
