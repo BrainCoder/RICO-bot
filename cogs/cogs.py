@@ -48,13 +48,9 @@ class cogs(commands.Cog):
     @cog.error
     async def cog_handler(self, ctx, error):
         emoji = '❌'
-        if isinstance(error, commands.ExtensionNotLoaded):
-            await ctx.message.add_reaction(emoji)
-        elif isinstance(error, commands.CommandInvokeError):
-            await ctx.message.add_reaction(emoji)
-        else:
-            print('Ignoring exception in command {}:'.format(ctx.command), file=sys.stderr)
-            traceback.print_exception(type(error), error, error.__traceback__, file=sys.stderr)
+        await ctx.message.add_reaction(emoji)
+        print('Ignoring exception in command {}:'.format(ctx.command), file=sys.stderr)
+        traceback.print_exception(type(error), error, error.__traceback__, file=sys.stderr)
 
 def setup(client):
     client.add_cog(cogs(client))
