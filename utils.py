@@ -62,6 +62,12 @@ def init():
     )
     meta.create_all(engine)
 
+#Devlogs timestamp
+today = datetime.now()
+ctoday = today.strftime("%d/%m/%Y")
+ctime = today.strftime("%H:%M")
+timestr = f'**[{ctoday}] [{ctime}] -**'
+
 def to_dt(t_stamp):
     return datetime.fromtimestamp(t_stamp)
 

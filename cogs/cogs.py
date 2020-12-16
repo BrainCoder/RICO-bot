@@ -3,12 +3,8 @@ from discord.ext import commands
 import settings
 import traceback
 import sys
+import utils
 from datetime import datetime
-
-today = datetime.now()
-ctoday = today.strftime("%d/%m/%Y")
-ctime = today.strftime("%H:%M")
-timestr = f'**[{ctoday}] [{ctime}] - **'
 
 class cogs(commands.Cog):
 
@@ -23,7 +19,7 @@ class cogs(commands.Cog):
         """Command to manually toggle cogs. For action use either\n**load** - load the cog\n**unload** - unload the cog\n**reload** - reload the cog"""
         devlogs = self.client.get_channel(settings.config["channels"]["devlog"])
         emoji = '✅'
-        log = f'{timestr}`{extension}` {action}ed manually'
+        log = f'{utils.timestr}`{extension}` {action}ed manually'
         prefix = settings.config["prefix"]
         if action == 'load':
             self.client.load_extension(f'cogs.{extension}')

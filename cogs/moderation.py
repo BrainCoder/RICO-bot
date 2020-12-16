@@ -24,14 +24,6 @@ profanity.load_censor_words_from_file('blacklist.txt', whitelist_words = whiteli
 time_regex = re.compile("(?:(\d{1,5})(h|s|m|d))+?")
 time_dict = {"h": 3600, "s": 1, "m": 60, "d": 86400}
 
-#Devlogs setup
-today = datetime.now()
-ctoday = today.strftime("%d/%m/%Y")
-ctime = today.strftime("%H:%M")
-timestr = f'**[{ctoday}] [{ctime}] -**'
-#Devlogs setup
-
-
 class TimeConverter(commands.Converter):
     async def convert(self, ctx, argument):
         args = argument.lower()
@@ -322,14 +314,14 @@ class ModCommands(commands.Cog):
             emoji = '✅'
             await ctx.message.add_reaction(emoji)
             profanity.load_censor_words_from_file('blacklist.txt', whitelist_words = whitelist)
-            await devlogs.send(f'{timestr}Reloaded `blacklist.txt` and `whitelist.txt` due to edit')
+            await devlogs.send(f'{utils.timestr}Reloaded `blacklist.txt` and `whitelist.txt` due to edit')
         elif arg == 'remove':
             with open('blacklist.txt', "r", encoding="utf-8") as f:
                 stored = [w.strip() for w in f.readlines()]
             with open('blacklist.txt', "w", encoding="utf-8") as f:
                 f.write("".join([f"{w}\n" for w in stored if w not in words]))
                 profanity.load_censor_words_from_file('blacklist.txt', whitelist_words = whitelist)
-                await devlogs.send(f'{timestr}Reloaded `blacklist.txt` and `whitelist.txt` due to edit')
+                await devlogs.send(f'{utils.timestr}Reloaded `blacklist.txt` and `whitelist.txt` due to edit')
             emoji = '✅'
             await ctx.message.add_reaction(emoji)
         elif arg == 'blacklist':

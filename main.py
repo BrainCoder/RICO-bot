@@ -30,19 +30,14 @@ client=commands.Bot(command_prefix=prefix, intents=intents, case_insensitive = T
 client.add_command(relapse)
 client.add_command(update)
 
-today = datetime.now()
-ctoday = today.strftime("%d/%m/%Y")
-ctime = today.strftime("%H:%M")
-timestr = f'**[{ctoday}] [{ctime}] - **'
-
 @client.event
 async def on_ready():
     print('Bot is active')
     await client.wait_until_ready()
     devlogs = client.get_channel(settings.config["channels"]["devlog"])
     if prefix == '!':
-        await devlogs.send(f'{timestr}Bot is online')
-        await devlogs.send(f'{timestr}Loaded `blacklist.txt` & `whitelist.txt` due to startup')
+        await devlogs.send(f'{utils.timestr}Bot is online')
+        await devlogs.send(f'{utils.timestr}Loaded `blacklist.txt` & `whitelist.txt` due to startup')
     await cogs_load()
 
 async def cogs_load():
@@ -51,7 +46,7 @@ async def cogs_load():
         for filename in os.listdir('./cogs'):
             if filename.endswith('.py'):
                 client.load_extension(f'cogs.{filename[:-3]}')
-                await devlogs.send(f'{timestr}`{filename}` loadeded due to startup')
+                await devlogs.send(f'{utils.timestr}`{filename}` loadeded due to startup')
     else:
         client.load_extension(f'cogs.cogs')
 
@@ -69,7 +64,7 @@ async def logout(ctx):
 async def creset(ctx):
     devlogs = client.get_channel(settings.config["channels"]["devlog"])
     emoji = '✅'
-    log = f'{timestr}`cogs` loaded manually using !creset command'
+    log = f'{utils.timestr}`cogs` loaded manually using !creset command'
     client.load_extension(f'cogs.cogs')
     await ctx.message.add_reaction(emoji)
     if prefix == '!':
