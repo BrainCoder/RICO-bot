@@ -1,9 +1,8 @@
 import discord
-from discord.ext import commands, tasks
+from discord.ext import commands
 import os
 import sys
 import settings
-from datetime import datetime
 
 import utils
 from streak import relapse
@@ -14,7 +13,7 @@ if len(sys.argv) < 3:
           "mysql+pymysql://user(:password if present)@localhost/database_name")
     sys.exit(0)
 
-with open (sys.argv[1], 'rt') as conf_file:
+with open(sys.argv[1], 'rt') as conf_file:
     settings.init()
     settings.config = utils.json.load(conf_file)
     settings.config["databaseUrl"] = sys.argv[2]
@@ -25,7 +24,7 @@ prefix = settings.config["prefix"]
 intents = discord.Intents.all()
 intents.members = True
 intents.presences = True
-client=commands.Bot(command_prefix=prefix, intents=intents, case_insensitive = True)
+client = commands.Bot(command_prefix=prefix, intents=intents, case_insensitive=True)
 
 client.add_command(relapse)
 client.add_command(update)
@@ -47,8 +46,11 @@ async def cogs_load():
             if filename.endswith('.py'):
                 client.load_extension(f'cogs.{filename[:-3]}')
                 await devlogs.send(f'{utils.timestr}`{filename}` loadeded due to startup')
+                print(f'loaded {filename}')
+        await devlogs.send(f'{utils.timestr}`all cogs loaded')
+        print('all cogs loaded')
     else:
-        client.load_extension(f'cogs.cogs')
+        client.load_extension('cogs.cogs')
 
 @client.command(name="logout", aliases=["killswitch"])
 @commands.has_any_role(
@@ -65,11 +67,11 @@ async def creset(ctx):
     devlogs = client.get_channel(settings.config["channels"]["devlog"])
     emoji = '✅'
     log = f'{utils.timestr}`cogs` loaded manually using !creset command'
-    client.load_extension(f'cogs.cogs')
+    client.load_extension('cogs.cogs')
     await ctx.message.add_reaction(emoji)
     if prefix == '!':
         await devlogs.send(log)
 
-with open ('token.txt', 'rt') as myfile:
+with open('token.txt', 'rt') as myfile:
     contents = myfile.read()
     client.run(f'{contents}')

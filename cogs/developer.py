@@ -1,16 +1,12 @@
-import discord
-import settings
-import traceback
-import sys
-import asyncio
 import os
 import gitlab
 import re
+import settings
 
 from discord import File
 from discord.ext import commands
 import utils
-from sqlalchemy import insert, select, update
+from sqlalchemy import update
 from re import search
 
 class DeveloperTools(commands.Cog):
@@ -65,7 +61,7 @@ class DeveloperTools(commands.Cog):
         if isinstance(error, commands.MissingRequiredArgument):
             if error.param.name == 'inp':
                 await ctx.send("You forgot to give me input to repeat!")
-    
+
     @commands.command(name='verifyintegrity', aliases=['vi', 'verify'])
     @commands.has_any_role(
         settings.config["statusRoles"]["developer"])
@@ -119,15 +115,15 @@ class DeveloperTools(commands.Cog):
             await ctx.send(f'Amount of users added: {str(len(members_added))}\n'
                         f'Amount of users lost: {str(len(members_lost))}')
         else:
-            await ctx.send('please specify which verification you want carry out, for more information on how the command works type in `!help verifyintegrity`')    
+            await ctx.send('please specify which verification you want carry out, for more information on how the command works type in `!help verifyintegrity`')
 
     @commands.command(name='error')
     @commands.has_any_role(
         settings.config["statusRoles"]["developer"])
     async def errorlog(self, ctx, action=None):
         emoji = '✅'
-        if action == None:
-            await ctx.send(file = File('/root/.pm2/logs/NPC-error.log'))
+        if action is None:
+            await ctx.send(file=File('/root/.pm2/logs/NPC-error.log'))
         elif action == 'flush':
             os.flush()
             await ctx.message.add_reaction(emoji)

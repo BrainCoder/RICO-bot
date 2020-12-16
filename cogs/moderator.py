@@ -34,8 +34,8 @@ class ModeratorTools(commands.Cog):
         elif historical.lower() == "current":
             historical = 0
         else:
-            await ctx.send(f'Could not understand whether records should be historical or not. '
-                           f'Please enter either "historical" or "current" as the argument')
+            await ctx.send('Could not understand whether records should be historical or not. '
+                           'Please enter either "historical" or "current" as the argument')
             return
         mod_action_clause = ""
         if action == "mute":
@@ -45,7 +45,7 @@ class ModeratorTools(commands.Cog):
         elif action == "ban":
             mod_action_clause = " and me.event_type = 1"
         if output_format.lower() != "raw" and output_format.lower() != "table":
-            await ctx.send(f'Format option only takes options "raw" or "table".')
+            await ctx.send('Format option only takes options "raw" or "table".')
             return
         user_clause = ""
         if user is not None:
@@ -72,13 +72,13 @@ class ModeratorTools(commands.Cog):
             await channel.send(table_output)
         else:
             if len(raw_output) > 2000:
-                await ctx.send(f'Message exceeds 2,000 characters. Attempting to break into two messages.')
+                await ctx.send('Message exceeds 2,000 characters. Attempting to break into two messages.')
                 midway_point = int(round(len(raw_output) / 2, 0))
                 length = len(raw_output)
                 first_half = raw_output[0:midway_point]
                 last_half = raw_output[midway_point:length]
                 if len(first_half) > 2000 or len(last_half) > 2000:
-                    await ctx.send(f'Output is too long. Please contact a developer to see transcript.')
+                    await ctx.send('Output is too long. Please contact a developer to see transcript.')
                 else:
                     await channel.send(first_half)
                     await channel.send(last_half)
@@ -125,8 +125,8 @@ class ModeratorTools(commands.Cog):
         The command will also not take any roles with \"@\" symbols inside of them as a precaution."""
         everyone = False
         if '@' in role:
-            await ctx.send(f'Please use the non-mentionable version of that role. '
-                           f'If you\'re trying to check all offline users, unfortunately you can not.')
+            await ctx.send('Please use the non-mentionable version of that role. '
+                           'If you\'re trying to check all offline users, unfortunately you can not.')
             return
         role_to_index = None
         roles = ctx.guild.roles

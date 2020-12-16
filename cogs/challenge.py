@@ -11,7 +11,7 @@ class MonthlyChallenge(commands.Cog):
     @commands.command(name="participation", pass_context=True)
     async def participation_amount(self, ctx):
         """sends the current number of users with the M-Challenge participant role"""
-        #add make it so it sends how many people are in the yearly challenge too
+        # add make it so it sends how many people are in the yearly challenge too
         guild = ctx.guild
         userAvatarUrl = ctx.author.avatar_url
         mrole = guild.get_role(settings.config["statusRoles"]["monthly-challenge-participant"])
@@ -24,10 +24,10 @@ class MonthlyChallenge(commands.Cog):
         print(f'{yno}')
         embed = discord.Embed(color=ctx.author.color, timestamp=ctx.message.created_at)
         embed.set_author(name="Challenge statistics", icon_url=userAvatarUrl)
-        embed.add_field(name=f"Participation", value=f"\nMonthly Challenge Memebers left: {mno}\n Yearly Challenge Members left: {yno}")
+        embed.add_field(name="Participation", value=f"\nMonthly Challenge Memebers left: {mno}\n Yearly Challenge Members left: {yno}")
         await ctx.send(embed=embed)
 
-    #Monthly Challenge
+    # Monthly Challenge
 
     @commands.command(name="mstartchallenge", pass_context=True)
     @commands.has_any_role(
@@ -71,7 +71,7 @@ class MonthlyChallenge(commands.Cog):
         await ctx.send(f"Challenge Winners {len(newParticipants)}")
         print(len(newParticipants))
 
-    #Yearly challenge
+    # Yearly challenge
 
     @commands.command(name="yearlychallenge")
     async def yearlychallenge(self, ctx):

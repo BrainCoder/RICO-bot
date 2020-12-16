@@ -1,6 +1,4 @@
-import discord
 from discord.ext import commands
-from discord.ext.commands import cooldown
 
 from utils import idData
 
@@ -34,7 +32,7 @@ async def relapse(ctx, *args):
             Anon = True
             await ctx.message.delete()
             await removeStreakRoles(ctx.author)
-    members = await ctx.guild.fetch_members(limit=None).flatten()
+    await ctx.guild.fetch_members(limit=None).flatten()
     for role in ctx.author.roles:
         if role.id == settings.config["statusRoles"]["monthly-challenge-participant"]:
             guild = ctx.guild
@@ -56,7 +54,7 @@ async def relapse(ctx, *args):
             print(f'{no}')
             channel = guild.get_channel(settings.config["channels"]["yearly-challenge"])
             print(f'{channel}')
-            await channel.send(f'Monthly Challenge members left: {no}')    
+            await channel.send(f'Monthly Challenge members left: {no}')
     else:
         maxDays = 365 * 10
         n_days = 0
@@ -66,13 +64,13 @@ async def relapse(ctx, *args):
             if(len(args) > 1 and args[1].isnumeric() and 24 > int(args[1]) >= 0):
                 n_hours = int(args[1])
             elif(len(args) > 1 and (not args[1].isnumeric() or not 24 > int(args[1]) >= 0)):
-                message = await ctx.channel.send(f'The provided command arguments are not permitted.')
+                message = await ctx.channel.send('The provided command arguments are not permitted.')
                 if Anon:
                     await asyncio.sleep(5)
                     await message.delete()
                 return
-        elif(len(args) > 0 and ( not args[0].isnumeric() or not maxDays > int(args[0]) >= 0)): 
-            message = await ctx.channel.send(f'The provided command arguments are not permitted.')
+        elif(len(args) > 0 and (not args[0].isnumeric() or not maxDays > int(args[0]) >= 0)):
+            message = await ctx.channel.send('The provided command arguments are not permitted.')
             if Anon:
                 await asyncio.sleep(5)
                 await message.delete()
@@ -94,24 +92,22 @@ async def relapse(ctx, *args):
                         past_streaks = [totalHours]
                     query = (utils.userdata
                     .update()
-                    .where(utils.userdata.c.id == ctx.author.id)
-                    .values(last_relapse = current_starting_date.timestamp(),
-                            past_streaks = utils.json.dumps(past_streaks)))
+                        .where(utils.userdata.c.id == ctx.author.id)
+                        .values(last_relapse=current_starting_date.timestamp(),
+                                past_streaks=utils.json.dumps(past_streaks)))
                     utils.conn.execute(query)
                     if not Anon:
                         await updateStreakRole(ctx.author, current_starting_date)
-                    #pic = await getEmergencyPicture()
                     message = await ctx.channel.send(
-                        content=f'Your streak was {daysStr}{middleStr}{hoursStr} long.')#,
-                        #file=pic)
+                        content=f'Your streak was {daysStr}{middleStr}{hoursStr} long.')
                     if Anon:
                         await asyncio.sleep(5)
                         await message.delete()
             if(rows[0]['last_relapse'] is None or total_streak_length <= 60):
                 query = (utils.userdata
-                .update()
+                    .update()
                 .where(utils.userdata.c.id == ctx.author.id)
-                .values(last_relapse = current_starting_date.timestamp()))
+                    .values(last_relapse=current_starting_date.timestamp()))
                 utils.conn.execute(query)
                 if not Anon:
                     await updateStreakRole(ctx.author, current_starting_date)
@@ -120,8 +116,8 @@ async def relapse(ctx, *args):
                     await asyncio.sleep(5)
                     await message.delete()
         else:
-            query = utils.userdata.insert().values(id = ctx.author.id,
-                    last_relapse = current_starting_date.timestamp())
+            query = utils.userdata.insert().values(id=ctx.author.id,
+                    last_relapse=current_starting_date.timestamp())
             utils.conn.execute(query)
             if not Anon:
                 await updateStreakRole(ctx.author, current_starting_date)
@@ -134,7 +130,7 @@ async def relapse_handler(ctx, error):
     if isinstance(error, commands.CheckFailure):
         await ctx.send('That command cannot be used in this channel')
     elif isinstance(error, commands.CommandOnCooldown):
-        await ctx.send(content=f'This command is on cooldown. Please wait {error.retry_after}s', delete_after=5)   
+        await ctx.send(content=f'This command is on cooldown. Please wait {error.retry_after}s', delete_after=5)
     else:
         print('Ignoring exception in command {}:'.format(ctx.command), file=sys.stderr)
         traceback.print_exception(type(error), error, error.__traceback__, file=sys.stderr)
@@ -174,7 +170,7 @@ async def update_handler(ctx, error):
     if isinstance(error, commands.CheckFailure):
         await ctx.send('That command cannot be used in this channel')
     elif isinstance(error, commands.CommandOnCooldown):
-        await ctx.send(content=f'This command is on cooldown. Please wait {error.retry_after}s', delete_after=5)        
+        await ctx.send(content=f'This command is on cooldown. Please wait {error.retry_after}s', delete_after=5)
     else:
         print('Ignoring exception in command {}:'.format(ctx.command), file=sys.stderr)
         traceback.print_exception(type(error), error, error.__traceback__, file=sys.stderr)

@@ -1,8 +1,6 @@
 import json
-import asyncio
 import settings
-
-from datetime import datetime, timedelta
+from datetime import datetime
 from sqlalchemy import create_engine, MetaData, Table, Column, ForeignKey
 from sqlalchemy.dialects.mysql import BIGINT, INTEGER, TEXT, DATETIME, TINYINT
 from os import listdir
@@ -62,7 +60,7 @@ def init():
     )
     meta.create_all(engine)
 
-#Devlogs timestamp
+# Devlogs timestamp
 today = datetime.now()
 ctoday = today.strftime("%d/%m/%Y")
 ctime = today.strftime("%H:%M")

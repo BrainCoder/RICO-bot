@@ -1,12 +1,9 @@
-import discord
 from discord.ext import commands
 from discord.ext.commands import Cog
 
 import utils
 
 import settings
-
-client=commands.Bot(command_prefix='!')
 
 class welcome(commands.Cog):
 
@@ -28,8 +25,7 @@ class welcome(commands.Cog):
                     f' to see the commands that you can use to assign yourself.')
                 query = utils.userdata.insert(). \
                     values(id=member.id,
-                           member_activation_date=
-                           int((utils.datetime.now() +
+                           member_activation_date=int((utils.datetime.now() +
                                 utils.timedelta(hours=settings.config["memberUpdateInterval"])).timestamp()))
                 utils.conn.execute(query)
             else:
@@ -42,7 +38,7 @@ class welcome(commands.Cog):
                 if result[8] == 1: # muted
                     mute_role = member.guild.get_role(settings.config["statusRoles"]["muted"])
                     await member.add_roles(mute_role)
-                elif result[9] == 1: #double-muted
+                elif result[9] == 1: # double-muted
                     double_mute_role = member.guild.get_role(settings.config["statusRoles"]["double-muted"])
                     await member.add_roles(double_mute_role)
 

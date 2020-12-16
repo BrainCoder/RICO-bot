@@ -1,10 +1,10 @@
-from discord.ext import commands
-
 import settings
 import traceback
 import sys
 import utils
-from datetime import datetime
+
+from discord.ext import commands
+
 
 class cogs(commands.Cog):
 
