@@ -136,9 +136,12 @@ class ModCommands(commands.Cog):
     async def mute(self, ctx, user: discord.Member, *, reason=None):
         """mutes the user and puts a strike against their name"""
         await self.client.wait_until_ready()
+        member_role = ctx.guild.get_role(settings.config["statusRoles"]["member"])
         if reason == None:
             await ctx.channel.send('please give reason for mute', delete_after=5)
-        elif reason != None:
+        else:
+            if member_role in user.roles:
+                await remove_member_role(self, ctx, user, member_role)
             channel = self.client.get_channel(settings.config["channels"]["log"])
             userAvatarUrl = user.avatar_url
             for discord.guild in self.client.guilds:
@@ -152,7 +155,7 @@ class ModCommands(commands.Cog):
             await channel.send(embed=embed)
             mod_query = utils.mod_event.insert(). \
                 values(recipient_id=user.id, event_type=3, event_time=utils.datetime.now(), reason=reason,
-                       issuer_id=ctx.author.id, historical=0)
+                        issuer_id=ctx.author.id, historical=0)
             utils.conn.execute(mod_query)
             user_data_query = update(utils.userdata).where(utils.userdata.c.id == user.id) \
                     .values(mute=1)
