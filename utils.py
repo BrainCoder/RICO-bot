@@ -68,19 +68,16 @@ ctoday = today.strftime("%d/%m/%Y")
 ctime = today.strftime("%H:%M")
 timestr = f'**[{ctoday}] [{ctime}] -**'
 
-def to_dt(t_stamp):
-    return datetime.fromtimestamp(t_stamp)
-
+"""def to_dt(t_stamp):
+    return datetime.fromtimestamp(t_stamp)"""
 
 def readFile(fileName):
     with open(fileName, 'r') as myfile:
         return myfile.read()
 
-
-async def waitThenRun(seconds, fn):
+"""async def waitThenRun(seconds, fn):
     await asyncio.sleep(seconds)
-    await fn()
-
+    await fn()"""
 
 # Main Streak
 def is_in_streak_channel(ctx):
