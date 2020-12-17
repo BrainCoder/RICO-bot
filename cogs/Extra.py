@@ -103,7 +103,7 @@ class Extra(commands.Cog):
         if not Hound:
             await ctx.send('Ur not my dad :c')
         else:
-            await ctx.send('uwu what kinda of sandwich does daddy want =^.^=')
+            await ctx.send('uwu what kinda of sandwich does daddy want =^.^=', delete_after=5)
 
     @commands.command(name="emergency", aliases=['m'])
     async def emergency(self, ctx):
