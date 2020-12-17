@@ -64,6 +64,8 @@ class DeveloperTools(commands.Cog):
         if isinstance(error, commands.MissingRequiredArgument):
             if error.param.name == 'inp':
                 await ctx.send("You forgot to give me input to repeat!")
+            else:
+                await utils.dotraceback(ctx, error)
 
     @commands.command(name='verifyintegrity', aliases=['vi', 'verify'])
     @commands.has_any_role(

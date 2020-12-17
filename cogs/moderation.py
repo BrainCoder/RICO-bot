@@ -441,7 +441,7 @@ class ModCommands(commands.Cog):
         if isinstance(error, commands.CheckFailure):
             await utils.emoji(ctx, '❌')
         else:
-            pass
+            await utils.dotraceback(ctx, error)
 
     @Cog.listener()
     async def on_message(self, message):

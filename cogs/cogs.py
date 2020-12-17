@@ -1,6 +1,4 @@
 import settings
-import traceback
-import sys
 import utils
 
 from discord.ext import commands
@@ -42,8 +40,7 @@ class cogs(commands.Cog):
     @cog.error
     async def cog_handler(self, ctx, error):
         await utils.emoji(ctx, '❌')
-        print('Ignoring exception in command {}:'.format(ctx.command), file=sys.stderr)
-        traceback.print_exception(type(error), error, error.__traceback__, file=sys.stderr)
+        await utils.dotraceback(ctx, error)
 
 def setup(client):
     client.add_cog(cogs(client))
