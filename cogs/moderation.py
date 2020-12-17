@@ -123,8 +123,6 @@ class ModCommands(commands.Cog):
             await remove_member_role(self, ctx, user, member_role)
         if muted:
             await self.client.wait_until_ready()
-            # await user.send(
-            #    f"Muted for '{reason}' by <@{ctx.author.id}>\nTo resolve this mute please communicate with the memeber of staff who muted you")
             double_role = ctx.guild.get_role(settings.config["statusRoles"]["double-muted"])
             await user.add_roles(double_role)
             await utils.doembed(ctx, "DoubleMute", f"{user} has been Double Muted!", f"Muted by: <@{ctx.author.id}>.", user)
@@ -139,8 +137,6 @@ class ModCommands(commands.Cog):
             if reason is None:
                 await ctx.channel.send('please give reason for mute', delete_after=5)
             else:
-                # await user.send(
-                #    f"Muted for '{reason}' by <@{ctx.author.id}>\nTo resolve this mute please communicate with the memeber of staff who muted you")
                 await user.add_roles(Mute_role)
                 await utils.doembed(ctx, "Mute", f"{user} has been Muted!", f"**for:** {reason} Muted by: <@{ctx.author.id}>.", user)
                 mod_query = utils.mod_event.insert(). \
@@ -247,8 +243,6 @@ class ModCommands(commands.Cog):
             return
         if reason is None:
             reason = "For being a jerk!"
-        message = "https://tenor.com/view/get-out-gif-9615975"
-        await member.send(f"kicked for **{reason}**\n{message}")
         await ctx.guild.kick(member, reason=reason)
         await utils.doembed(ctx, "Kick", f"{member} has been Kicked!", f"**for:** {reason} Kicked by: <@{ctx.author.id}>.", member)
         mod_query = utils.mod_event.insert(). \
@@ -278,8 +272,6 @@ class ModCommands(commands.Cog):
             return
         if reason is None:
             reason = "For being a jerk!"
-        message = "https://tenor.com/view/bane-no-banned-and-you-are-explode-gif-16047504"
-        await member.send(f"Banned for **{reason}**\n{message}")
         await ctx.guild.ban(member, reason=reason)
         await utils.doembed(ctx, "Ban", f"{member} has been Banned!", f"**for:** {reason} banned by: <@{ctx.author.id}>.", member)
         mod_query = utils.mod_event.insert(). \
