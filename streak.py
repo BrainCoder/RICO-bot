@@ -5,6 +5,8 @@ from utils import idData
 import utils
 import settings
 import asyncio
+import traceback
+import sys
 from datetime import timedelta
 
 def getStreakString(total_streak_length):
@@ -130,7 +132,8 @@ async def relapse_handler(ctx, error):
     elif isinstance(error, commands.CommandOnCooldown):
         await ctx.send(content=f'This command is on cooldown. Please wait {error.retry_after}s', delete_after=5)
     else:
-        await utils.dotraceback(ctx, error)
+        print('Ignoring exception in command {}:'.format(ctx.command), file=sys.stderr)
+        traceback.print_exception(type(error), error, error.__traceback__, file=sys.stderr)
 
 
 @commands.command(name="update")
@@ -169,7 +172,8 @@ async def update_handler(ctx, error):
     elif isinstance(error, commands.CommandOnCooldown):
         await ctx.send(content=f'This command is on cooldown. Please wait {error.retry_after}s', delete_after=5)
     else:
-        await utils.dotraceback(ctx, error)
+        print('Ignoring exception in command {}:'.format(ctx.command), file=sys.stderr)
+        traceback.print_exception(type(error), error, error.__traceback__, file=sys.stderr)
 
 def getOwnedStreakRole(member):
     for role in idData[member.guild.id]['streakRoles']:

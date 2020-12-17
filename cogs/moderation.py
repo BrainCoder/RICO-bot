@@ -11,6 +11,8 @@ import settings
 import utils
 import asyncio
 import re
+import traceback
+import sys
 
 whitelist = []
 with open('whitelist.txt', 'r') as f:
@@ -375,7 +377,8 @@ class ModCommands(commands.Cog):
         if isinstance(error, commands.CheckFailure):
             await utils.emoji(ctx, '❌')
         else:
-            await utils.dotraceback(ctx, error)
+            print('Ignoring exception in command {}:'.format(ctx.command), file=sys.stderr)
+            traceback.print_exception(type(error), error, error.__traceback__, file=sys.stderr)
 
     @Cog.listener()
     async def on_message(self, message):

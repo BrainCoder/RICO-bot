@@ -1,6 +1,7 @@
 import discord
 from discord.ext import commands
-import utils
+import traceback
+import sys
 
 class ErrorHandler(commands.Cog):
 
@@ -39,7 +40,8 @@ class ErrorHandler(commands.Cog):
         elif isinstance(error, discord.NotFound):
             pass
         else:
-            await utils.dotraceback(ctx, error)
+            print('Ignoring exception in command {}:'.format(ctx.command), file=sys.stderr)
+            traceback.print_exception(type(error), error, error.__traceback__, file=sys.stderr)
 
 def setup(client):
     client.add_cog(ErrorHandler(client))

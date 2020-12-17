@@ -2,6 +2,8 @@ import os
 import gitlab
 import re
 import settings
+import traceback
+import sys
 
 from discord import File
 from discord.ext import commands
@@ -65,7 +67,8 @@ class DeveloperTools(commands.Cog):
             if error.param.name == 'inp':
                 await ctx.send("You forgot to give me input to repeat!")
             else:
-                await utils.dotraceback(ctx, error)
+                print('Ignoring exception in command {}:'.format(ctx.command), file=sys.stderr)
+                traceback.print_exception(type(error), error, error.__traceback__, file=sys.stderr)
 
     @commands.command(name='verifyintegrity', aliases=['vi', 'verify'])
     @commands.has_any_role(

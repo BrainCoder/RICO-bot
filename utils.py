@@ -5,8 +5,6 @@ from sqlalchemy import create_engine, MetaData, Table, Column, ForeignKey
 from sqlalchemy.dialects.mysql import BIGINT, INTEGER, TEXT, DATETIME, TINYINT
 from os import listdir
 from os.path import isfile, join
-import traceback
-import sys
 import discord
 
 global engine
@@ -78,10 +76,6 @@ def readFile(fileName):
 
 async def emoji(ctx, emji):
     await ctx.message.add_reaction(emji)
-
-async def dotraceback(ctx, error):
-    print('Ignoring exception in command {}:'.format(ctx.command), file=sys.stderr)
-    traceback.print_exception(type(error), error, error.__traceback__, file=sys.stderr)
 
 async def doembed(ctx, aname, fname, fval, user, channel=False):
     if settings.config["prefix"] == '!':
