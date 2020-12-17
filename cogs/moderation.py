@@ -41,11 +41,7 @@ class TimeConverter(commands.Converter):
 
 async def remove_member_role(self, ctx, user, member_role):
     await user.remove_roles(member_role)
-    embed = discord.Embed(color=ctx.author.color, timestamp=ctx.message.created_at)
-    embed.set_author(name="Member", icon_url=user.avatar_url)
-    embed.add_field(name=f"{user} has had their member role removed! ", value=f"Member removed by: <@{ctx.author.id}>.")
-    channel = self.client.get_channel(settings.config["channels"]["log"])
-    await channel.send(embed=embed)
+    await utils.doembed(ctx, "Member", f"{user} no longer has member!", f"Member taken by: <@{ctx.author.id}>.", user)
     mod_query = utils.mod_event.insert(). \
         values(recipient_id=user.id, event_type=9, event_time=utils.datetime.now(),
                issuer_id=ctx.author.id, historical=0)
@@ -57,11 +53,7 @@ async def remove_member_role(self, ctx, user, member_role):
 
 async def add_member_role(self, ctx, user, member_role):
     await user.add_roles(member_role)
-    embed = discord.Embed(color=ctx.author.color, timestamp=ctx.message.created_at)
-    embed.set_author(name="Member", icon_url=user.avatar_url)
-    embed.add_field(name=f"{user} has been given member! ", value=f"Member given by: <@{ctx.author.id}>.")
-    channel = self.client.get_channel(settings.config["channels"]["log"])
-    await channel.send(embed=embed)
+    await utils.doembed(ctx, "Member", f"{user} has been given member!", f"Member given by: <@{ctx.author.id}>.", user)
     mod_query = utils.mod_event.insert(). \
         values(recipient_id=user.id, event_type=8, event_time=utils.datetime.now(),
                issuer_id=ctx.author.id, historical=0)
@@ -84,19 +76,13 @@ class ModCommands(commands.Cog):
     async def selfmute(self, ctx):
         """Lets the user selfmute taking them out of the server"""
         Selfmute_Role = ctx.guild.get_role(settings.config["statusRoles"]["self-mute"])
-        logs_channel = self.client.get_channel(settings.config["channels"]["log"])
         if Selfmute_Role in ctx.author.roles:
             await ctx.author.remove_roles(Selfmute_Role)
-            embed = discord.Embed(color=ctx.author.color, timestamp=ctx.message.created_at)
-            embed.set_author(name="Selfmute", icon_url=ctx.author.avatar_url)
-            embed.add_field(name=f'{ctx.author} selfmuted!', value='They shall remain inside the selfmute channel untill they choose to leave')
-            await logs_channel.send(embed=embed)
+            await utils.doembed(ctx, "Selfmute", f'{ctx.author} is no longer selfmuted!', 'They may run free amoungst the hills like a wild rabbit', ctx.author)
         else:
             await ctx.author.add_roles(Selfmute_Role)
-            embed = discord.Embed(color=ctx.author.color, timestamp=ctx.message.created_at)
-            embed.set_author(name="Selfmute", icon_url=ctx.author.avatar_url)
-            embed.add_field(name=f'{ctx.author} is no longer selfmuted!', value='They may run free amoungst the hills like a wild rabbit')
-            await logs_channel.send(embed=embed)
+            await utils.doembed(ctx, "Selfmute", f'{ctx.author} selfmuted!', 'They shall remain inside the selfmute channel untill they choose to leave', ctx.author)
+
 
     @commands.command(name="purge", aliases=["clear"])
     @commands.has_any_role(
@@ -138,16 +124,11 @@ class ModCommands(commands.Cog):
             await remove_member_role(self, ctx, user, member_role)
         if muted:
             await self.client.wait_until_ready()
-            channel = self.client.get_channel(settings.config["channels"]["log"])
-            userAvatarUrl = user.avatar_url
             # await user.send(
             #    f"Muted for '{reason}' by <@{ctx.author.id}>\nTo resolve this mute please communicate with the memeber of staff who muted you")
             double_role = ctx.guild.get_role(settings.config["statusRoles"]["double-muted"])
             await user.add_roles(double_role)
-            embed = discord.Embed(color=ctx.author.color, timestamp=ctx.message.created_at)
-            embed.set_author(name="DoubleMute", icon_url=userAvatarUrl)
-            embed.add_field(name=f"{user} has been Double Muted! ", value=f"Muted by: <@{ctx.author.id}>.")
-            await channel.send(embed=embed)
+            await utils.doembed(ctx, "DoubleMute", f"{user} has been Double Muted!", f"Muted by: <@{ctx.author.id}>.", user)
             mod_query = utils.mod_event.insert(). \
                 values(recipient_id=user.id, event_type=10, event_time=utils.datetime.now(), reason=reason,
                     issuer_id=ctx.author.id, historical=0)
@@ -159,15 +140,10 @@ class ModCommands(commands.Cog):
             if reason is None:
                 await ctx.channel.send('please give reason for mute', delete_after=5)
             else:
-                channel = self.client.get_channel(settings.config["channels"]["log"])
-                userAvatarUrl = user.avatar_url
                 # await user.send(
                 #    f"Muted for '{reason}' by <@{ctx.author.id}>\nTo resolve this mute please communicate with the memeber of staff who muted you")
                 await user.add_roles(Mute_role)
-                embed = discord.Embed(color=ctx.author.color, timestamp=ctx.message.created_at)
-                embed.set_author(name="Mute", icon_url=userAvatarUrl)
-                embed.add_field(name=f"{user} has been Muted! ", value=f"**for:** {reason} Muted by: <@{ctx.author.id}>.")
-                await channel.send(embed=embed)
+                await utils.doembed(ctx, "Mute", f"{user} has been Muted!", f"**for:** {reason} Muted by: <@{ctx.author.id}>.", user)
                 mod_query = utils.mod_event.insert(). \
                     values(recipient_id=user.id, event_type=3, event_time=utils.datetime.now(), reason=reason,
                         issuer_id=ctx.author.id, historical=0)
@@ -187,11 +163,7 @@ class ModCommands(commands.Cog):
         userAvatarUrl = user.avatar_url
         if time:
             await user.add_roles(cooldown_role)
-            embed = discord.Embed(color=ctx.author.color, timestamp=ctx.message.created_at)
-            embed.set_author(name="user", icon_url=userAvatarUrl)
-            embed.add_field(name=f'{user} cooled-down by {ctx.author}',
-                            value=f'The cooldown will be removed in {time}s, or a moderator will have to remove it manually')
-            await logs_channel.send(embed=embed)
+            await utils.doembed(ctx, "Cooldown", f'{user} cooled-down by {ctx.author}', f'The cooldown will be removed in {time}s, or a moderator will have to remove it manually', user)
             time_of_cooldown = utils.datetime.now()
             mod_query = utils.mod_event.insert(). \
                 values(recipient_id=user.id, event_type=5, event_time=time_of_cooldown,
@@ -202,11 +174,7 @@ class ModCommands(commands.Cog):
             utils.conn.execute(user_data_query)
             await asyncio.sleep(time)
             await user.remove_roles(cooldown_role)
-            embed = discord.Embed(color=ctx.author.color, timestamp=ctx.message.created_at)
-            embed.set_author(name="user", icon_url=userAvatarUrl)
-            embed.add_field(name=f'{user} is no longer cooled-down',
-                            value='The cooldown was removed automatically by the bot')
-            await logs_channel.send(embed=embed)
+            await utils.doembed(ctx, "Cooldown", f'{user} is no longer cooled-down', 'The cooldown was removed automatically by the bot', user)
             make_historical_query = text(f'update mod_event set historical = 1 '
                                          f'where recipient_id = {user.id} and event_type = 5')
             utils.conn.execute(make_historical_query)
@@ -232,13 +200,8 @@ class ModCommands(commands.Cog):
             self_mute_role = ctx.guild.get_role(settings.config["statusRoles"]["self-mute"])
             muted_role = ctx.guild.get_role(settings.config["statusRoles"]["muted"])
             double_role = ctx.guild.get_role(settings.config["statusRoles"]["double-muted"])
-            channel = self.client.get_channel(settings.config["channels"]["log"])
-            userAvatarUrl = user.avatar_url
             if time:
-                embed = discord.Embed(color=ctx.author.color, timestamp=ctx.message.created_at)
-                embed.set_author(name="Unmute", icon_url=userAvatarUrl)
-                embed.add_field(name=f"{user} will be unmuted in {time}s! ", value=f"Unmuted by: <@{ctx.author.id}>.")
-                await channel.send(embed=embed)
+                await utils.doembed(ctx, "Unmute", f"{user} will be unmuted in {time}s!", f"Unmuted by: <@{ctx.author.id}>.", user)
                 await asyncio.sleep(time)
             if muted_role in user.roles:
                 if double_role not in user.roles:
@@ -251,10 +214,7 @@ class ModCommands(commands.Cog):
                 await user.remove_roles(double_role)
                 double = True
             if muted or self_muted or double:
-                embed = discord.Embed(color=ctx.author.color, timestamp=ctx.message.created_at)
-                embed.set_author(name="Unmute", icon_url=userAvatarUrl)
-                embed.add_field(name=f"{user} has been Unmuted! ", value=f"Unmuted by: <@{ctx.author.id}>.")
-                await channel.send(embed=embed)
+                await utils.doembed(ctx, "Unmute", f"{user} has been Unmuted!", f"Unmuted by: <@{ctx.author.id}>.", user)
                 if not self_muted:
                     if muted and not double:
                         unmute_query = utils.mod_event.insert(). \
@@ -291,14 +251,9 @@ class ModCommands(commands.Cog):
         if reason is None:
             reason = "For being a jerk!"
         message = "https://tenor.com/view/get-out-gif-9615975"
-        channel = self.client.get_channel(settings.config["channels"]["log"])  # log
         await member.send(f"kicked for **{reason}**\n{message}")
         await ctx.guild.kick(member, reason=reason)
-        userAvatarUrl = member.avatar_url
-        embed = discord.Embed(color=ctx.author.color, timestamp=ctx.message.created_at)
-        embed.set_author(name="Kick", icon_url=userAvatarUrl)
-        embed.add_field(name=f"{member} has been Kicked! ", value=f"**for:** {reason} Kicked by: <@{ctx.author.id}>.")
-        await channel.send(embed=embed)
+        await utils.doembed(ctx, "Kick", f"{member} has been Kicked!", f"**for:** {reason} Kicked by: <@{ctx.author.id}>.", member)
         mod_query = utils.mod_event.insert(). \
             values(recipient_id=member.id, event_type=2, event_time=utils.datetime.now(), reason=reason,
                    issuer_id=ctx.author.id, historical=0)
@@ -327,14 +282,9 @@ class ModCommands(commands.Cog):
         if reason is None:
             reason = "For being a jerk!"
         message = "https://tenor.com/view/bane-no-banned-and-you-are-explode-gif-16047504"
-        channel = self.client.get_channel(settings.config["channels"]["log"])  # log
-        userAvatarUrl = member.avatar_url
         await member.send(f"Banned for **{reason}**\n{message}")
         await ctx.guild.ban(member, reason=reason)
-        embed = discord.Embed(color=ctx.author.color, timestamp=ctx.message.created_at)
-        embed.set_author(name="Ban", icon_url=userAvatarUrl)
-        embed.add_field(name=f"{member} has been Banned! ", value=f"**for:** {reason} banned by: <@{ctx.author.id}>.")
-        await channel.send(embed=embed)
+        await utils.doembed(ctx, "Ban", f"{member} has been Banned!", f"**for:** {reason} banned by: <@{ctx.author.id}>.", member)
         mod_query = utils.mod_event.insert(). \
             values(recipient_id=member.id, event_type=1, event_time=utils.datetime.now(), reason=reason,
                    issuer_id=ctx.author.id, historical=0)
@@ -409,13 +359,8 @@ class ModCommands(commands.Cog):
                 lyncher_list = ""
                 for lyncher in lynchers:
                     lyncher_list += self.client.get_user(lyncher[0]).mention + " "
-                channel = self.client.get_channel(settings.config["channels"]["log"])  # log
-                userAvatarUrl = 'https://cdn.discordapp.com/avatars/749836263955103774/d95c04a16c2bad01a4451c97fae42766.webp?size=1024'
-                bot_role = ctx.guild.get_role(settings.config["statusRoles"]["bot-role"])
-                embed = discord.Embed(color=bot_role.color, timestamp=ctx.message.created_at)
-                embed.set_author(name="Lynch", icon_url=userAvatarUrl)
-                embed.add_field(name=f"User {member} was lynched! ", value=f"lynched by: {lyncher_list}")
-                await channel.send(embed=embed)
+                bot = ctx.guild.get_member(settings.config["botId"])
+                await utils.doembed(ctx, "Lynch", f"User {member} was lynched! ", f"lynched by: {lyncher_list}", bot)
             else:
                 await utils.emoji(ctx, '✅')
                 query = update(utils.userdata).where(utils.userdata.c.id == member.id) \

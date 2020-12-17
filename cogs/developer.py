@@ -23,7 +23,7 @@ class DeveloperTools(commands.Cog):
 
     @commands.command(name='test')
     async def test(self, ctx):
-        await utils.emoji(ctx, '✅')
+        await utils.doembed(ctx, 'aname', 'fname', 'fval')
 
     @commands.command(name="checklist", aliases=['cl'])
     @commands.has_any_role(

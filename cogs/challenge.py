@@ -13,20 +13,15 @@ class MonthlyChallenge(commands.Cog):
     async def participation_amount(self, ctx):
         """sends the current number of users with the M-Challenge participant role"""
         # add make it so it sends how many people are in the yearly challenge too
-        guild = ctx.guild
-        userAvatarUrl = ctx.author.avatar_url
-        mrole = guild.get_role(settings.config["statusRoles"]["monthly-challenge-participant"])
-        yrole = guild.get_role(settings.config["statusRoles"]["yearly-challenge-participant"])
-        mpartcipants = [m for m in guild.members if mrole in m.roles]
-        ypartcipants = [m for m in guild.members if yrole in m.roles]
+        mrole = ctx.guild.get_role(settings.config["statusRoles"]["monthly-challenge-participant"])
+        yrole = ctx.guild.get_role(settings.config["statusRoles"]["yearly-challenge-participant"])
+        mpartcipants = [m for m in ctx.guild.members if mrole in m.roles]
+        ypartcipants = [m for m in ctx.guild.members if yrole in m.roles]
         mno = len(mpartcipants)
         yno = len(ypartcipants)
         print(f'{mno}')
         print(f'{yno}')
-        embed = discord.Embed(color=ctx.author.color, timestamp=ctx.message.created_at)
-        embed.set_author(name="Challenge statistics", icon_url=userAvatarUrl)
-        embed.add_field(name="Participation", value=f"\nMonthly Challenge Memebers left: {mno}\n Yearly Challenge Members left: {yno}")
-        await ctx.send(embed=embed)
+        await utils.doembed(ctx, "Challenge statics", "Participation", f"\nMonthly Challenge Memebers left: {mno}\n Yearly Challenge Members left: {yno}", ctx.author, True)
 
     # Monthly Challenge
 

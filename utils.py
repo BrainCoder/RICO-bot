@@ -7,6 +7,7 @@ from os import listdir
 from os.path import isfile, join
 import traceback
 import sys
+import discord
 
 global engine
 global conn
@@ -81,6 +82,16 @@ async def emoji(ctx, emji):
 async def dotraceback(ctx, error):
     print('Ignoring exception in command {}:'.format(ctx.command), file=sys.stderr)
     traceback.print_exception(type(error), error, error.__traceback__, file=sys.stderr)
+
+async def doembed(ctx, aname, fname, fval, user, channel=False):
+    logs_channel = ctx.guild.get_channel(settings.config["channels"]["log"])
+    embed = discord.Embed(color=ctx.author.color, timestamp=ctx.message.created_at)
+    embed.set_author(name=aname, icon_url=user.avatar_url)
+    embed.add_field(name=fname, value=fval)
+    if channel:
+        await ctx.send(embed=embed)
+    else:
+        await logs_channel.send(embed=embed)
 
 """async def waitThenRun(seconds, fn):
     await asyncio.sleep(seconds)
