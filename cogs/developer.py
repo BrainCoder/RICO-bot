@@ -21,6 +21,10 @@ class DeveloperTools(commands.Cog):
         server = gitlab.Gitlab(self.url, self.authkey, api_version=4, ssl_verify=True)
         self.project = server.projects.get(self.project_name)
 
+    @commands.command(name='test')
+    async def test(self, ctx):
+        await utils.emoji(ctx, '✅')
+
     @commands.command(name="checklist", aliases=['cl'])
     @commands.has_any_role(
         settings.config["statusRoles"]["moderator"],
@@ -32,8 +36,7 @@ class DeveloperTools(commands.Cog):
             pattern = re.compile(" - ")
             broken = pattern.split(raw)
             self.project.issues.create({'title': f'{broken[0]}', 'description': f'{ broken[1]}\n\nIssue created by: {ctx.message.author.name}'})
-            emoji = '✅'
-            await ctx.message.add_reaction(emoji)
+            await utils.emoji(ctx, '✅')
         else:
             await ctx.send('Please enter your job in the following format\n```!cl {job title} - {job description}```')
 
@@ -70,9 +73,8 @@ class DeveloperTools(commands.Cog):
         of users within the guild that the command was typed in.
         Note this can not track users who are not in the guild that this was called in, but also might have
         a member value set."""
-        emoji = '✅'
         if action == 'database':
-            await ctx.message.add_reaction(emoji)
+            await utils.emoji(ctx, '✅')
             new_entries = 0
             current_users = len(utils.conn.execute(utils.userdata.select()).fetchall())
             for user in ctx.guild.members:
@@ -87,7 +89,7 @@ class DeveloperTools(commands.Cog):
             await ctx.channel.send("The old amount of users was " + str(current_users) + \
                                 "\nThe new amount of users is " + str(new_count))
         elif action == 'member':
-            await ctx.message.add_reaction(emoji)
+            await utils.emoji(ctx, '✅')
             members_added = []
             members_lost = []
             missing_members = []
@@ -121,15 +123,14 @@ class DeveloperTools(commands.Cog):
     @commands.has_any_role(
         settings.config["statusRoles"]["developer"])
     async def errorlog(self, ctx, action=None):
-        emoji = '✅'
         if action is None:
             await ctx.send(file=File('/root/.pm2/logs/NPC-error.log'))
         elif action == 'flush':
             os.flush()
-            await ctx.message.add_reaction(emoji)
+            await utils.emoji(ctx, '✅')
         elif action == 'delete':
             os.del_bkup()
-            await ctx.message.add_reaction(emoji)
+            await utils.emoji(ctx, '✅')
 
 def setup(client):
     client.add_cog(DeveloperTools(client))

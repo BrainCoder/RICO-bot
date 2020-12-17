@@ -65,10 +65,9 @@ async def logout(ctx):
     settings.config["statusRoles"]["developer"])
 async def creset(ctx):
     devlogs = client.get_channel(settings.config["channels"]["devlog"])
-    emoji = '✅'
     log = f'{utils.timestr}`cogs` loaded manually using !creset command'
     client.load_extension('cogs.cogs')
-    await ctx.message.add_reaction(emoji)
+    await utils.emoji(ctx, '✅')
     if prefix == '!':
         await devlogs.send(log)
 

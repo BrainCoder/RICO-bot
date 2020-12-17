@@ -73,9 +73,13 @@ def readFile(fileName):
     with open(fileName, 'r') as myfile:
         return myfile.read()
 
+async def emoji(ctx, emji):
+    await ctx.message.add_reaction(emji)
+
 """async def waitThenRun(seconds, fn):
     await asyncio.sleep(seconds)
-    await fn()"""
+    await fn()
+"""
 
 # Main Streak
 def is_in_streak_channel(ctx):

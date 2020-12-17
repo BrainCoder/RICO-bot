@@ -4,10 +4,9 @@ from discord.ext import commands, tasks
 from discord.ext.commands import Cog
 
 from re import search
-from datetime import datetime
+from datetime import datetime, timedelta
 from better_profanity import profanity
 from sqlalchemy import text, update
-from datetime import timedelta
 import settings
 import utils
 import asyncio
@@ -355,8 +354,7 @@ class ModCommands(commands.Cog):
         elif arg == 'add':
             with open('blacklist.txt', "a", encoding="utf-8") as f:
                 f.write("".join([f"{w}\n" for w in words]))
-            emoji = '✅'
-            await ctx.message.add_reaction(emoji)
+                await utils.emoji(ctx, '✅')
             profanity.load_censor_words_from_file('blacklist.txt', whitelist_words=whitelist)
             await devlogs.send(f'{utils.timestr}Reloaded `blacklist.txt` and `whitelist.txt` due to edit')
         elif arg == 'remove':
@@ -366,8 +364,7 @@ class ModCommands(commands.Cog):
                 f.write("".join([f"{w}\n" for w in stored if w not in words]))
                 profanity.load_censor_words_from_file('blacklist.txt', whitelist_words=whitelist)
                 await devlogs.send(f'{utils.timestr}Reloaded `blacklist.txt` and `whitelist.txt` due to edit')
-            emoji = '✅'
-            await ctx.message.add_reaction(emoji)
+            await utils.emoji(ctx, '✅')
         elif arg == 'blacklist':
             await ctx.send(file=File('blacklist.txt'))
         else:
@@ -389,7 +386,7 @@ class ModCommands(commands.Cog):
         result = utils.conn.execute(query).fetchone()
         if result:
             current_lynches = result[5] + 1
-            if utils.datetime.now() > (utils.datetime.fromtimestamp(result[7]) + utils.timedelta(hours=8)):
+            if utils.datetime.now() > (utils.datetime.fromtimestamp(result[7]) + timedelta(hours=8)):
                 current_lynches = 1
                 make_historical_query = text(f'update mod_event set historical = 1 '
                                              f'where recipient_id = {member.id} and event_type = 6')
@@ -420,10 +417,10 @@ class ModCommands(commands.Cog):
                 embed.add_field(name=f"User {member} was lynched! ", value=f"lynched by: {lyncher_list}")
                 await channel.send(embed=embed)
             else:
-                await ctx.channel.send('lynch acknowledged', delete_after=5)
+                await utils.emoji(ctx, '✅')
                 query = update(utils.userdata).where(utils.userdata.c.id == member.id) \
                     .values(lynch_count=current_lynches,
-                            lynch_expiration_time=(utils.datetime.now() + utils.timedelta(hours=8)).timestamp())
+                            lynch_expiration_time=(utils.datetime.now() + timedelta(hours=8)).timestamp())
                 utils.conn.execute(query)
                 mod_query = utils.mod_event.insert(). \
                     values(recipient_id=member.id, event_type=6, event_time=utils.datetime.now(),
@@ -438,13 +435,13 @@ class ModCommands(commands.Cog):
         """messages the given user through the bot"""
         channel = await member.create_dm()
         await channel.send(content)
-        emoji = '✅'
-        await ctx.message.add_reaction(emoji)
+        await utils.emoji(ctx, '✅')
     @dm.error
     async def dm_handler(self, ctx, error):
-        emoji = '❌'
         if isinstance(error, commands.CheckFailure):
-            await ctx.message.add_reaction(emoji)
+            await utils.emoji(ctx, '❌')
+        else:
+            pass
 
     @Cog.listener()
     async def on_message(self, message):
