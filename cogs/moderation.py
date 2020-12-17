@@ -281,6 +281,7 @@ class ModCommands(commands.Cog):
                         utils.conn.execute(user_data_query)
 
     @commands.command(name="kick")
+    @commands.cooldown(3, 600, commands.BucketType.user)
     @commands.has_any_role(
         settings.config["statusRoles"]["moderator"])
     async def kick(self, ctx, member: discord.User = None, *, reason=None):
@@ -316,6 +317,7 @@ class ModCommands(commands.Cog):
         await member.add_roles(underage_role)
 
     @commands.command(name="ban")
+    @commands.cooldown(3, 600, commands.BucketType.user)
     @commands.has_any_role(
         settings.config["statusRoles"]["moderator"])
     async def ban(self, ctx, member: discord.User = None, *, reason=None):
