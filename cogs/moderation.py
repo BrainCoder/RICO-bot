@@ -83,7 +83,6 @@ class ModCommands(commands.Cog):
             await ctx.author.add_roles(Selfmute_Role)
             await utils.doembed(ctx, "Selfmute", f'{ctx.author} selfmuted!', 'They shall remain inside the selfmute channel untill they choose to leave', ctx.author)
 
-
     @commands.command(name="purge", aliases=["clear"])
     @commands.has_any_role(
         settings.config["statusRoles"]["moderator"])
@@ -159,8 +158,6 @@ class ModCommands(commands.Cog):
     async def cooldown(self, ctx, user: discord.Member, *, time: TimeConverter = None):
         """takes the user out of the general channel for a specific amount of time"""
         cooldown_role = user.guild.get_role(settings.config["statusRoles"]["cooldown"])
-        logs_channel = self.client.get_channel(settings.config["channels"]["log"])
-        userAvatarUrl = user.avatar_url
         if time:
             await user.add_roles(cooldown_role)
             await utils.doembed(ctx, "Cooldown", f'{user} cooled-down by {ctx.author}', f'The cooldown will be removed in {time}s, or a moderator will have to remove it manually', user)
