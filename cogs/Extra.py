@@ -106,7 +106,8 @@ class Extra(commands.Cog):
         settings.config["statusRoles"]["vip"],
         settings.config["statusRoles"]["boost-vip"],
         settings.config["statusRoles"]["moderator"],
-        settings.config["statusRoles"]["semi-moderator"])
+        settings.config["statusRoles"]["semi-moderator"],
+        settings.config["statusRoles"]["trial-mod"])
     async def ui(self, ctx, *, member: discord.Member = None):
         #this definatley can be tidied in the future
         """gives basic info on the user tagged in the arg"""
@@ -134,7 +135,8 @@ class Extra(commands.Cog):
         settings.config["statusRoles"]["vip"],
         settings.config["statusRoles"]["boost-vip"],
         settings.config["statusRoles"]["moderator"],
-        settings.config["statusRoles"]["semi-moderator"])
+        settings.config["statusRoles"]["semi-moderator"],
+        settings.config["statusRoles"]["trial-mod"])
     async def avatar(self, ctx, *, avamember: discord.Member = None):
         """sends a link of the users avatar"""
         if avamember == None:
