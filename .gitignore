@@ -1,7 +1,5 @@
 .vscode
-token.txt
 __pycache__/
-main.db
 ids/test.json
 .idea/*
 ecosystem.config.js

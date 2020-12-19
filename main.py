@@ -7,10 +7,8 @@ import settings
 import utils
 
 if len(sys.argv) < 5:
-    print("Need config file and database url in order to run. Example: python config.json "
-          "mysql+pymysql://user(:password if present)@localhost/database_name"
-          "need gitlab token"
-          "need bot token")
+    print("\nArgs entered incorrectly, please refer to the args wikipage:\n"
+        "https://gitlab.com/HellHound0066/noporn-companion/-/wikis/Required-Arguments\n")
     sys.exit(0)
 
 with open(sys.argv[1], 'rt') as conf_file:
