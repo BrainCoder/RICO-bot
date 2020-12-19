@@ -83,7 +83,7 @@ class DeveloperTools(commands.Cog):
         if len(missing_members) > 0:
             dev_log_channel = self.client.get_channel(settings.config["channels"]["devlog"])
             await dev_log_channel.send(f'The following users were not in the database: '
-                                       f'{missing_members.join()}')
+                                       f'{",".join(missing_members)}')
         await ctx.send(f'Amount of users added: {str(len(members_added))}\n'
                        f'Amount of users lost: {str(len(members_lost))}')
 
