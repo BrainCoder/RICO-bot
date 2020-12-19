@@ -61,7 +61,7 @@ class DeveloperTools(commands.Cog):
         self._last_member = None
         self.url = 'https://gitlab.com/'
         self.authkey = sys.argv[3]
-        self.project_name = 'HellHound0066/noporn-companion'
+        self.project_name = settings.config["gitlabName"]
         self.project = None
         server = gitlab.Gitlab(self.url, self.authkey, api_version=4, ssl_verify=True)
         self.project = server.projects.get(self.project_name)
