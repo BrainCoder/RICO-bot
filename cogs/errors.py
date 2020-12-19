@@ -1,6 +1,5 @@
 import discord
 from discord.ext import commands
-
 import traceback
 import sys
 
@@ -37,7 +36,7 @@ class ErrorHandler(commands.Cog):
         elif isinstance(error, commands.MissingAnyRole):
             pass
         elif isinstance(error, discord.Forbidden):
-           pass
+            pass
         elif isinstance(error, discord.NotFound):
             pass
         else:

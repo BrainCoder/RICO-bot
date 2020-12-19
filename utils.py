@@ -1,12 +1,11 @@
 import json
-import asyncio
 import settings
-
-from datetime import datetime, timedelta
+from datetime import datetime
 from sqlalchemy import create_engine, MetaData, Table, Column, ForeignKey
 from sqlalchemy.dialects.mysql import BIGINT, INTEGER, TEXT, DATETIME, TINYINT
 from os import listdir
 from os.path import isfile, join
+import discord
 
 global engine
 global conn
@@ -62,19 +61,37 @@ def init():
     )
     meta.create_all(engine)
 
+# Devlogs timestamp
+today = datetime.now()
+ctoday = today.strftime("%d/%m/%Y")
+ctime = today.strftime("%H:%M")
+timestr = f'**[{ctoday}] [{ctime}] -**'
+
 def to_dt(t_stamp):
     return datetime.fromtimestamp(t_stamp)
-
 
 def readFile(fileName):
     with open(fileName, 'r') as myfile:
         return myfile.read()
 
+async def emoji(ctx, emji):
+    await ctx.message.add_reaction(emji)
 
-async def waitThenRun(seconds, fn):
+async def doembed(ctx, aname, fname, fval, user, channel=False):
+    if settings.config["prefix"] == '!':
+        logs_channel = ctx.guild.get_channel(settings.config["channels"]["log"])
+        embed = discord.Embed(color=ctx.author.color, timestamp=ctx.message.created_at)
+        embed.set_author(name=aname, icon_url=user.avatar_url)
+        embed.add_field(name=fname, value=fval)
+        if channel:
+            await ctx.send(embed=embed)
+        else:
+            await logs_channel.send(embed=embed)
+
+"""async def waitThenRun(seconds, fn):
     await asyncio.sleep(seconds)
     await fn()
-
+"""
 
 # Main Streak
 def is_in_streak_channel(ctx):

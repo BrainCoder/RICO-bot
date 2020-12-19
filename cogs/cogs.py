@@ -1,14 +1,10 @@
-from discord.ext import commands
-
 import settings
+import utils
 import traceback
 import sys
-from datetime import datetime
 
-today = datetime.now()
-ctoday = today.strftime("%d/%m/%Y")
-ctime = today.strftime("%H:%M")
-timestr = f'**[{ctoday}] [{ctime}] - **'
+from discord.ext import commands
+
 
 class cogs(commands.Cog):
 
@@ -22,35 +18,32 @@ class cogs(commands.Cog):
     async def cog(self, ctx, action, extension):
         """Command to manually toggle cogs. For action use either\n**load** - load the cog\n**unload** - unload the cog\n**reload** - reload the cog"""
         devlogs = self.client.get_channel(settings.config["channels"]["devlog"])
-        emoji = '✅'
-        log = f'{timestr}`{extension}` {action}ed manually'
+        log = f'{utils.timestr}`{extension}` {action}ed manually'
+        prefix = settings.config["prefix"]
         if action == 'load':
             self.client.load_extension(f'cogs.{extension}')
-            await ctx.message.add_reaction(emoji)
-            await devlogs.send(log)
+            await utils.emoji(ctx, '✅')
+            if prefix == "!":
+                await devlogs.send(log)
         elif action == 'unload':
             if extension == 'cogs':
-                emoji = '❌'
-                await ctx.message.add_reaction(emoji)
+                await utils.emoji(ctx, '❌')
             else:
                 self.client.unload_extension(f'cogs.{extension}')
-                await ctx.message.add_reaction(emoji)
-                await devlogs.send(log)
+                await utils.emoji(ctx, '✅')
+                if prefix == "!":
+                    await devlogs.send(log)
         elif action == 'reload':
             self.client.unload_extension(f'cogs.{extension}')
             self.client.load_extension(f'cogs.{extension}')
-            await ctx.message.add_reaction(emoji)
-            await devlogs.send(log)
+            await utils.emoji(ctx, '✅')
+            if prefix == "!":
+                await devlogs.send(log)
     @cog.error
     async def cog_handler(self, ctx, error):
-        emoji = '❌'
-        if isinstance(error, commands.ExtensionNotLoaded):
-            await ctx.message.add_reaction(emoji)
-        elif isinstance(error, commands.CommandInvokeError):
-            await ctx.message.add_reaction(emoji)
-        else:
-            print('Ignoring exception in command {}:'.format(ctx.command), file=sys.stderr)
-            traceback.print_exception(type(error), error, error.__traceback__, file=sys.stderr)
+        await utils.emoji(ctx, '❌')
+        print('Ignoring exception in command {}:'.format(ctx.command), file=sys.stderr)
+        traceback.print_exception(type(error), error, error.__traceback__, file=sys.stderr)
 
 def setup(client):
     client.add_cog(cogs(client))
