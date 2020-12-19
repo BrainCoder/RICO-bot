@@ -6,9 +6,11 @@ import sys
 import settings
 import utils
 
-if len(sys.argv) < 3:
+if len(sys.argv) < 5:
     print("Need config file and database url in order to run. Example: python config.json "
-          "mysql+pymysql://user(:password if present)@localhost/database_name")
+          "mysql+pymysql://user(:password if present)@localhost/database_name"
+          "need gitlab token"
+          "need bot token")
     sys.exit(0)
 
 with open(sys.argv[1], 'rt') as conf_file:
@@ -64,6 +66,4 @@ async def creset(ctx):
     if settings.config["prefix"] == '!':
         await devlogs.send(log)
 
-with open('token.txt', 'rt') as myfile:
-    contents = myfile.read()
-    client.run(f'{contents}')
+client.run(sys.argv[4])
