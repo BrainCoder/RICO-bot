@@ -11,6 +11,49 @@ import utils
 from sqlalchemy import update
 from re import search
 
+async def vi_db(ctx):
+    new_entries = 0
+    current_users = len(utils.conn.execute(utils.userdata.select()).fetchall())
+    for user in ctx.guild.members:
+        query = utils.userdata.select().where(utils.userdata.c.id == user.id)
+        result = utils.conn.execute(query).fetchone()
+        if not result and not user.bot:
+            query = utils.userdata.insert(). \
+                values(id=user.id)
+            utils.conn.execute(query)
+            new_entries += 1
+    new_count = len(utils.conn.execute(utils.userdata.select()).fetchall())
+    await ctx.channel.send("The old amount of users was " + str(current_users) + \
+                        "\nThe new amount of users is " + str(new_count))
+
+async def vi_member(ctx):
+    members_added = []
+    members_lost = []
+    missing_members = []
+    for user in ctx.guild.members:
+        query = utils.userdata.select().where(utils.userdata.c.id == user.id)
+        result = utils.conn.execute(query).fetchone()
+        if result:
+            member_role = ctx.guild.get_role(settings.config["statusRoles"]["member"])
+            if member_role in user.roles and result[11] == 0:
+                user_data_query = update(utils.userdata).where(utils.userdata.c.id == user.id) \
+                    .values(member=1)
+                utils.conn.execute(user_data_query)
+                members_added.append(user.name)
+            elif member_role not in user.roles and result[11] == 1:
+                user_data_query = update(utils.userdata).where(utils.userdata.c.id == user.id) \
+                    .values(member=0)
+                utils.conn.execute(user_data_query)
+                members_lost.append(user.name)
+        else:
+            missing_members.append(user.name)
+    if len(missing_members) > 0:
+        dev_log_channel = ctx.guild.get_channel(settings.config["channels"]["devlog"])
+        await dev_log_channel.send(f'The following users were not in the database: '
+                                f'{",".join(missing_members)}')
+    await ctx.send(f'Amount of users added: {str(len(members_added))}\n'
+                f'Amount of users lost: {str(len(members_lost))}')
+
 class DeveloperTools(commands.Cog):
 
     def __init__(self, client):
@@ -80,49 +123,10 @@ class DeveloperTools(commands.Cog):
         a member value set."""
         if action == 'database':
             await utils.emoji(ctx, '✅')
-            new_entries = 0
-            current_users = len(utils.conn.execute(utils.userdata.select()).fetchall())
-            for user in ctx.guild.members:
-                query = utils.userdata.select().where(utils.userdata.c.id == user.id)
-                result = utils.conn.execute(query).fetchone()
-                if not result and not user.bot:
-                    query = utils.userdata.insert(). \
-                        values(id=user.id)
-                    utils.conn.execute(query)
-                    new_entries += 1
-            new_count = len(utils.conn.execute(utils.userdata.select()).fetchall())
-            await ctx.channel.send("The old amount of users was " + str(current_users) + \
-                                "\nThe new amount of users is " + str(new_count))
+            await vi_db(ctx)
         elif action == 'member':
             await utils.emoji(ctx, '✅')
-            members_added = []
-            members_lost = []
-            missing_members = []
-            for user in ctx.guild.members:
-                query = utils.userdata.select().where(utils.userdata.c.id == user.id)
-                result = utils.conn.execute(query).fetchone()
-                if result:
-                    member_role = ctx.guild.get_role(settings.config["statusRoles"]["member"])
-                    if member_role in user.roles and result[11] == 0:
-                        user_data_query = update(utils.userdata).where(utils.userdata.c.id == user.id) \
-                            .values(member=1)
-                        utils.conn.execute(user_data_query)
-                        members_added.append(user.name)
-                    elif member_role not in user.roles and result[11] == 1:
-                        user_data_query = update(utils.userdata).where(utils.userdata.c.id == user.id) \
-                            .values(member=0)
-                        utils.conn.execute(user_data_query)
-                        members_lost.append(user.name)
-                else:
-                    missing_members.append(user.name)
-            if len(missing_members) > 0:
-                dev_log_channel = self.client.get_channel(settings.config["channels"]["devlog"])
-                await dev_log_channel.send(f'The following users were not in the database: '
-                                        f'{missing_members.join()}')
-            await ctx.send(f'Amount of users added: {str(len(members_added))}\n'
-                        f'Amount of users lost: {str(len(members_lost))}')
-        else:
-            await ctx.send('please specify which verification you want carry out, for more information on how the command works type in `!help verifyintegrity`')
+            await vi_member(ctx)
 
     @commands.command(name='error')
     @commands.has_any_role(
