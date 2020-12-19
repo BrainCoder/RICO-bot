@@ -99,7 +99,8 @@ class ModCommands(commands.Cog):
     @commands.command(name="member")
     @commands.has_any_role(
         settings.config["statusRoles"]["moderator"],
-        settings.config["statusRoles"]["semi-moderator"])
+        settings.config["statusRoles"]["semi-moderator"],
+        settings.config["statusRoles"]["trial-mod"])
     async def member(self, ctx, user: discord.Member):
         await self.client.wait_until_ready()
         member_role = ctx.guild.get_role(settings.config["statusRoles"]["member"])
@@ -111,7 +112,8 @@ class ModCommands(commands.Cog):
     @commands.command(name="mute", aliases=['s', 'strike'])
     @commands.has_any_role(
         settings.config["statusRoles"]["moderator"],
-        settings.config["statusRoles"]["semi-moderator"])
+        settings.config["statusRoles"]["semi-moderator"],
+        settings.config["statusRoles"]["trial-mod"])
     async def mute(self, ctx, user: discord.Member, *, reason=None):
         """mutes the user and puts a strike against their name"""
         await self.client.wait_until_ready()
@@ -152,7 +154,8 @@ class ModCommands(commands.Cog):
     @commands.command(name="cooldown", aliases=['c'])
     @commands.has_any_role(
         settings.config["statusRoles"]["moderator"],
-        settings.config["statusRoles"]["semi-moderator"])
+        settings.config["statusRoles"]["semi-moderator"],
+        settings.config["statusRoles"]["trial-mod"])
     async def cooldown(self, ctx, user: discord.Member, *, time: TimeConverter = None):
         """takes the user out of the general channel for a specific amount of time"""
         cooldown_role = user.guild.get_role(settings.config["statusRoles"]["cooldown"])
@@ -182,7 +185,8 @@ class ModCommands(commands.Cog):
     @commands.command(name="unmute")
     @commands.has_any_role(
         settings.config["statusRoles"]["moderator"],
-        settings.config["statusRoles"]["semi-moderator"])
+        settings.config["statusRoles"]["semi-moderator"],
+        settings.config["statusRoles"]["trial-mod"])
     async def nunmute(self, ctx, user: discord.Member = None, *, time: TimeConverter = None):
         """unmute the user"""
         await self.client.wait_until_ready()
@@ -258,7 +262,8 @@ class ModCommands(commands.Cog):
     @commands.command(name='underage')
     @commands.has_any_role(
         settings.config["statusRoles"]["moderator"],
-        settings.config["statusRoles"]["semi-moderator"])
+        settings.config["statusRoles"]["semi-moderator"],
+        settings.config["statusRoles"]["trial-mod"])
     async def underage(self, ctx, member: discord.Member):
         underage_role = ctx.guild.get_role(settings.config["statusRoles"]["underage"])
         await member.add_roles(underage_role)
