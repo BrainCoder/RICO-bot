@@ -1,12 +1,10 @@
 import discord
 from discord.ext import commands
+
 import os
 import sys
 import settings
-
 import utils
-from streak import relapse
-from streak import update
 
 if len(sys.argv) < 3:
     print("Need config file and database url in order to run. Example: python config.json "
@@ -19,28 +17,23 @@ with open(sys.argv[1], 'rt') as conf_file:
     settings.config["databaseUrl"] = sys.argv[2]
     utils.init()
 
-prefix = settings.config["prefix"]
-
 intents = discord.Intents.all()
 intents.members = True
 intents.presences = True
-client = commands.Bot(command_prefix=prefix, intents=intents, case_insensitive=True)
-
-client.add_command(relapse)
-client.add_command(update)
+client = commands.Bot(command_prefix=settings.config["prefix"], intents=intents, case_insensitive=True)
 
 @client.event
 async def on_ready():
     print('Bot is active')
     await client.wait_until_ready()
     devlogs = client.get_channel(settings.config["channels"]["devlog"])
-    if prefix == '!':
+    if settings.config["prefix"] == '!':
         await devlogs.send(f'{utils.timestr}Bot is online')
         await devlogs.send(f'{utils.timestr}Loaded `blacklist.txt` & `whitelist.txt` due to startup')
     await cogs_load()
 
 async def cogs_load():
-    if prefix == '!':
+    if settings.config["prefix"] == '!':
         devlogs = client.get_channel(settings.config["channels"]["devlog"])
         for filename in os.listdir('./cogs'):
             if filename.endswith('.py'):
@@ -68,7 +61,7 @@ async def creset(ctx):
     log = f'{utils.timestr}`cogs` loaded manually using !creset command'
     client.load_extension('cogs.cogs')
     await utils.emoji(ctx, '✅')
-    if prefix == '!':
+    if settings.config["prefix"] == '!':
         await devlogs.send(log)
 
 with open('token.txt', 'rt') as myfile:
