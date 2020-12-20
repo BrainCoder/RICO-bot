@@ -53,9 +53,9 @@ class Extra(commands.Cog):
     @commands.has_any_role(
         settings.config["statusRoles"]["vip"],
         settings.config["statusRoles"]["boost-vip"],
-        settings.config["statusRoles"]["moderator"],
-        settings.config["statusRoles"]["semi-moderator"],
-        settings.config["statusRoles"]["trial-mod"])
+        settings.config["staffRoles"]["moderator"],
+        settings.config["staffRoles"]["semi-moderator"],
+        settings.config["staffRoles"]["trial-mod"])
     async def ui(self, ctx, *, member: discord.Member = None):
         # this definatley can be tidied in the future
         """gives basic info on the user tagged in the arg"""
@@ -82,9 +82,9 @@ class Extra(commands.Cog):
     @commands.has_any_role(
         settings.config["statusRoles"]["vip"],
         settings.config["statusRoles"]["boost-vip"],
-        settings.config["statusRoles"]["moderator"],
-        settings.config["statusRoles"]["semi-moderator"],
-        settings.config["statusRoles"]["trial-mod"])
+        settings.config["staffRoles"]["moderator"],
+        settings.config["staffRoles"]["semi-moderator"],
+        settings.config["staffRoles"]["trial-mod"])
     async def avatar(self, ctx, *, avamember: discord.Member = None):
         """sends a link of the users avatar"""
         if avamember is None:
@@ -98,7 +98,7 @@ class Extra(commands.Cog):
     async def gfsandwich(self, ctx):
         """Evidence that the bot is hounds gf"""
         Hound = False
-        HDev = ctx.guild.get_role(settings.config["statusRoles"]["head-dev"])
+        HDev = ctx.guild.get_role(settings.config["staffRoles"]["head-dev"])
         for role in ctx.author.roles:
             if role.id == HDev.id:
                 Hound = True

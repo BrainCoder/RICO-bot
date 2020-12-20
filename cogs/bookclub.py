@@ -10,8 +10,8 @@ class BookClub(commands.Cog):
     @commands.command(name="bc_members", pass_context=True)
     @commands.has_any_role(
         settings.config["statusRoles"]["bc-facilitator"],
-        settings.config["statusRoles"]["moderator"],
-        settings.config["statusRoles"]["developer"])
+        settings.config["staffRoles"]["moderator"],
+        settings.config["staffRoles"]["developer"])
     async def bookclub_members(self, ctx):
         """Displays the total number of memebers currently with the BookClub role"""
         guild = ctx.guild

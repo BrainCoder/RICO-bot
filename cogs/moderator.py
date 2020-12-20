@@ -15,8 +15,8 @@ class ModeratorTools(commands.Cog):
 
     @commands.command(name="getstrikes", aliases=['sr', 'gs', 'report'])
     @commands.has_any_role(
-        settings.config["statusRoles"]["moderator"],
-        settings.config["statusRoles"]["semi-moderator"]
+        settings.config["staffRoles"]["moderator"],
+        settings.config["staffRoles"]["semi-moderator"]
     )
     async def report(self, ctx, user: discord.User = None, output_format="raw", historical="historical",
                      action="mute"):
@@ -113,9 +113,9 @@ class ModeratorTools(commands.Cog):
 
     @commands.command(name="offline")
     @commands.has_any_role(
-        settings.config["statusRoles"]["head-moderator"],
-        settings.config["statusRoles"]["moderator"],
-        settings.config["statusRoles"]["semi-moderator"]
+        settings.config["staffRoles"]["head-moderator"],
+        settings.config["staffRoles"]["moderator"],
+        settings.config["staffRoles"]["semi-moderator"]
     )
     async def offline(self, ctx, role):
         """Lets you check which users are offline given the name of a role.
