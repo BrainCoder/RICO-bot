@@ -112,8 +112,10 @@ class ModCommands(commands.Cog):
         member_role = ctx.guild.get_role(settings.config["statusRoles"]["member"])
         if member_role in user.roles:
             await remove_member_role(self, ctx, user, member_role)
+            await utils.emoji(ctx, '✅')
         else:
             await add_member_role(self, ctx, user, member_role)
+            await utils.emoji(ctx, '✅')
 
     @commands.command(name="mute", aliases=['s', 'strike'])
     @commands.has_any_role(
@@ -273,6 +275,7 @@ class ModCommands(commands.Cog):
     async def underage(self, ctx, member: discord.Member):
         underage_role = ctx.guild.get_role(settings.config["statusRoles"]["underage"])
         await member.add_roles(underage_role)
+        await utils.emoji(ctx, '✅')
 
     @commands.command(name="ban")
     @commands.cooldown(3, 600, commands.BucketType.user)
