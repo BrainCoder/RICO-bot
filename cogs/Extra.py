@@ -2,9 +2,12 @@ import discord
 from discord.ext import commands
 from discord.ext.commands import cooldown
 
+from datetime import datetime, timedelta
 import random
 import aiohttp
 import settings
+
+import utils
 
 
 class Extra(commands.Cog):
@@ -57,26 +60,23 @@ class Extra(commands.Cog):
         settings.config["staffRoles"]["semi-moderator"],
         settings.config["staffRoles"]["trial-mod"])
     async def ui(self, ctx, *, member: discord.Member = None):
-        # this definatley can be tidied in the future
         """gives basic info on the user tagged in the arg"""
         if member is None:
-            DateCreated = ctx.author.created_at.strftime("%A, %B %d %Y at %H:%M:%S %p")
-            MemberJoinedAt = ctx.author.joined_at.strftime("%A, %B %d %Y at %H:%M:%S %p")
-            userAvatarUrl = ctx.author.avatar_url
-            embed = discord.Embed(color=ctx.author.color, timestamp=ctx.message.created_at)
-            embed.set_author(name="UI", icon_url=userAvatarUrl)
-            embed.add_field(name='Account was created at: ', value=f"{DateCreated}.")
-            embed.add_field(name="Member joined at: ", value=f"{MemberJoinedAt}.")
-            await ctx.send(embed=embed)
-        else:
-            DateCreated = member.created_at.strftime("%A, %B %d %Y at %H:%M:%S %p")
-            MemberJoinedAt = member.joined_at.strftime("%A, %B %d %Y at %H:%M:%S %p")
-            userAvatarUrl = member.avatar_url
-            embed = discord.Embed(color=ctx.author.color, timestamp=ctx.message.created_at)
-            embed.set_author(name="UI", icon_url=userAvatarUrl)
-            embed.add_field(name='Account was created at: ', value=f"{DateCreated}.")
-            embed.add_field(name="Member joined at: ", value=f"{MemberJoinedAt}.")
-            await ctx.send(embed=embed)
+            member = ctx.author
+        member_joined_at = member.joined_at.strftime("%A, %B %d %Y at %H:%M:%S %p")
+        user_query = utils.userdata.select().where(utils.userdata.c.id == member.id)
+        result = utils.conn.execute(user_query).fetchone()
+        if result and result[14] != 0:
+            member_joined_at = (datetime.fromtimestamp((result[14])) -
+                                timedelta(hours=settings.config["memberUpdateInterval"])) \
+                .strftime("%A, %B %d %Y at %H:%M:%S %p")
+        date_created = member.created_at.strftime("%A, %B %d %Y at %H:%M:%S %p")
+        user_avatar_url = member.avatar_url
+        embed = discord.Embed(color=ctx.author.color, timestamp=ctx.message.created_at)
+        embed.set_author(name="UI", icon_url=user_avatar_url)
+        embed.add_field(name='Account was created at: ', value=f"{date_created}.")
+        embed.add_field(name="Member joined at: ", value=f"{member_joined_at}.")
+        await ctx.send(embed=embed)
 
     @commands.command(name="avatar", aliases=["av"])
     @commands.has_any_role(
