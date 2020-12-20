@@ -4,3 +4,5 @@ ids/test.json
 .idea/*
 ecosystem.config.js
 website-blacklist.txt
+blacklist.txt
+whitelist.txt
