@@ -22,7 +22,7 @@ class welcome(commands.Cog):
                 await channel.send(
                     f'{member.mention} Welcome! Please go to <#{settings.config["channels"]["rules"]}> to read'
                     f' an overview of what this server is about. Go to <#{settings.config["channels"]["streak-guide"]}>'
-                    f'and <#{settings.config["channels"]["roles-and-access"]}>'
+                    f' and <#{settings.config["channels"]["roles-and-access"]}>'
                     f' to see the commands that you can use to assign yourself.')
                 query = utils.userdata.insert(). \
                     values(id=member.id,
