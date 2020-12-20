@@ -81,8 +81,11 @@ class DeveloperTools(commands.Cog):
         if search(rawregex, raw):
             pattern = re.compile(" - ")
             broken = pattern.split(raw)
-            self.project.issues.create({'title': f'{broken[0]}', 'description': f'{ broken[1]}\n\nIssue created by: {ctx.message.author.name}'})
-            await utils.emoji(ctx, '✅')
+            if "-" in broken[1]:
+                await ctx.send('Please do not include `-` in your job description')
+            else:
+                self.project.issues.create({'title': f'{broken[0]}', 'description': f'{ broken[1]}\n\nIssue created by: {ctx.message.author.name}'})
+                await utils.emoji(ctx, '✅')
         else:
             await ctx.send('Please enter your job in the following format\n```!cl {job title} - {job description}```')
 
