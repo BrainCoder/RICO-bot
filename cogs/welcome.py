@@ -3,6 +3,7 @@ from discord.ext.commands import Cog
 
 import utils
 
+from datetime import datetime, timedelta
 import settings
 
 class welcome(commands.Cog):
@@ -20,13 +21,13 @@ class welcome(commands.Cog):
             if not result:
                 await channel.send(
                     f'{member.mention} Welcome! Please go to <#{settings.config["channels"]["rules"]}> to read'
-                    f' an overview of what this server is about. Go to <#{settings.config["channels"]["streak-guide"]}> '
+                    f' an overview of what this server is about. Go to <#{settings.config["channels"]["streak-guide"]}>'
                     f'and <#{settings.config["channels"]["roles-and-access"]}>'
                     f' to see the commands that you can use to assign yourself.')
                 query = utils.userdata.insert(). \
                     values(id=member.id,
-                           member_activation_date=int((utils.datetime.now() +
-                                utils.timedelta(hours=settings.config["memberUpdateInterval"])).timestamp()))
+                           member_activation_date=int((datetime.now() +
+                                timedelta(hours=settings.config["memberUpdateInterval"])).timestamp()))
                 utils.conn.execute(query)
             else:
                 await channel.send(

@@ -1,13 +1,12 @@
 from discord.ext import commands
 
 from utils import idData
-
 import utils
 import settings
 import asyncio
 import traceback
 import sys
-from datetime import timedelta
+from datetime import datetime, timedelta
 
 def getStreakString(total_streak_length):
     days, remainder = divmod(total_streak_length, 60*60*24)
@@ -33,7 +32,7 @@ def getDeservedStreakRole(days, serverID):
             return idData[serverID]['streakRoles'][role]
 
 async def updateStreakRole(member, startingDate):
-    days = (utils.datetime.today() - startingDate).days
+    days = (datetime.today() - startingDate).days
     owned = getOwnedStreakRole(member)
     deserved = getDeservedStreakRole(days, member.guild.id)
     if owned == deserved:
@@ -113,7 +112,7 @@ class Streak(commands.Cog):
                     await asyncio.sleep(5)
                     await message.delete()
                 return
-            current_starting_date = utils.datetime.today() - timedelta(days=n_days, hours=n_hours)
+            current_starting_date = datetime.today() - timedelta(days=n_days, hours=n_hours)
             query = utils.userdata.select().where(utils.userdata.c.id == ctx.author.id)
             rows = utils.conn.execute(query).fetchall()
             if(len(rows)):
@@ -189,7 +188,7 @@ class Streak(commands.Cog):
         rows = utils.conn.execute(query).fetchall()
         if(len(rows) and rows[0]['last_relapse'] is not None):
             last_starting_date = utils.to_dt(rows[0]['last_relapse'])
-            total_streak_length = (utils.datetime.today() - last_starting_date).total_seconds()
+            total_streak_length = (datetime.today() - last_starting_date).total_seconds()
             [daysStr, middleStr, hoursStr] = getStreakString(total_streak_length)
             if not Anon:
                 await updateStreakRole(ctx.author, last_starting_date)
