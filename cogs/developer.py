@@ -73,6 +73,7 @@ class DeveloperTools(commands.Cog):
     @commands.command(name="checklist", aliases=['cl'])
     @commands.has_any_role(
         settings.config["statusRoles"]["moderator"],
+        settings.config["statusRoles"]["semi-moderator"],
         settings.config["statusRoles"]["developer"])
     async def cl(self, ctx, *, raw):
         """Add the message to the dev team job-board"""
