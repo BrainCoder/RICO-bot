@@ -101,6 +101,10 @@ def is_in_streak_channel(ctx):
 async def is_in_complaint_channel(ctx):
     return ctx.channel.id == settings.config["channels"]["complaints"]
 
+# Bump Channel
+async def NotInBump(ctx):
+    return ctx.channel.id != settings.config["channels"]["bump"]
+
 """
 def hasPerms(ctx, requiredLevel):
     for role in idData['streakRoles']:

@@ -72,6 +72,12 @@ class ModCommands(commands.Cog):
         self._last_member = None
         self.check_member_status.start()
 
+    @commands.command(name='d')
+    @commands.check(utils.NotInBump)
+    async def dBumpChannel(self, ctx, *, args):
+        await ctx.message.delete()
+        await ctx.send(f'Wrong channel! Please bump the server in <#{settings.config["channels"]["bump"]}>', delete_after=5)
+
     @commands.command(name='selfmute')
     @commands.has_any_role(
         settings.config["statusRoles"]["member"])
