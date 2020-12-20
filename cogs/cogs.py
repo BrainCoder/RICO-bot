@@ -14,7 +14,7 @@ class cogs(commands.Cog):
 
     @commands.command(name="cog", aliases=["cogs"])
     @commands.has_any_role(
-        settings.config["statusRoles"]["developer"])
+        settings.config["staffRoles"]["developer"])
     async def cog(self, ctx, action, extension):
         """Command to manually toggle cogs. For action use either\n**load** - load the cog\n**unload** - unload the cog\n**reload** - reload the cog"""
         devlogs = self.client.get_channel(settings.config["channels"]["devlog"])

@@ -26,7 +26,7 @@ class MonthlyChallenge(commands.Cog):
 
     @commands.command(name="mstartchallenge", pass_context=True)
     @commands.has_any_role(
-        settings.config["statusRoles"]["developer"])
+        settings.config["staffRoles"]["developer"])
     async def mstartChallenge(self, ctx):
         """starts that months monthly challenge"""
         newParticipants = []
@@ -47,7 +47,7 @@ class MonthlyChallenge(commands.Cog):
 
     @commands.command(name="mendchallenge", pass_context=True)
     @commands.has_any_role(
-        settings.config["statusRoles"]["developer"])
+        settings.config["staffRoles"]["developer"])
     async def mendChallenge(self, ctx):
         """ends that monthly challenge"""
         newParticipants = []
@@ -77,7 +77,7 @@ class MonthlyChallenge(commands.Cog):
 
     @commands.command(name="ystartchallenge", pass_context=True)
     @commands.has_any_role(
-        settings.config["statusRoles"]["developer"])
+        settings.config["staffRoles"]["developer"])
     async def ystartChallenge(self, ctx):
         """starts that months monthly challenge"""
         newParticipants = []
@@ -98,7 +98,7 @@ class MonthlyChallenge(commands.Cog):
 
     @commands.command(name="yendchallenge", pass_context=True)
     @commands.has_any_role(
-        settings.config["statusRoles"]["developer"])
+        settings.config["staffRoles"]["developer"])
     async def yendChallenge(self, ctx):
         """ends that monthly challenge"""
         newParticipants = []

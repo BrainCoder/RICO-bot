@@ -72,9 +72,9 @@ class DeveloperTools(commands.Cog):
 
     @commands.command(name="checklist", aliases=['cl'])
     @commands.has_any_role(
-        settings.config["statusRoles"]["moderator"],
-        settings.config["statusRoles"]["semi-moderator"],
-        settings.config["statusRoles"]["developer"])
+        settings.config["staffRoles"]["moderator"],
+        settings.config["staffRoles"]["semi-moderator"],
+        settings.config["staffRoles"]["developer"])
     async def cl(self, ctx, *, raw):
         """Add the message to the dev team job-board"""
         rawregex = r"[a-zA-Z0-9] - [a-zA-Z0-9]"
@@ -96,7 +96,7 @@ class DeveloperTools(commands.Cog):
 
     @commands.command(name="getchannel")
     @commands.has_any_role(
-        settings.config["statusRoles"]["developer"])
+        settings.config["staffRoles"]["developer"])
     async def getchannel(self, ctx, id):
         """Find a channel with the channel ID"""
         channel = ctx.guild.get_channel(int(id))
@@ -104,7 +104,7 @@ class DeveloperTools(commands.Cog):
 
     @commands.command(name='repeat', aliases=['mimic', 'copy'])
     @commands.has_any_role(
-        settings.config["statusRoles"]["developer"])
+        settings.config["staffRoles"]["developer"])
     async def do_repeat(self, ctx, *, inp: str):
         """repeats the input you give it"""
         await ctx.send(inp)
@@ -119,7 +119,7 @@ class DeveloperTools(commands.Cog):
 
     @commands.command(name='verifyintegrity', aliases=['vi', 'verify'])
     @commands.has_any_role(
-        settings.config["statusRoles"]["developer"])
+        settings.config["staffRoles"]["developer"])
     async def verifyintegrity(self, ctx, action):
         """command does one of two things based on the arguments given\n**database** - Ensures that all users currently in the server are inside the database, and adds them if not.\n**memeber** - Verifies the member status using the guild as the source of truth
         of users within the guild that the command was typed in.
@@ -134,7 +134,7 @@ class DeveloperTools(commands.Cog):
 
     @commands.command(name='error')
     @commands.has_any_role(
-        settings.config["statusRoles"]["developer"])
+        settings.config["staffRoles"]["developer"])
     async def errorlog(self, ctx, action=None):
         if action is None:
             await ctx.send(file=File('/root/.pm2/logs/NPC-error.log'))

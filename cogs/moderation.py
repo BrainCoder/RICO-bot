@@ -64,6 +64,28 @@ async def add_member_role(self, ctx, user, member_role):
         .values(member=1)
     utils.conn.execute(user_data_query)
 
+async def complaintsHandler(message):
+    complaints_channel = message.guild.get_channel(settings.config["channels"]["complaints"])
+    bot_id = settings.config["botId"]
+    if message.author.id != bot_id:
+        await complaints_channel.send(f"<@{message.author.id}> said: {message.content}")
+
+async def spamFilter(message):
+    muted_role = message.guild.get_role(settings.config["statusRoles"]["muted"])
+    await message.author.add_roles(muted_role)
+    embed = discord.Embed(color=message.author.color, timestamp=message.created_at)
+    embed.set_author(name="Mute", icon_url=message.author.avatar_url)
+    embed.add_field(name=f"{message.author} has been Muted! ", value="muted for mention spamming")
+    logs_channel = message.guild.get_channel(settings.config["channels"]["log"])
+    await logs_channel.send(embed=embed)
+    reason = 'auto muted for spam pinging'
+    mod_query = utils.mod_event.insert(). \
+        values(recipient_id=message.author.id, event_type=3, event_time=utils.datetime.now(), reason=reason,
+            issuer_id=settings.config["botId"], historical=0)
+    utils.conn.execute(mod_query)
+    user_data_query = update(utils.userdata).where(utils.userdata.c.id == message.author.id) \
+        .values(mute=1)
+    utils.conn.execute(user_data_query)
 
 class ModCommands(commands.Cog):
 
@@ -93,7 +115,7 @@ class ModCommands(commands.Cog):
 
     @commands.command(name="purge", aliases=["clear"])
     @commands.has_any_role(
-        settings.config["statusRoles"]["moderator"])
+        settings.config["staffRoles"]["moderator"])
     async def purge(self, ctx, amount=5):
         """clears messages in the given channel"""
         if amount > 50:
@@ -104,9 +126,9 @@ class ModCommands(commands.Cog):
 
     @commands.command(name="member")
     @commands.has_any_role(
-        settings.config["statusRoles"]["moderator"],
-        settings.config["statusRoles"]["semi-moderator"],
-        settings.config["statusRoles"]["trial-mod"])
+        settings.config["staffRoles"]["moderator"],
+        settings.config["staffRoles"]["semi-moderator"],
+        settings.config["staffRoles"]["trial-mod"])
     async def member(self, ctx, user: discord.Member):
         await self.client.wait_until_ready()
         member_role = ctx.guild.get_role(settings.config["statusRoles"]["member"])
@@ -119,9 +141,9 @@ class ModCommands(commands.Cog):
 
     @commands.command(name="mute", aliases=['s', 'strike'])
     @commands.has_any_role(
-        settings.config["statusRoles"]["moderator"],
-        settings.config["statusRoles"]["semi-moderator"],
-        settings.config["statusRoles"]["trial-mod"])
+        settings.config["staffRoles"]["moderator"],
+        settings.config["staffRoles"]["semi-moderator"],
+        settings.config["staffRoles"]["trial-mod"])
     async def mute(self, ctx, user: discord.Member, *, reason=None):
         """mutes the user and puts a strike against their name"""
         await self.client.wait_until_ready()
@@ -161,9 +183,9 @@ class ModCommands(commands.Cog):
 
     @commands.command(name="cooldown", aliases=['c'])
     @commands.has_any_role(
-        settings.config["statusRoles"]["moderator"],
-        settings.config["statusRoles"]["semi-moderator"],
-        settings.config["statusRoles"]["trial-mod"])
+        settings.config["staffRoles"]["moderator"],
+        settings.config["staffRoles"]["semi-moderator"],
+        settings.config["staffRoles"]["trial-mod"])
     async def cooldown(self, ctx, user: discord.Member, *, time: TimeConverter = None):
         """takes the user out of the general channel for a specific amount of time"""
         cooldown_role = user.guild.get_role(settings.config["statusRoles"]["cooldown"])
@@ -192,9 +214,9 @@ class ModCommands(commands.Cog):
 
     @commands.command(name="unmute")
     @commands.has_any_role(
-        settings.config["statusRoles"]["moderator"],
-        settings.config["statusRoles"]["semi-moderator"],
-        settings.config["statusRoles"]["trial-mod"])
+        settings.config["staffRoles"]["moderator"],
+        settings.config["staffRoles"]["semi-moderator"],
+        settings.config["staffRoles"]["trial-mod"])
     async def nunmute(self, ctx, user: discord.Member = None, *, time: TimeConverter = None):
         """unmute the user"""
         await self.client.wait_until_ready()
@@ -249,7 +271,7 @@ class ModCommands(commands.Cog):
     @commands.command(name="kick")
     @commands.cooldown(3, 600, commands.BucketType.user)
     @commands.has_any_role(
-        settings.config["statusRoles"]["moderator"])
+        settings.config["staffRoles"]["moderator"])
     async def kick(self, ctx, member: discord.User = None, *, reason=None):
         """kicks the user from the server"""
         if member is None or member == ctx.message.author:
@@ -269,9 +291,9 @@ class ModCommands(commands.Cog):
 
     @commands.command(name='underage')
     @commands.has_any_role(
-        settings.config["statusRoles"]["moderator"],
-        settings.config["statusRoles"]["semi-moderator"],
-        settings.config["statusRoles"]["trial-mod"])
+        settings.config["staffRoles"]["moderator"],
+        settings.config["staffRoles"]["semi-moderator"],
+        settings.config["staffRoles"]["trial-mod"])
     async def underage(self, ctx, member: discord.Member):
         underage_role = ctx.guild.get_role(settings.config["statusRoles"]["underage"])
         await member.add_roles(underage_role)
@@ -280,7 +302,7 @@ class ModCommands(commands.Cog):
     @commands.command(name="ban")
     @commands.cooldown(3, 600, commands.BucketType.user)
     @commands.has_any_role(
-        settings.config["statusRoles"]["moderator"])
+        settings.config["staffRoles"]["moderator"])
     async def ban(self, ctx, member: discord.User = None, *, reason=None):
         """bans the user from the server"""
         if member is None or member == ctx.message.author:
@@ -300,7 +322,7 @@ class ModCommands(commands.Cog):
 
     @commands.command(name="automod")
     @commands.has_any_role(
-        settings.config["statusRoles"]["moderator"])
+        settings.config["staffRoles"]["moderator"])
     async def automod_edit(self, ctx, arg=None, *words):
         invarg = 'Please use the corect arguments\n```!automod add - add word to blacklist\n!automod remove - remove word from blacklist\n!automod blacklist - to see the blacklist```'
         devlogs = self.client.get_channel(settings.config["channels"]["devlog"])
@@ -328,8 +350,8 @@ class ModCommands(commands.Cog):
     @commands.command(name="lynch")
     @commands.has_any_role(
         settings.config["statusRoles"]["member"],
-        settings.config["statusRoles"]["moderator"],
-        settings.config["statusRoles"]["semi-moderator"])
+        settings.config["staffRoles"]["moderator"],
+        settings.config["staffRoles"]["semi-moderator"])
     async def nlynch(self, ctx, member: discord.Member = None):
         """A command to be used if there is no staff present, where three members can type in `!lynch` in order to mute a user"""
         if member is None:
@@ -396,58 +418,47 @@ class ModCommands(commands.Cog):
 
     @Cog.listener()
     async def on_message(self, message):
-        prefix = settings.config["prefix"]
-        bot_id = settings.config["botId"]
-        if prefix == "!":
-            complaints_channel = self.client.get_channel(settings.config["channels"]["complaints"])
+        if settings.config["prefix"] == "!":
             if message.guild is None:
-                if message.author.id != bot_id:
-                    await complaints_channel.send(f"<@{message.author.id}> said: {message.content}")
+                await complaintsHandler(message)
             else:
                 with open(settings.config["websiteBlacklistFilePath"]) as blocked_file:
                     for website in blocked_file:
                         website = website.replace("\n", "")
                         if website in message.content:
                             await message.delete()
-                            staff_chat = self.client.get_channel(settings.config["channels"]["staff-lounge"])
+                            staff_chat = message.guild.get_channel(settings.config["channels"]["staff-lounge"])
                             await staff_chat.send(f'{message.author.name} tried to post a link from the blacklist.')
                             break
-                member = False
-                # I would like to add a staff check to allow staff memebers to post invite links however i dont know how to do this, this is a job for the future
-                member_role = message.guild.get_role(settings.config["statusRoles"]["member"])
-                muted_role = message.guild.get_role(settings.config["statusRoles"]["muted"])
-                logs_channel = message.guild.get_channel(settings.config["channels"]["log"])
-                author = message.author
-                userAvatarUrl = author.avatar_url
-                def _check(m):
-                    return (m.author == author and len(m.mentions) and (datetime.utcnow()-m.created_at).seconds < 15)
-                if type(author) is discord.User:
-                    return
-                for role in author.roles:
-                    if role.id == member_role.id:
-                        member = True
-                if not author.bot:
-                    if len((list(filter(lambda m: _check(m), self.client.cached_messages)))) >= 5:
-                        await author.add_roles(muted_role)
-                        embed = discord.Embed(color=author.color, timestamp=message.created_at)
-                        embed.set_author(name="Mute", icon_url=userAvatarUrl)
-                        embed.add_field(name=f"{author} has been Muted! ", value="muted for mention spamming")
-                        await logs_channel.send(embed=embed)
-                        reason = 'auto muted for spam pinging'
-                        mod_query = utils.mod_event.insert(). \
-                            values(recipient_id=author.id, event_type=3, event_time=utils.datetime.now(), reason=reason,
-                                issuer_id=bot_id, historical=0)
-                        utils.conn.execute(mod_query)
-                        user_data_query = update(utils.userdata).where(utils.userdata.c.id == author.id) \
-                            .values(mute=1)
-                        utils.conn.execute(user_data_query)
-                    if profanity.contains_profanity(message.content):
-                        await message.delete()
-                    elif not member and search(url_regex, message.content):
-                        await message.delete()
-                    elif search(invite_regex, message.content):
-                        await message.delete()
-                        await logs_channel.send(f'<@{author.id}> tried to post:\n{message.content}')
+                staff = False
+                for role in message.author.roles:
+                    id = message.author.guild.get_role(role.id).id
+                    if id in settings.config["staffRoles"].values():
+                        staff = True
+                if staff:
+                    pass
+                else:
+                    member = False
+                    member_role = message.guild.get_role(settings.config["statusRoles"]["member"])
+                    logs_channel = message.guild.get_channel(settings.config["channels"]["log"])
+                    author = message.author
+                    def _check(m):
+                        return (m.author == author and len(m.mentions) and (datetime.utcnow()-m.created_at).seconds < 15)
+                    if type(author) is discord.User:
+                        return
+                    for role in author.roles:
+                        if role.id == member_role.id:
+                            member = True
+                    if not author.bot:
+                        if len((list(filter(lambda m: _check(m), self.client.cached_messages)))) >= 5:
+                            await spamFilter(message)
+                        if profanity.contains_profanity(message.content):
+                            await message.delete()
+                        elif not member and search(url_regex, message.content):
+                            await message.delete()
+                        elif search(invite_regex, message.content):
+                            await message.delete()
+                            await logs_channel.send(f'<@{author.id}> tried to post:\n{message.content}')
 
     @tasks.loop(hours=settings.config["memberUpdateInterval"])
     async def check_member_status(self):

@@ -47,7 +47,7 @@ async def cogs_load():
 
 @client.command(name="logout", aliases=["killswitch"])
 @commands.has_any_role(
-    settings.config["statusRoles"]["admin"])
+    settings.config["staffRoles"]["admin"])
 async def logout(ctx):
     """kills the bot and all its processes"""
     await ctx.send("logging out")
@@ -55,7 +55,7 @@ async def logout(ctx):
 
 @client.command(name="creset")
 @commands.has_any_role(
-    settings.config["statusRoles"]["developer"])
+    settings.config["staffRoles"]["developer"])
 async def creset(ctx):
     devlogs = client.get_channel(settings.config["channels"]["devlog"])
     log = f'{utils.timestr}`cogs` loaded manually using !creset command'
