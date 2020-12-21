@@ -77,6 +77,13 @@ class ModCommands(commands.Cog):
     async def dBumpChannel(self, ctx, *, args):
         await ctx.message.delete()
         await ctx.send(f'Wrong channel! Please bump the server in <#{settings.config["channels"]["bump"]}>', delete_after=5)
+    @dBumpChannel.error
+    async def relapse_handler(self, ctx, error):
+        if isinstance(error, commands.CheckFailure):
+            pass
+        else:
+            print('Ignoring exception in command {}:'.format(ctx.command), file=sys.stderr)
+            traceback.print_exception(type(error), error, error.__traceback__, file=sys.stderr)
 
     @commands.command(name='selfmute')
     @commands.has_any_role(
