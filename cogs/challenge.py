@@ -86,6 +86,12 @@ class MonthlyChallenge(commands.Cog):
         await ctx.author.add_roles(signup_role)
         await utils.emoji(ctx, '✅')
 
+    @commands.command(name='deadpool')
+    async def deadpoolSingup(self, ctx):
+        # I need a check here to make sure the users streak is under 30 days, gunna rely on squirrel for that
+        signupRole = ctx.guild.get_role(settings.config["challenges"]["deadpoolSignup"])
+        await ctx.author.add_roles(signupRole)
+        await utils.emoji(ctx, '✅')
 
 def setup(client):
     client.add_cog(MonthlyChallenge(client))
