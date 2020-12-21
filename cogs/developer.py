@@ -139,10 +139,10 @@ class DeveloperTools(commands.Cog):
         if action is None:
             await ctx.send(file=File('/root/.pm2/logs/NPC-error.log'))
         elif action == 'flush':
-            os.flush()
+            os.system("/usr/local/bin/flush")
             await utils.emoji(ctx, '✅')
         elif action == 'delete':
-            os.del_bkup()
+            os.system("/usr/local/bin/del_bkup")
             await utils.emoji(ctx, '✅')
 
 def setup(client):
