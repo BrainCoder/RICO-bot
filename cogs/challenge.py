@@ -12,15 +12,13 @@ class MonthlyChallenge(commands.Cog):
     @commands.command(name="participation", pass_context=True)
     async def participation_amount(self, ctx):
         """sends the current number of users with the M-Challenge participant role"""
-        mrole = ctx.guild.get_role(settings.config["challenges"]["monthlyChallengeParticipant"])
-        yrole = ctx.guild.get_role(settings.config["challenges"]["yearlyChallengeParticipant"])
-        mpartcipants = [m for m in ctx.guild.members if mrole in m.roles]
-        ypartcipants = [m for m in ctx.guild.members if yrole in m.roles]
+        mpartcipants = [m for m in ctx.guild.members if ctx.guild.get_role(settings.config["challenges"]["monthlyChallengeParticipant"]) in m.roles]
+        ypartcipants = [m for m in ctx.guild.members if ctx.guild.get_role(settings.config["challenges"]["yearlyChallengeParticipant"]) in m.roles]
+        dparticipants = [m for m in ctx.guild.members if ctx.guild.get_role(settings.config["challenges"]["deadpoolParticipant"]) in m.roles]
         mno = len(mpartcipants)
         yno = len(ypartcipants)
-        print(f'{mno}')
-        print(f'{yno}')
-        await utils.doembed(ctx, "Challenge statics", "Participation", f"\nMonthly Challenge Memebers left: {mno}\n Yearly Challenge Members left: {yno}", ctx.author, True)
+        dno = len(dparticipants)
+        await utils.doembed(ctx, "Challenge statics", "Participation", f"\nMonthly Challenge Memebers left: {mno}\nYearly Challenge Members left: {yno}\nDeadpool Challenge Members Left: {dno}", ctx.author, True)
 
     # Monthly Challenge
 
@@ -120,6 +118,48 @@ class MonthlyChallenge(commands.Cog):
                         break
         await ctx.send(f"Challenge Winners {len(newParticipants)}")
         print(len(newParticipants))
+
+    @commands.command(name='deadpool')
+    @commands.has_any_role(
+        settings.config["staffRoles"]["developer"])
+    async def deadpool(self, ctx, action=None):
+        """Command used to manage the deapool challenge\nStart - Gives everyone w/ the signup role the participant role\nEnd - Gives the finial memeber the winner role"""
+        if action is None:
+            await ctx.send('Please specify the apropriate arguments for this command')
+        if action == 'start':
+            await utils.emoji(ctx, '✅')
+            newParticipants = []
+            print('Starting new month now.')
+            for discord.guild in self.client.guilds:
+                signupRole = discord.guild.get_role(settings.config["challenges"]["deadpoolSignup"])
+                participationRole = discord.guild.get_role(settings.config["challenges"]["deadpoolParticipant"])
+                members = await discord.guild.fetch_members(limit=None).flatten()
+                for member in members:
+                    for role in member.roles:
+                        if role.id == settings.config["challenges"]["deadpoolSignup"]:
+                            self.client.loop.create_task(member.remove_roles(signupRole))
+                            newParticipants.append(member)
+                            self.client.loop.create_task(member.add_roles(participationRole))
+                            break
+            await ctx.send(f"Challenge participants {len(newParticipants)}")
+            print(len(newParticipants))
+        if action == 'ends':
+            await utils.emoji(ctx, '✅')
+            newParticipants = []
+            print('Ending challenge now.')
+            for discord.guild in self.client.guilds:
+                participationrole = discord.guild.get_role(settings.config["challenges"]["deadpoolParticipant"])
+                winnerrole = discord.guild.get_role(settings.config["challenges"]["deadpoolWinner"])
+                members = await discord.guild.fetch_members(limit=None).flatten()
+                for member in members:
+                    for role in member.roles:
+                        if role.id == settings.config["challenges"]["deadpoolParticipant"]:
+                            self.client.loop.create_task(member.remove_roles(participationrole))
+                            newParticipants.append(member)
+                            self.client.loop.create_task(member.add_roles(winnerrole))
+                            break
+            await ctx.send(f"Challenge Winners {len(newParticipants)}")
+            print(len(newParticipants))
 
 
 def setup(client):
