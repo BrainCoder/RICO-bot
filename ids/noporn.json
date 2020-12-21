@@ -28,6 +28,14 @@
         "semi-moderator":588637037897318400,
         "trial-mod":764923370760175626
     },
+    "challenges":{
+        "monthlyChallengeSignup":582648694017490945,
+        "monthlyChallengeParticipant":582640858378272793,
+        "monthlyChallengeWinner":582649176601657365,
+        "yearlyChallengeSignup":787087926554787850,
+        "yearlyChallengeParticipant":787088217895338054,
+        "2021ChallengeWinner":787089397467185152
+    },
     "genderRoles":{
         "male":665530855778680832,
         "female":562047851484545044
@@ -53,8 +61,6 @@
         "book-club":698536415146803200,
         "retention":703263347776290917,
         "virgin":706927842835038238,
-        "monthly-challenge":582648694017490945,
-        "yearly-challenge":787087926554787850,
         "support-group":739323525218828350,
         "productivity":739524735083217056
     },
@@ -68,10 +74,6 @@
         "muted":520288471399792670,
         "double-muted":621417590065070107,
         "manager":520575654060752897,
-        "monthly-challenge-winner":582649176601657365,
-        "monthly-challenge-participant":582640858378272793,
-        "2021-challenge-winner":787089397467185152,
-        "yearly-challenge-participant":787088217895338054,
         "underage":617048143418097683,
         "cooldown":707708746205233212,
         "spoiled":704779065164562483,
