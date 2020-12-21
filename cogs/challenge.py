@@ -22,8 +22,10 @@ async def chalToggle(ctx, beforeRole, afterRole):
     print(len(newParticipants))
 
 async def monthly(ctx, action):
+    channel = ctx.guild.get_channel(settings.config["channels"]["monthly-challenge"])
     if action == 'start':
         await chalToggle(ctx, settings.config["challenges"]["monthlyChallengeSignup"], settings.config["challenges"]["monthlyChallengeParticipant"])
+        await channel.send(f'<@{settings.config["challenges"]["monthlyChallengeParticipant"]}> the new monthly challenge has started! Please be sure to grab the role again to be signed up for the next one')
     if action == 'stop':
         await chalToggle(ctx, settings.config["challenges"]["monthlyChallengeParticipant"], settings.config["challenges"]["monthlyChallengeWinner"])
 
