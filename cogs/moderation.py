@@ -64,28 +64,6 @@ async def add_member_role(self, ctx, user, member_role):
         .values(member=1)
     utils.conn.execute(user_data_query)
 
-async def complaintsHandler(message):
-    complaints_channel = message.guild.get_channel(settings.config["channels"]["complaints"])
-    bot_id = settings.config["botId"]
-    if message.author.id != bot_id:
-        await complaints_channel.send(f"<@{message.author.id}> said: {message.content}")
-
-async def spamFilter(message):
-    muted_role = message.guild.get_role(settings.config["statusRoles"]["muted"])
-    await message.author.add_roles(muted_role)
-    embed = discord.Embed(color=message.author.color, timestamp=message.created_at)
-    embed.set_author(name="Mute", icon_url=message.author.avatar_url)
-    embed.add_field(name=f"{message.author} has been Muted! ", value="muted for mention spamming")
-    logs_channel = message.guild.get_channel(settings.config["channels"]["log"])
-    await logs_channel.send(embed=embed)
-    reason = 'auto muted for spam pinging'
-    mod_query = utils.mod_event.insert(). \
-        values(recipient_id=message.author.id, event_type=3, event_time=datetime.now(), reason=reason,
-            issuer_id=settings.config["botId"], historical=0)
-    utils.conn.execute(mod_query)
-    user_data_query = update(utils.userdata).where(utils.userdata.c.id == message.author.id) \
-        .values(mute=1)
-    utils.conn.execute(user_data_query)
 
 class ModCommands(commands.Cog):
 
@@ -418,47 +396,58 @@ class ModCommands(commands.Cog):
 
     @Cog.listener()
     async def on_message(self, message):
-        if settings.config["prefix"] == "!":
+        prefix = settings.config["prefix"]
+        bot_id = settings.config["botId"]
+        if prefix == "!":
+            complaints_channel = self.client.get_channel(settings.config["channels"]["complaints"])
             if message.guild is None:
-                await complaintsHandler(message)
+                if message.author.id != bot_id:
+                    await complaints_channel.send(f"<@{message.author.id}> said: {message.content}")
             else:
                 with open(settings.config["websiteBlacklistFilePath"]) as blocked_file:
                     for website in blocked_file:
                         website = website.replace("\n", "")
                         if website in message.content:
                             await message.delete()
-                            staff_chat = message.guild.get_channel(settings.config["channels"]["staff-lounge"])
+                            staff_chat = self.client.get_channel(settings.config["channels"]["staff-lounge"])
                             await staff_chat.send(f'{message.author.name} tried to post a link from the blacklist.')
                             break
-                staff = False
-                for role in message.author.roles:
-                    id = message.author.guild.get_role(role.id).id
-                    if id in settings.config["staffRoles"].values():
-                        staff = True
-                if staff:
-                    pass
-                else:
-                    member = False
-                    member_role = message.guild.get_role(settings.config["statusRoles"]["member"])
-                    logs_channel = message.guild.get_channel(settings.config["channels"]["log"])
-                    author = message.author
-                    def _check(m):
-                        return (m.author == author and len(m.mentions) and (datetime.utcnow()-m.created_at).seconds < 15)
-                    if type(author) is discord.User:
-                        return
-                    for role in author.roles:
-                        if role.id == member_role.id:
-                            member = True
-                    if not author.bot:
-                        if len((list(filter(lambda m: _check(m), self.client.cached_messages)))) >= 5:
-                            await spamFilter(message)
-                        if profanity.contains_profanity(message.content):
-                            await message.delete()
-                        elif not member and search(url_regex, message.content):
-                            await message.delete()
-                        elif search(invite_regex, message.content):
-                            await message.delete()
-                            await logs_channel.send(f'<@{author.id}> tried to post:\n{message.content}')
+                member = False
+                # I would like to add a staff check to allow staff memebers to post invite links however i dont know how to do this, this is a job for the future
+                member_role = message.guild.get_role(settings.config["statusRoles"]["member"])
+                muted_role = message.guild.get_role(settings.config["statusRoles"]["muted"])
+                logs_channel = message.guild.get_channel(settings.config["channels"]["log"])
+                author = message.author
+                userAvatarUrl = author.avatar_url
+                def _check(m):
+                    return (m.author == author and len(m.mentions) and (datetime.utcnow()-m.created_at).seconds < 15)
+                if type(author) is discord.User:
+                    return
+                for role in author.roles:
+                    if role.id == member_role.id:
+                        member = True
+                if not author.bot:
+                    if len((list(filter(lambda m: _check(m), self.client.cached_messages)))) >= 5:
+                        await author.add_roles(muted_role)
+                        embed = discord.Embed(color=author.color, timestamp=message.created_at)
+                        embed.set_author(name="Mute", icon_url=userAvatarUrl)
+                        embed.add_field(name=f"{author} has been Muted! ", value="muted for mention spamming")
+                        await logs_channel.send(embed=embed)
+                        reason = 'auto muted for spam pinging'
+                        mod_query = utils.mod_event.insert(). \
+                            values(recipient_id=author.id, event_type=3, event_time=utils.datetime.now(), reason=reason,
+                                issuer_id=bot_id, historical=0)
+                        utils.conn.execute(mod_query)
+                        user_data_query = update(utils.userdata).where(utils.userdata.c.id == author.id) \
+                            .values(mute=1)
+                        utils.conn.execute(user_data_query)
+                    if profanity.contains_profanity(message.content):
+                        await message.delete()
+                    elif not member and search(url_regex, message.content):
+                        await message.delete()
+                    elif search(invite_regex, message.content):
+                        await message.delete()
+                        await logs_channel.send(f'<@{author.id}> tried to post:\n{message.content}')
 
     @tasks.loop(hours=settings.config["memberUpdateInterval"])
     async def check_member_status(self):
