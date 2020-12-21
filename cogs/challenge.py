@@ -1,6 +1,8 @@
 from discord.ext import commands
 import settings
 import utils
+import sys
+import traceback
 
 async def chalToggle(ctx, beforeRole, afterRole):
     await utils.emoji(ctx, '✅')
@@ -20,26 +22,18 @@ async def chalToggle(ctx, beforeRole, afterRole):
     print(len(newParticipants))
 
 async def monthly(ctx, action):
-    if action is None:
-        await ctx.send('Please specify the apropriate arguments for this command')
     if action == 'start':
         await chalToggle(ctx, settings.config["challenges"]["monthlyChallengeSignup"], settings.config["challenges"]["monthlyChallengeParticipant"])
     if action == 'stop':
         await chalToggle(ctx, settings.config["challenges"]["monthlyChallengeParticipant"], settings.config["challenges"]["monthlyChallengeWinner"])
 
 async def yearly(ctx, action):
-    """Command used to manage the deapool challenge\nStart - Gives everyone w/ the signup role the participant role\nEnd - Gives the finial memeber the winner role"""
-    if action is None:
-        await ctx.send('Please specify the apropriate arguments for this command')
     if action == 'start':
         await chalToggle(ctx, settings.config["challenges"]["yearlyChallengeSignup"], settings.config["challenges"]["yearlyChallengeParticipant"])
     if action == 'stop':
         await chalToggle(ctx, settings.config["challenges"]["yearlyChallengeParticipant"], settings.config["challenges"]["2021ChallengeWinner"])
 
 async def deadpool(ctx, action):
-    """Command used to manage the deapool challenge\nStart - Gives everyone w/ the signup role the participant role\nEnd - Gives the finial memeber the winner role"""
-    if action is None:
-        await ctx.send('Please specify the apropriate arguments for this command')
     if action == 'start':
         await chalToggle(ctx, settings.config["challenges"]["deadpoolSignup"], settings.config["challenges"]["deadpoolParticipant"])
     if action == 'stop':
@@ -55,12 +49,22 @@ class MonthlyChallenge(commands.Cog):
     @commands.has_any_role(
         settings.config["staffRoles"]["developer"])
     async def challenge(self, ctx, challenge, action):
+        """Simmilar to the cog toggle, this allows the for easy starting and restarting of all chaellenges on the server"""
         if challenge == 'monthly':
             await monthly(ctx, action)
         if challenge == 'yearly':
             await yearly(ctx, action)
         if challenge == 'deadpool':
             await deadpool(ctx, action)
+    @challenge.error
+    async def challeneHandler(self, ctx, error):
+        if isinstance(error, commands.CheckFailure):
+            await utils.emoji(ctx, '❌')
+        elif isinstance(error, commands.MissingRequiredArgument):
+            await ctx.send('Please selected the challene and/or action you would like to commit')
+        else:
+            print('Ignoring exception in command {}:'.format(ctx.command), file=sys.stderr)
+            traceback.print_exception(type(error), error, error.__traceback__, file=sys.stderr)
 
     @commands.command(name="participation", pass_context=True)
     async def participation_amount(self, ctx):
