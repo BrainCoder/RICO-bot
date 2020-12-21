@@ -109,13 +109,22 @@ class ModCommands(commands.Cog):
         settings.config["staffRoles"]["trial-mod"])
     async def member(self, ctx, user: discord.Member):
         await self.client.wait_until_ready()
+        member_joined_at = user.joined_at
+        user_query = utils.userdata.select().where(utils.userdata.c.id == user.id)
+        result = utils.conn.execute(user_query).fetchone()
+        if result and result[14] != 0:
+            member_joined_at = (datetime.fromtimestamp((result[14])) -
+                                timedelta(hours=settings.config["memberUpdateInterval"]))
         member_role = ctx.guild.get_role(settings.config["statusRoles"]["member"])
         if member_role in user.roles:
             await remove_member_role(self, ctx, user, member_role)
             await utils.emoji(ctx, '✅')
         else:
-            await add_member_role(self, ctx, user, member_role)
-            await utils.emoji(ctx, '✅')
+            if datetime.now() >= (member_joined_at + timedelta(hours=settings.config["memberCommandThreshold"])):
+                await add_member_role(self, ctx, user, member_role)
+                await utils.emoji(ctx, '✅')
+            else:
+                await ctx.send("User has not been around long enough to be automatically given member.")
 
     @commands.command(name="mute", aliases=['s', 'strike'])
     @commands.has_any_role(
