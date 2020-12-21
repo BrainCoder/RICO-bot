@@ -1,39 +1,21 @@
-import discord
 from discord.ext import commands
 import settings
 import utils
 
-async def challengeStart(self, ctx, signupRole, participationRole):
+async def challenge(ctx, beforeRole, afterRole):
+    await utils.emoji(ctx, '✅')
     newParticipants = []
     print('Starting new month now.')
-    for discord.guild in client.guilds:
-        signupR = discord.guild.get_role(signupRole)
-        participationR = discord.guild.get_role(participationRole)
-        members = await discord.guild.fetch_members(limit=None).flatten()
-        for member in members:
-            for role in member.roles:
-                if role.id == signupRole:
-                    client.loop.create_task(member.remove_roles(signupR))
-                    newParticipants.append(member)
-                    client.loop.create_task(member.add_roles(participationR))
-                    break
-    await ctx.send(f"Challenge participants {len(newParticipants)}")
-    print(len(newParticipants))
-
-async def challengeEnd(self, ctx, participationRole, winnerRole):
-    newParticipants = []
-    print('Starting new month now.')
-    for discord.guild in client.guilds:
-        signupR = discord.guild.get_role(participationRole)
-        participationR = discord.guild.get_role(winnerRole)
-        members = await discord.guild.fetch_members(limit=None).flatten()
-        for member in members:
-            for role in member.roles:
-                if role.id == participationRole:
-                    client.loop.create_task(member.remove_roles(signupR))
-                    newParticipants.append(member)
-                    client.loop.create_task(member.add_roles(participationR))
-                    break
+    before = ctx.guild.get_role(beforeRole)
+    after = ctx.guild.get_role(afterRole)
+    members = await ctx.guild.fetch_members(limit=None).flatten()
+    for member in members:
+        for role in member.roles:
+            if role.id == beforeRole:
+                await member.add_roles(after)
+                newParticipants.append(member)
+                await member.remove_roles(before)
+                break
     await ctx.send(f"Challenge participants {len(newParticipants)}")
     print(len(newParticipants))
 
@@ -54,8 +36,6 @@ class MonthlyChallenge(commands.Cog):
         dno = len(dparticipants)
         await utils.doembed(ctx, "Challenge statics", "Participation", f"\nMonthly Challenge Memebers left: {mno}\nYearly Challenge Members left: {yno}\nDeadpool Challenge Members Left: {dno}", ctx.author, True)
 
-    # Monthly Challenge
-
     @commands.command(name='monthly')
     @commands.has_any_role(
         settings.config["staffRoles"]["developer"])
@@ -63,13 +43,9 @@ class MonthlyChallenge(commands.Cog):
         if action is None:
             await ctx.send('Please specify the apropriate arguments for this command')
         if action == 'start':
-            await utils.emoji(ctx, '✅')
-            await challengeStart(ctx, settings.config["challenges"]["monthlyChallengeSignup"], settings.config["challenges"]["monthlyChallengeParticipant"])
-        if action == 'ends':
-            await utils.emoji(ctx, '✅')
-            await challengeEnd(ctx, settings.config["challenges"]["monthlyChallengeParticipant"], settings.config["challenges"]["monthlyChallengeWinner"])
-
-    # Yearly challenge
+            await challenge(ctx, settings.config["challenges"]["monthlyChallengeSignup"], settings.config["challenges"]["monthlyChallengeParticipant"])
+        if action == 'end':
+            await challenge(ctx, settings.config["challenges"]["monthlyChallengeParticipant"], settings.config["challenges"]["monthlyChallengeWinner"])
 
     @commands.command(name="yearlychallenge")
     async def yearlychallenge(self, ctx):
@@ -86,11 +62,9 @@ class MonthlyChallenge(commands.Cog):
         if action is None:
             await ctx.send('Please specify the apropriate arguments for this command')
         if action == 'start':
-            await utils.emoji(ctx, '✅')
-            await challengeStart(ctx, settings.config["challenges"]["yearlyChallengeSignup"], settings.config["challenges"]["yearlyChallengeParticipant"])
-        if action == 'ends':
-            await utils.emoji(ctx, '✅')
-            await challengeEnd(ctx, settings.config["challenges"]["yearlyChallengeParticipant"], settings.config["challenges"]["2021ChallengeWinner"])
+            await challenge(ctx, settings.config["challenges"]["yearlyChallengeSignup"], settings.config["challenges"]["yearlyChallengeParticipant"])
+        if action == 'end':
+            await challenge(ctx, settings.config["challenges"]["yearlyChallengeParticipant"], settings.config["challenges"]["2021ChallengeWinner"])
 
     @commands.command(name='deadpool')
     @commands.has_any_role(
@@ -100,11 +74,9 @@ class MonthlyChallenge(commands.Cog):
         if action is None:
             await ctx.send('Please specify the apropriate arguments for this command')
         if action == 'start':
-            await utils.emoji(ctx, '✅')
-            await challengeStart(ctx, settings.config["challenges"]["deadpoolSignup"], settings.config["challenges"]["deadpoolParticipant"])
-        if action == 'ends':
-            await utils.emoji(ctx, '✅')
-            await challengeEnd(ctx, settings.config["challenges"]["deadpoolParticipant"], settings.config["challenges"]["deadpoolWinner"])
+            await challenge(ctx, settings.config["challenges"]["deadpoolSignup"], settings.config["challenges"]["deadpoolParticipant"])
+        if action == 'stop':
+            await challenge(ctx, settings.config["challenges"]["deadpoolParticipant"], settings.config["challenges"]["deadpoolWinner"])
 
 
 def setup(client):
