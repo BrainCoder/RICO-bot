@@ -13,6 +13,9 @@ global meta
 global userdata
 global mod_event
 global mod_event_type
+global name_change_type
+global name_change_event
+
 
 def init():
     global engine
@@ -21,6 +24,8 @@ def init():
     global userdata
     global mod_event
     global mod_event_type
+    global name_change_type
+    global name_change_event
     engine = create_engine(settings.config["databaseUrl"], echo=True)
     conn = engine.connect()
     meta = MetaData()
@@ -59,6 +64,23 @@ def init():
         Column('issuer_id', BIGINT, ForeignKey("userdata.id"), nullable=False),
         Column('historical', TINYINT, nullable=False, default=0)
     )
+
+    name_change_type = Table(
+         'name_change_type', meta,
+         Column('change_type_id', INTEGER, primary_key=True, nullable=False, autoincrement=True),
+         Column('change_type', TEXT, nullable=False)
+    )
+
+    name_change_event = Table(
+        'name_change_event', meta,
+        Column('name_change_event_id', BIGINT, primary_key=True, nullable=False, autoincrement=True),
+        Column('user_id', BIGINT, ForeignKey("userdata.id"), nullable=False),
+        Column('previous_name', TEXT, nullable=False),
+        Column('change_type', INTEGER, ForeignKey('name_change_type.change_type_id'), nullable=False),
+        Column('new_name', TEXT, nullable=False),
+        Column('event_time', DATETIME, nullable=False)
+    )
+
     meta.create_all(engine)
 
 # Devlogs timestamp
