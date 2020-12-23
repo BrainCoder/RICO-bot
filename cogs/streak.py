@@ -92,6 +92,17 @@ class Streak(commands.Cog):
                 channel = guild.get_channel(settings.config["channels"]["yearly-challenge"])
                 print(f'{channel}')
                 await channel.send(f'Monthly Challenge members left: {no}')
+        for role in ctx.author.roles:
+            if role.id == settings.config["challenges"]["deadpool-participant"]:
+                guild = ctx.guild
+                role = guild.get_role(settings.config["challenges"]["deadpool-participant"])
+                await ctx.author.remove_roles(role)
+                partcipants = [m for m in guild.members if role in m.roles]
+                no = len(partcipants)
+                print(f'{no}')
+                channel = guild.get_channel(settings.config["channels"]["deadpool-challenge"])
+                print(f'{channel}')
+                await channel.send(f'Monthly Challenge members left: {no}')
         else:
             maxDays = 365 * 10
             n_days = 0
