@@ -29,15 +29,15 @@
         "trial-mod":764923370760175626
     },
     "challenges":{
-        "monthlyChallengeSignup":582648694017490945,
-        "monthlyChallengeParticipant":582640858378272793,
-        "monthlyChallengeWinner":582649176601657365,
-        "yearlyChallengeSignup":787087926554787850,
-        "yearlyChallengeParticipant":787088217895338054,
-        "2021ChallengeWinner":787089397467185152,
-        "deadpoolSignup":790396021497790514,
-        "deadpoolParticipant":790396365465321472,
-        "deadpoolWinner":790396518313099315
+        "monthly-challenge-signup":582648694017490945,
+        "monthly-challenge-participant":582640858378272793,
+        "monthly-challenge-winner":582649176601657365,
+        "yearly-challenge-signup":787087926554787850,
+        "yearly-challenge-participant":787088217895338054,
+        "2021-challenge-winner":787089397467185152,
+        "deadpool-signup":790396021497790514,
+        "deadpool-participant":790396365465321472,
+        "deadpool-winner":790396518313099315
     },
     "genderRoles":{
         "male":665530855778680832,

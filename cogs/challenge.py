@@ -3,6 +3,7 @@ import settings
 import utils
 import sys
 import traceback
+from datetime import datetime, timedelta
 
 async def chalToggle(ctx, beforeRole, afterRole):
     await utils.emoji(ctx, '✅')
@@ -24,22 +25,22 @@ async def chalToggle(ctx, beforeRole, afterRole):
 async def monthly(ctx, action):
     channel = ctx.guild.get_channel(settings.config["channels"]["monthly-challenge"])
     if action == 'start':
-        await chalToggle(ctx, settings.config["challenges"]["monthlyChallengeSignup"], settings.config["challenges"]["monthlyChallengeParticipant"])
-        await channel.send(f'<@{settings.config["challenges"]["monthlyChallengeParticipant"]}> the new monthly challenge has started! Please be sure to grab the role again to be signed up for the next one')
+        await chalToggle(ctx, settings.config["challenges"]["monthly-challenge-signup"], settings.config["challenges"]["monthly-challenge-participant"])
+        await channel.send(f'<@{settings.config["challenges"]["monthly-challenge-participant"]}> the new monthly challenge has started! Please be sure to grab the role again to be signed up for the next one')
     if action == 'stop':
-        await chalToggle(ctx, settings.config["challenges"]["monthlyChallengeParticipant"], settings.config["challenges"]["monthlyChallengeWinner"])
+        await chalToggle(ctx, settings.config["challenges"]["monthly-challenge-participant"], settings.config["challenges"]["monthly-challenge-winner"])
 
 async def yearly(ctx, action):
     if action == 'start':
-        await chalToggle(ctx, settings.config["challenges"]["yearlyChallengeSignup"], settings.config["challenges"]["yearlyChallengeParticipant"])
+        await chalToggle(ctx, settings.config["challenges"]["yearly-challenge-signup"], settings.config["challenges"]["yearly-challenge-participant"])
     if action == 'stop':
-        await chalToggle(ctx, settings.config["challenges"]["yearlyChallengeParticipant"], settings.config["challenges"]["2021ChallengeWinner"])
+        await chalToggle(ctx, settings.config["challenges"]["yearly-challenge-participant"], settings.config["challenges"]["2021-challenge-winner"])
 
 async def deadpool(ctx, action):
     if action == 'start':
-        await chalToggle(ctx, settings.config["challenges"]["deadpoolSignup"], settings.config["challenges"]["deadpoolParticipant"])
+        await chalToggle(ctx, settings.config["challenges"]["deadpool-signup"], settings.config["challenges"]["deadpool-participant"])
     if action == 'stop':
-        await chalToggle(ctx, settings.config["challenges"]["deadpoolParticipant"], settings.config["challenges"]["deadpoolWinner"])
+        await chalToggle(ctx, settings.config["challenges"]["deadpool-participant"], settings.config["challenges"]["deadpool-winner"])
 
 class MonthlyChallenge(commands.Cog):
 
@@ -63,7 +64,7 @@ class MonthlyChallenge(commands.Cog):
         if isinstance(error, commands.CheckFailure):
             await utils.emoji(ctx, '❌')
         elif isinstance(error, commands.MissingRequiredArgument):
-            await ctx.send('Please selected the challene and/or action you would like to commit')
+            await ctx.send('Please selected the challenge and/or action you would like to commit')
         else:
             print('Ignoring exception in command {}:'.format(ctx.command), file=sys.stderr)
             traceback.print_exception(type(error), error, error.__traceback__, file=sys.stderr)
@@ -71,9 +72,9 @@ class MonthlyChallenge(commands.Cog):
     @commands.command(name="participation", pass_context=True)
     async def participation_amount(self, ctx):
         """sends the current number of users with the M-Challenge participant role"""
-        mpartcipants = [m for m in ctx.guild.members if ctx.guild.get_role(settings.config["challenges"]["monthlyChallengeParticipant"]) in m.roles]
-        ypartcipants = [m for m in ctx.guild.members if ctx.guild.get_role(settings.config["challenges"]["yearlyChallengeParticipant"]) in m.roles]
-        dparticipants = [m for m in ctx.guild.members if ctx.guild.get_role(settings.config["challenges"]["deadpoolParticipant"]) in m.roles]
+        mpartcipants = [m for m in ctx.guild.members if ctx.guild.get_role(settings.config["challenges"]["monthly-challenge-participant"]) in m.roles]
+        ypartcipants = [m for m in ctx.guild.members if ctx.guild.get_role(settings.config["challenges"]["yearly-challenge-participant"]) in m.roles]
+        dparticipants = [m for m in ctx.guild.members if ctx.guild.get_role(settings.config["challenges"]["deadpool-participant"]) in m.roles]
         mno = len(mpartcipants)
         yno = len(ypartcipants)
         dno = len(dparticipants)
@@ -82,14 +83,23 @@ class MonthlyChallenge(commands.Cog):
     @commands.command(name="yearlychallenge")
     async def yearlychallenge(self, ctx):
         """gives the user the yearly challenge role"""
-        signup_role = ctx.guild.get_role(settings.config["challenges"]["yearlyChallengeSignup"])
+        signup_role = ctx.guild.get_role(settings.config["challenges"]["yearly-challenge-signup"])
         await ctx.author.add_roles(signup_role)
         await utils.emoji(ctx, '✅')
 
     @commands.command(name='deadpool')
     async def deadpoolSingup(self, ctx):
-        # I need a check here to make sure the users streak is under 30 days, gunna rely on squirrel for that
-        signupRole = ctx.guild.get_role(settings.config["challenges"]["deadpoolSignup"])
+        user_query = utils.userdata.select().where(utils.userdata.c.id == ctx.author.id)
+        result = utils.conn.execute(user_query).fetchone()
+        if result[1] is not None and result[1] != 0:
+            past_streak_time = datetime.fromtimestamp(result[1])
+            if datetime.now() > past_streak_time + timedelta(days=30):
+                await ctx.channel.send("Cannot join because you're too far along in your streak. Congratulations!")
+                return
+        else:
+            await ctx.channel.send("No streak data found. Please set your streak before entering the competition.")
+            return
+        signupRole = ctx.guild.get_role(settings.config["challenges"]["deadpool-signup"])
         await ctx.author.add_roles(signupRole)
         await utils.emoji(ctx, '✅')
 

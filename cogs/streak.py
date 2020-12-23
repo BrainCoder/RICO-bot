@@ -71,9 +71,9 @@ class Streak(commands.Cog):
                 await removeStreakRoles(ctx.author)
         await ctx.guild.fetch_members(limit=None).flatten()
         for role in ctx.author.roles:
-            if role.id == settings.config["statusRoles"]["monthly-challenge-participant"]:
+            if role.id == settings.config["challenges"]["monthly-challenge-participant"]:
                 guild = ctx.guild
-                role = guild.get_role(settings.config["statusRoles"]["monthly-challenge-participant"])
+                role = guild.get_role(settings.config["challenges"]["monthly-challenge-participant"])
                 await ctx.author.remove_roles(role)
                 partcipants = [m for m in guild.members if role in m.roles]
                 no = len(partcipants)
@@ -82,9 +82,9 @@ class Streak(commands.Cog):
                 print(f'{channel}')
                 await channel.send(f'Monthly Challenge members left: {no}')
         for role in ctx.author.roles:
-            if role.id == settings.config["statusRoles"]["yearly-challenge-participant"]:
+            if role.id == settings.config["challenges"]["yearly-challenge-participant"]:
                 guild = ctx.guild
-                role = guild.get_role(settings.config["statusRoles"]["yearly-challenge-participant"])
+                role = guild.get_role(settings.config["challenges"]["yearly-challenge-participant"])
                 await ctx.author.remove_roles(role)
                 partcipants = [m for m in guild.members if role in m.roles]
                 no = len(partcipants)
