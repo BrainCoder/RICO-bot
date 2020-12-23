@@ -44,6 +44,7 @@ async def cogs_load():
         print('all cogs loaded')
     else:
         client.load_extension('cogs.cogs')
+        client.load_extension('cogs.errors')
 
 @client.command(name="logout", aliases=["killswitch"])
 @commands.has_any_role(
