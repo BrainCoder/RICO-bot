@@ -2,6 +2,7 @@
     "serverId":519330541720436736,
     "botId":749836263955103774,
     "memberUpdateInterval":168,
+    "memberCommandThreshold": 72,
     "websiteBlacklistFilePath":"website-blacklist.txt",
     "gitlabName":"HellHound0066/noporn-companion",
     "prefix":"!",

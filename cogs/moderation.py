@@ -4,7 +4,7 @@ from discord.ext import commands, tasks
 from discord.ext.commands import Cog
 
 from re import search
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from better_profanity import profanity
 from sqlalchemy import text, update
 import settings
@@ -77,6 +77,13 @@ class ModCommands(commands.Cog):
     async def dBumpChannel(self, ctx, *, args):
         await ctx.message.delete()
         await ctx.send(f'Wrong channel! Please bump the server in <#{settings.config["channels"]["bump"]}>', delete_after=5)
+    @dBumpChannel.error
+    async def relapse_handler(self, ctx, error):
+        if isinstance(error, commands.CheckFailure):
+            pass
+        else:
+            print('Ignoring exception in command {}:'.format(ctx.command), file=sys.stderr)
+            traceback.print_exception(type(error), error, error.__traceback__, file=sys.stderr)
 
     @commands.command(name='selfmute')
     @commands.has_any_role(
@@ -109,13 +116,22 @@ class ModCommands(commands.Cog):
         settings.config["staffRoles"]["trial-mod"])
     async def member(self, ctx, user: discord.Member):
         await self.client.wait_until_ready()
+        member_joined_at = user.joined_at
+        user_query = utils.userdata.select().where(utils.userdata.c.id == user.id)
+        result = utils.conn.execute(user_query).fetchone()
+        if result and result[14] != 0:
+            member_joined_at = (datetime.fromtimestamp((result[14])) -
+                                timedelta(hours=settings.config["memberUpdateInterval"]))
         member_role = ctx.guild.get_role(settings.config["statusRoles"]["member"])
         if member_role in user.roles:
             await remove_member_role(self, ctx, user, member_role)
             await utils.emoji(ctx, '✅')
         else:
-            await add_member_role(self, ctx, user, member_role)
-            await utils.emoji(ctx, '✅')
+            if datetime.now() >= (member_joined_at + timedelta(hours=settings.config["memberCommandThreshold"])):
+                await add_member_role(self, ctx, user, member_role)
+                await utils.emoji(ctx, '✅')
+            else:
+                await ctx.send("User has not been around long enough to be automatically given member.")
 
     @commands.command(name="mute", aliases=['s', 'strike'])
     @commands.has_any_role(
@@ -476,6 +492,30 @@ class ModCommands(commands.Cog):
                     #     .values(member_activation_date=0)
                     # utils.conn.execute(user_data_query)
                     # Discuss idea of zeroing out instead so that anomalies don't occur but data will be lost.
+
+    @Cog.listener()
+    async def on_member_update(self, before_user, after_user):
+        if after_user.nick != before_user.nick:
+            before = before_user.nick
+            after = after_user.nick
+            if before_user.nick is None:
+                before = before_user.display_name + '#' + before_user.discriminator
+            if after_user.nick is None:
+                after = after_user.display_name + '#' + after_user.discriminator
+            nickname_query = utils.name_change_event.insert(). \
+            values(user_id=after_user.id, previous_name=before, change_type=2, new_name=after,
+                   event_time=datetime.now(timezone.utc))
+            utils.conn.execute(nickname_query)
+
+    @Cog.listener()
+    async def on_user_update(self, before_user, after_user):
+        if before_user.display_name != after_user.display_name or before_user.discriminator != after_user.discriminator:
+            before = before_user.display_name + '#' + before_user.discriminator
+            after = after_user.display_name + '#' + after_user.discriminator
+            username_query = utils.name_change_event.insert(). \
+                values(user_id=after_user.id, previous_name=before, change_type=1, new_name=after,
+                       event_time=datetime.now(timezone.utc))
+            utils.conn.execute(username_query)
 
 
 def setup(client):
