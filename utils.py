@@ -88,6 +88,16 @@ async def doembed(ctx, aname, fname, fval, user, channel=False):
         else:
             await logs_channel.send(embed=embed)
 
+async def inRoles(ctx, testRole):
+    for role in ctx.author.roles:
+        if role.id == testRole:
+            return True
+            pass
+    return False
+
+async def rolePop(ctx, role):
+    [m for m in ctx.guild.members if role in m.roles]
+
 """async def waitThenRun(seconds, fn):
     await asyncio.sleep(seconds)
     await fn()
