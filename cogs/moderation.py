@@ -4,7 +4,7 @@ from discord.ext import commands, tasks
 from discord.ext.commands import Cog
 
 from re import search
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from better_profanity import profanity
 from sqlalchemy import text, update
 import settings
@@ -492,6 +492,30 @@ class ModCommands(commands.Cog):
                     #     .values(member_activation_date=0)
                     # utils.conn.execute(user_data_query)
                     # Discuss idea of zeroing out instead so that anomalies don't occur but data will be lost.
+
+    @Cog.listener()
+    async def on_member_update(self, before_user, after_user):
+        if after_user.nick != before_user.nick:
+            before = before_user.nick
+            after = after_user.nick
+            if before_user.nick is None:
+                before = before_user.display_name + '#' + before_user.discriminator
+            if after_user.nick is None:
+                after = after_user.display_name + '#' + after_user.discriminator
+            nickname_query = utils.name_change_event.insert(). \
+            values(user_id=after_user.id, previous_name=before, change_type=2, new_name=after,
+                   event_time=datetime.now(timezone.utc))
+            utils.conn.execute(nickname_query)
+
+    @Cog.listener()
+    async def on_user_update(self, before_user, after_user):
+        if before_user.display_name != after_user.display_name or before_user.discriminator != after_user.discriminator:
+            before = before_user.display_name + '#' + before_user.discriminator
+            after = after_user.display_name + '#' + after_user.discriminator
+            username_query = utils.name_change_event.insert(). \
+                values(user_id=after_user.id, previous_name=before, change_type=1, new_name=after,
+                       event_time=datetime.now(timezone.utc))
+            utils.conn.execute(username_query)
 
 
 def setup(client):
