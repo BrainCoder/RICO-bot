@@ -52,7 +52,12 @@ class MonthlyChallenge(commands.Cog):
     @commands.has_any_role(
         settings.config["staffRoles"]["developer"])
     async def challenge(self, ctx, challenge, action):
-        """Simmilar to the cog toggle, this allows the for easy starting and restarting of all chaellenges on the server"""
+        """This is the command to manage the starting and stopping of all challenges running on the servers, as it stands the three challenges are 'Monthly Challenge', 'Yearly Challenge', 'Deadpool Challenge'.
+
+        Args:
+            challenge: This is the challenge you want to toggle, please enter 'monthly', 'yearly', or 'deadpool'
+            action: This is where you specify wether you want to start or stop the challenge, please be aware that these actions can take large amount of time to complete. Do not spam the command, if you are concerned about how long it taking please contact a developer"
+        """
         if challenge == 'monthly':
             await monthly(ctx, action)
         if challenge == 'yearly':
@@ -81,6 +86,7 @@ class MonthlyChallenge(commands.Cog):
         await utils.doembed(ctx, "Challenge statics", "Participation", f"\nMonthly Challenge Memebers left: {mno}\nYearly Challenge Members left: {yno}\nDeadpool Challenge Members Left: {dno}", ctx.author, True)
 
     @commands.command(name="yearlychallenge")
+    """Command you use to give yourself the Yearly Challenge Signup role"""
     async def yearlychallenge(self, ctx):
         """gives the user the yearly challenge role"""
         signup_role = ctx.guild.get_role(settings.config["challenges"]["yearly-challenge-signup"])
@@ -88,6 +94,7 @@ class MonthlyChallenge(commands.Cog):
         await utils.emoji(ctx, '✅')
 
     @commands.command(name='deadpool')
+    """Command you use to give yourself the Deadpool Signup role"""
     async def deadpoolSingup(self, ctx):
         user_query = utils.userdata.select().where(utils.userdata.c.id == ctx.author.id)
         result = utils.conn.execute(user_query).fetchone()
