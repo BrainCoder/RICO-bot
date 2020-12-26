@@ -26,10 +26,7 @@ profanity.load_censor_words_from_file('blacklist.txt', whitelist_words=whitelist
 async def remove_member_role(self, ctx, user, member_role):
     await user.remove_roles(member_role)
     await utils.doembed(ctx, "Member", f"{user} no longer has member!", f"Member taken by: <@{ctx.author.id}>.", user)
-    mod_query = utils.mod_event.insert(). \
-        values(recipient_id=user.id, event_type=9, event_time=datetime.now(),
-               issuer_id=ctx.author.id, historical=0)
-    utils.conn.execute(mod_query)
+    await utils.modeventQuery(user.id, 9, datetime.now(), None, ctx.author.id, 0)
     user_data_query = update(utils.userdata).where(utils.userdata.c.id == user.id) \
         .values(member=0)
     utils.conn.execute(user_data_query)
@@ -38,10 +35,7 @@ async def remove_member_role(self, ctx, user, member_role):
 async def add_member_role(self, ctx, user, member_role):
     await user.add_roles(member_role)
     await utils.doembed(ctx, "Member", f"{user} has been given member!", f"Member given by: <@{ctx.author.id}>.", user)
-    mod_query = utils.mod_event.insert(). \
-        values(recipient_id=user.id, event_type=8, event_time=datetime.now(),
-               issuer_id=ctx.author.id, historical=0)
-    utils.conn.execute(mod_query)
+    await utils.modeventQuery(user.id, 8, datetime.now(), None, ctx.author.id, 0)
     user_data_query = update(utils.userdata).where(utils.userdata.c.id == user.id) \
         .values(member=1)
     utils.conn.execute(user_data_query)
@@ -119,10 +113,7 @@ class ModCommands(commands.Cog):
             double_role = ctx.guild.get_role(settings.config["statusRoles"]["double-muted"])
             await user.add_roles(double_role)
             await utils.doembed(ctx, "DoubleMute", f"{user} has been Double Muted!", f"Muted by: <@{ctx.author.id}>.", user)
-            mod_query = utils.mod_event.insert(). \
-                values(recipient_id=user.id, event_type=10, event_time=datetime.now(), reason=reason,
-                    issuer_id=ctx.author.id, historical=0)
-            utils.conn.execute(mod_query)
+            await utils.modeventQuery(user.id, 10, datetime.now(), reason, ctx.author.id, 0)
             user_data_query = update(utils.userdata).where(utils.userdata.c.id == user.id) \
                 .values(double_mute=1)
             utils.conn.execute(user_data_query)
@@ -132,10 +123,7 @@ class ModCommands(commands.Cog):
             else:
                 await user.add_roles(Mute_role)
                 await utils.doembed(ctx, "Mute", f"{user} has been Muted!", f"**for:** {reason} Muted by: <@{ctx.author.id}>.", user)
-                mod_query = utils.mod_event.insert(). \
-                    values(recipient_id=user.id, event_type=3, event_time=datetime.now(), reason=reason,
-                        issuer_id=ctx.author.id, historical=0)
-                utils.conn.execute(mod_query)
+                await utils.modeventQuery(user.id, 3, datetime.now(), reason, ctx.author.id, 0)
                 user_data_query = update(utils.userdata).where(utils.userdata.c.id == user.id) \
                     .values(mute=1)
                 utils.conn.execute(user_data_query)
@@ -151,11 +139,7 @@ class ModCommands(commands.Cog):
         if time:
             await user.add_roles(cooldown_role)
             await utils.doembed(ctx, "Cooldown", f'{user} cooled-down by {ctx.author}', f'The cooldown will be removed in {time}s, or a moderator will have to remove it manually', user)
-            time_of_cooldown = datetime.now()
-            mod_query = utils.mod_event.insert(). \
-                values(recipient_id=user.id, event_type=5, event_time=time_of_cooldown,
-                       issuer_id=ctx.author.id, historical=0)
-            utils.conn.execute(mod_query)
+            await utils.modeventQuery(user.id, 5, datetime.now(), ctx.author.id, 0)
             user_data_query = update(utils.userdata).where(utils.userdata.c.id == user.id) \
                 .values(cooldown=1)
             utils.conn.execute(user_data_query)
@@ -205,10 +189,7 @@ class ModCommands(commands.Cog):
                 await utils.doembed(ctx, "Unmute", f"{user} has been Unmuted!", f"Unmuted by: <@{ctx.author.id}>.", user)
                 if not self_muted:
                     if muted and not double:
-                        unmute_query = utils.mod_event.insert(). \
-                            values(recipient_id=user.id, event_type=4, event_time=datetime.now(),
-                                issuer_id=ctx.author.id, historical=0)
-                        utils.conn.execute(unmute_query)
+                        await utils.modeventQuery(user.id, 4, datetime.now(), None, ctx.author.id, 0)
                         prior_mute_queries = text(f'update mod_event set historical = 1 where recipient_id = {user.id} '
                                                 f'and event_type = 3 and historical = 0')
                         utils.conn.execute(prior_mute_queries)
@@ -216,10 +197,7 @@ class ModCommands(commands.Cog):
                             .values(mute=0)
                         utils.conn.execute(user_data_query)
                     else:
-                        unmute_query = utils.mod_event.insert(). \
-                            values(recipient_id=user.id, event_type=4, event_time=datetime.now(),
-                                issuer_id=ctx.author.id, historical=0)
-                        utils.conn.execute(unmute_query)
+                        await utils.modeventQuery(user.id, 4, datetime.now(), None, ctx.author.id, 0)
                         prior_mute_queries = text(f'update mod_event set historical = 1 where recipient_id = {user.id} '
                                                 f'and event_type = 10 and historical = 0')
                         utils.conn.execute(prior_mute_queries)
@@ -240,10 +218,7 @@ class ModCommands(commands.Cog):
             reason = "For being a jerk!"
         await ctx.guild.kick(member, reason=reason)
         await utils.doembed(ctx, "Kick", f"{member} has been Kicked!", f"**for:** {reason} Kicked by: <@{ctx.author.id}>.", member)
-        mod_query = utils.mod_event.insert(). \
-            values(recipient_id=member.id, event_type=2, event_time=datetime.now(), reason=reason,
-                   issuer_id=ctx.author.id, historical=0)
-        utils.conn.execute(mod_query)
+        await utils.modeventQuery(member.id, 2, datetime.now(), reason, ctx.author.id, 0)
         user_data_query = update(utils.userdata).where(utils.userdata.c.id == member.id) \
             .values(kicked=1)
         utils.conn.execute(user_data_query)
@@ -271,10 +246,7 @@ class ModCommands(commands.Cog):
             reason = "For being a jerk!"
         await ctx.guild.ban(member, reason=reason)
         await utils.doembed(ctx, "Ban", f"{member} has been Banned!", f"**for:** {reason} banned by: <@{ctx.author.id}>.", member)
-        mod_query = utils.mod_event.insert(). \
-            values(recipient_id=member.id, event_type=1, event_time=datetime.now(), reason=reason,
-                   issuer_id=ctx.author.id, historical=0)
-        utils.conn.execute(mod_query)
+        await utils.modeventQuery(member.id, 1, datetime.now(), reason, ctx.author.id, 0)
         user_data_query = update(utils.userdata).where(utils.userdata.c.id == member.id) \
             .values(banned=1)
         utils.conn.execute(user_data_query)
@@ -335,10 +307,7 @@ class ModCommands(commands.Cog):
                 utils.conn.execute(query)
                 lynch_role = ctx.guild.get_role(settings.config["statusRoles"]["muted"])
                 await member.add_roles(lynch_role)
-                mod_query = utils.mod_event.insert(). \
-                    values(recipient_id=member.id, event_type=6, event_time=datetime.now(),
-                           issuer_id=ctx.author.id, historical=0)
-                utils.conn.execute(mod_query)
+                await utils.modeventQuery(member.id, 6, datetime.now(), None, ctx.author.id, 0)
                 find_lynches_query = text(f'select issuer_id from mod_event where recipient_id = {member.id} '
                                           f'and event_type = 6 and historical = 0')
                 lynchers = utils.conn.execute(find_lynches_query)
@@ -353,10 +322,7 @@ class ModCommands(commands.Cog):
                     .values(lynch_count=current_lynches,
                             lynch_expiration_time=(datetime.now() + timedelta(hours=8)).timestamp())
                 utils.conn.execute(query)
-                mod_query = utils.mod_event.insert(). \
-                    values(recipient_id=member.id, event_type=6, event_time=datetime.now(),
-                           issuer_id=ctx.author.id, historical=0)
-                utils.conn.execute(mod_query)
+                await utils.modeventQuery(member.id, 6, datetime.now(), None, ctx.atuhor.id, 0)
             member_role = ctx.guild.get_role(settings.config["statusRoles"]["member"])
             await ctx.author.remove_roles(member_role)
 
@@ -415,10 +381,7 @@ class ModCommands(commands.Cog):
                         embed.add_field(name=f"{author} has been Muted! ", value="muted for mention spamming")
                         await logs_channel.send(embed=embed)
                         reason = 'auto muted for spam pinging'
-                        mod_query = utils.mod_event.insert(). \
-                            values(recipient_id=author.id, event_type=3, event_time=utils.datetime.now(), reason=reason,
-                                issuer_id=bot_id, historical=0)
-                        utils.conn.execute(mod_query)
+                        await utils.modeventQuery(author.id, 3, datetime.now(), reason, bot_id, 0)
                         user_data_query = update(utils.userdata).where(utils.userdata.c.id == author.id) \
                             .values(mute=1)
                         utils.conn.execute(user_data_query)

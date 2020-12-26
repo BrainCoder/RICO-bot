@@ -97,6 +97,12 @@ def readFile(fileName):
 async def emoji(ctx, emji):
     await ctx.message.add_reaction(emji)
 
+async def modeventQuery(recipient_id, event_type, event_time, reason, issuer_id, historical):
+    mod_query = mod_event.insert(). \
+        values(recipient_id=recipient_id, event_type=event_type, reason=reason, event_time=event_time,
+            issuer_id=issuer_id, historical=historical)
+    conn.execute(mod_query)
+
 async def doembed(ctx, aname, fname, fval, user, channel=False):
     if settings.config["prefix"] == '!':
         logs_channel = ctx.guild.get_channel(settings.config["channels"]["log"])
