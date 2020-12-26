@@ -137,7 +137,11 @@ class DeveloperTools(commands.Cog):
         settings.config["staffRoles"]["developer"])
     async def errorlog(self, ctx, action=None):
         if action is None:
-            await ctx.send(file=File('/root/.pm2/logs/NPC-error.log'))
+            path = '/root/.pm2/logs/NPC-error.log'
+            if os.stat(path).st_size == 0:
+                await ctx.send('Error file is empty')
+            else:
+                await ctx.send(file=File(path))
         elif action == 'flush':
             os.system("/usr/local/bin/flush")
             await utils.emoji(ctx, '✅')
