@@ -60,6 +60,11 @@ async def challenge(ctx, role):
         channel = ctx.guild.get_channel(settings.config["channels"]["yearly-challenge"])
         await channel.send(f'Yearly Challenge members left: {no}')
 
+async def delayedDelete(message):
+    await asyncio.sleep(5)
+    await message.delete()
+
+
 class Streak(commands.Cog):
 
     def __init__(self, client):
@@ -93,14 +98,12 @@ class Streak(commands.Cog):
             elif(len(args) > 1 and (not args[1].isnumeric() or not 24 > int(args[1]) >= 0)):
                 message = await ctx.channel.send('The provided command arguments are not permitted.')
                 if Anon:
-                    await asyncio.sleep(5)
-                    await message.delete()
+                    await delayedDelete(message)
                 return
         elif(len(args) > 0 and (not args[0].isnumeric() or not maxDays > int(args[0]) >= 0)):
             message = await ctx.channel.send('The provided command arguments are not permitted.')
             if Anon:
-                await asyncio.sleep(5)
-                await message.delete()
+                await delayedDelete(message)
             return
         current_starting_date = datetime.today() - timedelta(days=n_days, hours=n_hours)
         query = utils.userdata.select().where(utils.userdata.c.id == ctx.author.id)
@@ -128,8 +131,7 @@ class Streak(commands.Cog):
                     message = await ctx.channel.send(
                         content=f'Your streak was {daysStr}{middleStr}{hoursStr} long.')
                     if Anon:
-                        await asyncio.sleep(5)
-                        await message.delete()
+                        await delayedDelete(message)
             if(rows[0]['last_relapse'] is None or total_streak_length <= 60):
                 query = (utils.userdata
                     .update()
@@ -140,8 +142,7 @@ class Streak(commands.Cog):
                     await updateStreakRole(ctx.author, current_starting_date)
                 message = await ctx.channel.send('Streak set successfully.')
                 if Anon:
-                    await asyncio.sleep(5)
-                    await message.delete()
+                    await delayedDelete(message)
         else:
             query = utils.userdata.insert().values(id=ctx.author.id,
                     last_relapse=current_starting_date.timestamp())
@@ -150,8 +151,7 @@ class Streak(commands.Cog):
                 await updateStreakRole(ctx.author, current_starting_date)
             message = await ctx.channel.send('Streak set successfully.')
             if Anon:
-                await asyncio.sleep(5)
-                await message.delete()
+                await delayedDelete(message)
     @relapse.error
     async def relapse_handler(self, ctx, error):
         if isinstance(error, commands.CheckFailure):
@@ -171,7 +171,6 @@ class Streak(commands.Cog):
         if Anon:
             await ctx.message.delete()
             await removeStreakRoles(ctx.author)
-
         query = utils.userdata.select().where(utils.userdata.c.id == ctx.author.id)
         rows = utils.conn.execute(query).fetchall()
         if(len(rows) and rows[0]['last_relapse'] is not None):
@@ -182,13 +181,11 @@ class Streak(commands.Cog):
                 await updateStreakRole(ctx.author, last_starting_date)
             message = await ctx.channel.send(f'Your streak is {daysStr}{middleStr}{hoursStr} long.')
             if Anon:
-                await asyncio.sleep(5)
-                await message.delete()
+                await delayedDelete(message)
         else:
             message = await ctx.channel.send("No data about you available do !relapse .")
             if Anon:
-                await asyncio.sleep(5)
-                await message.delete()
+                await delayedDelete(message)
     @update.error
     async def update_handler(self, ctx, error):
         if isinstance(error, commands.CheckFailure):

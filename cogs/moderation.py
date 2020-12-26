@@ -10,7 +10,6 @@ from sqlalchemy import text, update
 import settings
 import utils
 import asyncio
-import re
 import traceback
 import sys
 
@@ -22,23 +21,6 @@ url_regex = r"(?i)\b((?:https?://|www\d{0,3}[.]|[a-z0-9.\-]+[.][a-z]{2,4}/)(?:[^
 invite_regex = r"(?:https?://)?discord(?:(?:app)?\.com/invite|\.gg)/?[a-zA-Z0-9]+/?"
 
 profanity.load_censor_words_from_file('blacklist.txt', whitelist_words=whitelist)
-
-time_regex = re.compile("(?:(\d{1,5})(h|s|m|d))+?")
-time_dict = {"h": 3600, "s": 1, "m": 60, "d": 86400}
-
-class TimeConverter(commands.Converter):
-    async def convert(self, ctx, argument):
-        args = argument.lower()
-        matches = re.findall(time_regex, args)
-        time = 0
-        for v, k in matches:
-            try:
-                time += time_dict[k] * float(v)
-            except KeyError:
-                raise commands.BadArgument("{} is an invalid time-key! h/m/s/d are valid!".format(k))
-            except ValueError:
-                raise commands.BadArgument("{} is not a number!".format(v))
-        return time
 
 
 async def remove_member_role(self, ctx, user, member_role):
@@ -63,7 +45,6 @@ async def add_member_role(self, ctx, user, member_role):
     user_data_query = update(utils.userdata).where(utils.userdata.c.id == user.id) \
         .values(member=1)
     utils.conn.execute(user_data_query)
-
 
 class ModCommands(commands.Cog):
 
@@ -164,7 +145,7 @@ class ModCommands(commands.Cog):
         settings.config["staffRoles"]["moderator"],
         settings.config["staffRoles"]["semi-moderator"],
         settings.config["staffRoles"]["trial-mod"])
-    async def cooldown(self, ctx, user: discord.Member, *, time: TimeConverter = None):
+    async def cooldown(self, ctx, user: discord.Member, *, time: utils.TimeConverter = None):
         """takes the user out of the general channel for a specific amount of time"""
         cooldown_role = user.guild.get_role(settings.config["statusRoles"]["cooldown"])
         if time:
@@ -195,7 +176,7 @@ class ModCommands(commands.Cog):
         settings.config["staffRoles"]["moderator"],
         settings.config["staffRoles"]["semi-moderator"],
         settings.config["staffRoles"]["trial-mod"])
-    async def nunmute(self, ctx, user: discord.Member = None, *, time: TimeConverter = None):
+    async def nunmute(self, ctx, user: discord.Member = None, *, time: utils.TimeConverter = None):
         """unmute the user"""
         await self.client.wait_until_ready()
         if user is None:
