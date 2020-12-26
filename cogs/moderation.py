@@ -100,12 +100,8 @@ class ModCommands(commands.Cog):
     async def mute(self, ctx, user: discord.Member, *, reason=None):
         """mutes the user and puts a strike against their name"""
         await self.client.wait_until_ready()
-        muted = False
-        Mute_role = ctx.guild.get_role(settings.config["statusRoles"]["muted"])
+        muted = await utils.inRoles(ctx, ctx.guild.get_role(settings.config["statusRoles"]["muted"]))
         member_role = ctx.guild.get_role(settings.config["statusRoles"]["member"])
-        for role in user.roles:
-            if role.id == Mute_role.id:
-                muted = True
         if member_role in user.roles:
             await remove_member_role(self, ctx, user, member_role)
         if muted:
@@ -121,7 +117,7 @@ class ModCommands(commands.Cog):
             if reason is None:
                 await ctx.channel.send('please give reason for mute', delete_after=5)
             else:
-                await user.add_roles(Mute_role)
+                await user.add_roles(ctx.guild.get_role(settings.config["statusRoles"]["muted"]))
                 await utils.doembed(ctx, "Mute", f"{user} has been Muted!", f"**for:** {reason} Muted by: <@{ctx.author.id}>.", user)
                 await utils.modeventQuery(user.id, 3, datetime.now(), reason, ctx.author.id, 0)
                 user_data_query = update(utils.userdata).where(utils.userdata.c.id == user.id) \

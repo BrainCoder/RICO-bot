@@ -76,7 +76,6 @@ class Streak(commands.Cog):
     @commands.cooldown(1, 60, commands.BucketType.user)
     async def relapse(self, ctx, *args):
         """resets the users streak to day 0"""
-
         Anon = await utils.inRoles(ctx, settings.config["modeRoles"]["anon-streak"])
         mChal = await utils.inRoles(ctx, settings.config["challenges"]["monthly-challenge-participant"])
         yChal = await utils.inRole(ctx, settings.config["challenges"]["yearly-challenge-participant"])
@@ -87,7 +86,6 @@ class Streak(commands.Cog):
             await challenge(ctx, settings.config["challenges"]["monthly-challenge-participant"])
         if yChal:
             await challenge(ctx, settings.config["challenges"]["yearly-challenge-participant"])
-
         maxDays = 365 * 10
         n_days = 0
         n_hours = 0

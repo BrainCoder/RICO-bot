@@ -72,13 +72,10 @@ class MonthlyChallenge(commands.Cog):
     @commands.command(name="participation", pass_context=True)
     async def participation_amount(self, ctx):
         """sends the current number of users with the M-Challenge participant role"""
-        mpartcipants = [m for m in ctx.guild.members if ctx.guild.get_role(settings.config["challenges"]["monthly-challenge-participant"]) in m.roles]
-        ypartcipants = [m for m in ctx.guild.members if ctx.guild.get_role(settings.config["challenges"]["yearly-challenge-participant"]) in m.roles]
-        dparticipants = [m for m in ctx.guild.members if ctx.guild.get_role(settings.config["challenges"]["deadpool-participant"]) in m.roles]
-        mno = len(mpartcipants)
-        yno = len(ypartcipants)
-        dno = len(dparticipants)
-        await utils.doembed(ctx, "Challenge statics", "Participation", f"\nMonthly Challenge Memebers left: {mno}\nYearly Challenge Members left: {yno}\nDeadpool Challenge Members Left: {dno}", ctx.author, True)
+        mpartcipants = len(await utils.rolePop(ctx, settings.config["challenges"]["monthly-challenge-participant"]))
+        ypartcipants = len(await utils.rolePop(ctx, settings.config["challenges"]["yearly-challenge-participant"]))
+        dparticipants = len(await utils.rolePop(settings.config["challenges"]["deadpool-participant"]))
+        await utils.doembed(ctx, "Challenge statics", "Participation", f"\nMonthly Challenge Memebers left: {mpartcipants}\nYearly Challenge Members left: {ypartcipants}\nDeadpool Challenge Members Left: {dparticipants}", ctx.author, True)
 
     @commands.command(name="yearlychallenge")
     async def yearlychallenge(self, ctx):
