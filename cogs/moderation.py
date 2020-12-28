@@ -299,9 +299,9 @@ class ModCommands(commands.Cog):
     @commands.has_any_role(
         settings.config["staffRoles"]["moderator"])
     async def ban(self, ctx, member: discord.User = None, *, reason=None, purge=False):
-        """Generic command to ban a user to the server.  this command can only be exectued three times in a row by the same moderator\n
-        \n
-        Args\n
+        """Generic command to ban a user to the server.  this command can only be exectued three times in a row by the same moderator
+
+        Args
             member: This is the user you intend to ban.
             reason: This is the reason for the ban.
             purge: This is weather or not you want to purge the users past 24 hours of messages, this defaults to false. If you want to purge type in True.
