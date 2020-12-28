@@ -282,6 +282,7 @@ class ModCommands(commands.Cog):
         user_data_query = update(utils.userdata).where(utils.userdata.c.id == member.id) \
             .values(kicked=1)
         utils.conn.execute(user_data_query)
+        await utils.emoji(ctx, '✅')
 
     @commands.command(name='underage')
     @commands.has_any_role(
@@ -297,14 +298,23 @@ class ModCommands(commands.Cog):
     @commands.cooldown(3, 600, commands.BucketType.user)
     @commands.has_any_role(
         settings.config["staffRoles"]["moderator"])
-    async def ban(self, ctx, member: discord.User = None, *, reason=None):
-        """bans the user from the server"""
+    async def ban(self, ctx, member: discord.User = None, *, reason=None, purge=False):
+        """Generic command to ban a user to the server.  this command can only be exectued three times in a row by the same moderator\n
+        \n
+        Args\n
+            member: This is the user you intend to ban.
+            reason: This is the reason for the ban.
+            purge: This is weather or not you want to purge the users past 24 hours of messages, this defaults to false. If you want to purge type in True.
+        """
         if member is None or member == ctx.message.author:
             await ctx.channel.send("You cannot Ban yourself")
             return
         if reason is None:
             reason = "For being a jerk!"
-        await ctx.guild.ban(member, reason=reason)
+        if purge:
+            await ctx.guild.ban(member, reason=reason, delete_message_days=1)
+        else:
+            await ctx.guild.ban(member, reason=reason)
         await utils.doembed(ctx, "Ban", f"{member} has been Banned!", f"**for:** {reason} banned by: <@{ctx.author.id}>.", member)
         mod_query = utils.mod_event.insert(). \
             values(recipient_id=member.id, event_type=1, event_time=datetime.now(), reason=reason,
@@ -313,6 +323,7 @@ class ModCommands(commands.Cog):
         user_data_query = update(utils.userdata).where(utils.userdata.c.id == member.id) \
             .values(banned=1)
         utils.conn.execute(user_data_query)
+        await utils.emoji(ctx, '✅')
 
     @commands.command(name="automod")
     @commands.has_any_role(
