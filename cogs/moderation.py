@@ -209,6 +209,8 @@ class ModCommands(commands.Cog):
             await remove_member_role(self, ctx, user, member_role)
         if muted:
             pass
+        if user is ctx.author:
+            await ctx.send('you cannot mute yourself')
         else:
             if reason is None:
                 await ctx.channel.send('please give reason for mute', delete_after=5)
