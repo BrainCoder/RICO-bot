@@ -133,13 +133,19 @@ class ModCommands(commands.Cog):
             else:
                 await ctx.send("User has not been around long enough to be automatically given member.")
 
+
     @commands.command(name="mute", aliases=['s', 'strike'])
     @commands.has_any_role(
         settings.config["staffRoles"]["moderator"],
         settings.config["staffRoles"]["semi-moderator"],
         settings.config["staffRoles"]["trial-mod"])
     async def mute(self, ctx, user: discord.Member, *, reason=None):
-        """mutes the user and puts a strike against their name"""
+        """Generic mute command, gives the user the muted role and adds details to the mod event table
+
+        Args:
+            user : This is the user you want to mute
+            reason: This the the reason for the mute, please keep it consise and relevant for future refrence
+        """
         await self.client.wait_until_ready()
         muted = False
         Mute_role = ctx.guild.get_role(settings.config["statusRoles"]["muted"])
@@ -161,6 +167,7 @@ class ModCommands(commands.Cog):
             user_data_query = update(utils.userdata).where(utils.userdata.c.id == user.id) \
                 .values(double_mute=1)
             utils.conn.execute(user_data_query)
+            await utils.emoji(ctx, '✅')
         else:
             if reason is None:
                 await ctx.channel.send('please give reason for mute', delete_after=5)
@@ -174,6 +181,48 @@ class ModCommands(commands.Cog):
                 user_data_query = update(utils.userdata).where(utils.userdata.c.id == user.id) \
                     .values(mute=1)
                 utils.conn.execute(user_data_query)
+                await utils.emoji(ctx, '✅')
+
+    @commands.command(name="vmute", aliases=['vs', 'vstrike'])
+    @commands.cooldown(1, 86400, commands.BucketType.user)
+    @commands.has_any_role(
+        settings.config["staffRoles"]["moderator"],
+        settings.config["staffRoles"]["semi-moderator"],
+        settings.config["staffRoles"]["trial-mod"],
+        settings.config["statusRoles"]["vip"])
+    async def vmute(self, ctx, user: discord.Member, *, reason=None):
+        """A version of the mute command but for VIPs, has the same functionality of giving the user the mute role, and adding the event to the mod event table, but has a cooldown.
+        Please be aware, abuse of this command will result in the VIP role being removed
+
+        Args:
+            user : This is the user you want to mute
+            reason: This the the reason for the mute, please keep it consise and relevant for future refrence
+        """
+        await self.client.wait_until_ready()
+        muted = False
+        Mute_role = ctx.guild.get_role(settings.config["statusRoles"]["muted"])
+        member_role = ctx.guild.get_role(settings.config["statusRoles"]["member"])
+        for role in user.roles:
+            if role.id == Mute_role.id:
+                muted = True
+        if member_role in user.roles:
+            await remove_member_role(self, ctx, user, member_role)
+        if muted:
+            pass
+        else:
+            if reason is None:
+                await ctx.channel.send('please give reason for mute', delete_after=5)
+            else:
+                await user.add_roles(Mute_role)
+                await utils.doembed(ctx, "Mute", f"{user} has been Muted!", f"**for:** {reason} Muted by: <@{ctx.author.id}>.", user)
+                mod_query = utils.mod_event.insert(). \
+                    values(recipient_id=user.id, event_type=3, event_time=datetime.now(), reason=reason,
+                        issuer_id=ctx.author.id, historical=0)
+                utils.conn.execute(mod_query)
+                user_data_query = update(utils.userdata).where(utils.userdata.c.id == user.id) \
+                    .values(mute=1)
+                utils.conn.execute(user_data_query)
+                await utils.emoji(ctx, '✅')
 
     @commands.command(name="cooldown", aliases=['c'])
     @commands.has_any_role(
@@ -514,7 +563,7 @@ class ModCommands(commands.Cog):
             if after_user.nick is None:
                 after = after_user.display_name + '#' + after_user.discriminator
             nickname_query = utils.name_change_event.insert(). \
-            values(user_id=after_user.id, previous_name=before, change_type=2, new_name=after,
+                values(user_id=after_user.id, previous_name=before, change_type=2, new_name=after,
                    event_time=datetime.now(timezone.utc))
             utils.conn.execute(nickname_query)
 
