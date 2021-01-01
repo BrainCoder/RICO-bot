@@ -26,9 +26,10 @@ async def chal_toggle(ctx, beforeRole, afterRole):
 
 async def monthly(ctx, action):
     channel = ctx.guild.get_channel(settings.config["channels"]["monthly-challenge"])
+    role = ctx.guild.get_role(settings.config["challenges"]["monthly-challenge-participant"])
     if action == 'start':
         await chal_toggle(ctx, settings.config["challenges"]["monthly-challenge-signup"], settings.config["challenges"]["monthly-challenge-participant"])
-        await channel.send(f'<@{settings.config["challenges"]["monthly-challenge-participant"]}> the new monthly challenge has started! Please be sure to grab the role again to be signed up for the next one')
+        await channel.send(f'{role.mention} the new monthly challenge has started! Please be sure to grab the role again to be signed up for the next one')
     if action == 'stop':
         await chal_toggle(ctx, settings.config["challenges"]["monthly-challenge-participant"], settings.config["challenges"]["monthly-challenge-winner"])
 
@@ -61,8 +62,8 @@ class MonthlyChallenge(commands.Cog):
         stands the three challenges are 'Monthly Challenge', 'Yearly Challenge', 'Deadpool Challenge'.
 
         Args:
-            challenge: This is the challenge you want to toggle, please enter 'monthly', 'yearly', or 'deadpool'
-            action: This is where you specify wether you want to start or stop the challenge, please be aware that
+            **challenge:** This is the challenge you want to toggle, please enter 'monthly', 'yearly', or 'deadpool'
+            **action:** This is where you specify wether you want to start or stop the challenge, please be aware that
              these actions can take large amount of time to complete. Do not spam the command, if you are concerned
               about how long it taking please contact a developer"
         """
