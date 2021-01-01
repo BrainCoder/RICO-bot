@@ -4,7 +4,7 @@ from discord.ext import commands, tasks
 from discord.ext.commands import Cog
 
 from re import search
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from better_profanity import profanity
 from sqlalchemy import text, update
 import settings
@@ -52,6 +52,13 @@ class ModCommands(commands.Cog):
     async def dBumpChannel(self, ctx, *, args):
         await ctx.message.delete()
         await ctx.send(f'Wrong channel! Please bump the server in <#{settings.config["channels"]["bump"]}>', delete_after=5)
+    @dBumpChannel.error
+    async def relapse_handler(self, ctx, error):
+        if isinstance(error, commands.CheckFailure):
+            pass
+        else:
+            print('Ignoring exception in command {}:'.format(ctx.command), file=sys.stderr)
+            traceback.print_exception(type(error), error, error.__traceback__, file=sys.stderr)
 
     @commands.command(name='selfmute')
     @commands.has_any_role(
@@ -61,10 +68,10 @@ class ModCommands(commands.Cog):
         Selfmute_Role = ctx.guild.get_role(settings.config["statusRoles"]["self-mute"])
         if Selfmute_Role in ctx.author.roles:
             await ctx.author.remove_roles(Selfmute_Role)
-            await utils.doembed(ctx, "Selfmute", f'{ctx.author} is no longer selfmuted!', 'They may run free amoungst the hills like a wild rabbit', ctx.author)
+            await utils.doembed(ctx, "Selfmute", f'{ctx.author} is no longer selfmuted!', 'They may run free amongst the hills like a wild rabbit', ctx.author)
         else:
             await ctx.author.add_roles(Selfmute_Role)
-            await utils.doembed(ctx, "Selfmute", f'{ctx.author} selfmuted!', 'They shall remain inside the selfmute channel untill they choose to leave', ctx.author)
+            await utils.doembed(ctx, "Selfmute", f'{ctx.author} selfmuted!', 'They shall remain inside the selfmute channel until they choose to leave', ctx.author)
 
     @commands.command(name="purge", aliases=["clear"])
     @commands.has_any_role(
@@ -84,13 +91,23 @@ class ModCommands(commands.Cog):
         settings.config["staffRoles"]["trial-mod"])
     async def member(self, ctx, user: discord.Member):
         await self.client.wait_until_ready()
+        member_joined_at = user.joined_at
+        user_query = utils.userdata.select().where(utils.userdata.c.id == user.id)
+        result = utils.conn.execute(user_query).fetchone()
+        if result and result[14] != 0:
+            member_joined_at = (datetime.fromtimestamp((result[14])) -
+                                timedelta(hours=settings.config["memberUpdateInterval"]))
         member_role = ctx.guild.get_role(settings.config["statusRoles"]["member"])
         if member_role in user.roles:
             await remove_member_role(self, ctx, user, member_role)
             await utils.emoji(ctx, '✅')
         else:
-            await add_member_role(self, ctx, user, member_role)
-            await utils.emoji(ctx, '✅')
+            if datetime.now() >= (member_joined_at + timedelta(hours=settings.config["memberCommandThreshold"])):
+                await add_member_role(self, ctx, user, member_role)
+                await utils.emoji(ctx, '✅')
+            else:
+                await ctx.send("User has not been around long enough to be automatically given member.")
+
 
     @commands.command(name="mute", aliases=['s', 'strike'])
     @commands.has_any_role(
@@ -98,7 +115,12 @@ class ModCommands(commands.Cog):
         settings.config["staffRoles"]["semi-moderator"],
         settings.config["staffRoles"]["trial-mod"])
     async def mute(self, ctx, user: discord.Member, *, reason=None):
-        """mutes the user and puts a strike against their name"""
+        """Generic mute command, gives the user the muted role and adds details to the mod event table
+
+        Args:
+            user : This is the user you want to mute
+            reason: This the the reason for the mute, please keep it consise and relevant for future refrence
+        """
         await self.client.wait_until_ready()
         muted = await utils.inRoles(ctx, ctx.guild.get_role(settings.config["statusRoles"]["muted"]))
         member_role = ctx.guild.get_role(settings.config["statusRoles"]["member"])
@@ -113,6 +135,50 @@ class ModCommands(commands.Cog):
             user_data_query = update(utils.userdata).where(utils.userdata.c.id == user.id) \
                 .values(double_mute=1)
             utils.conn.execute(user_data_query)
+            await utils.emoji(ctx, '✅')
+        else:
+            if reason is None:
+                await ctx.channel.send('please give reason for mute', delete_after=5)
+            else:
+                await user.add_roles(Mute_role)
+                await utils.doembed(ctx, "Mute", f"{user} has been Muted!", f"**for:** {reason} Muted by: <@{ctx.author.id}>.", user)
+                mod_query = utils.mod_event.insert(). \
+                    values(recipient_id=user.id, event_type=3, event_time=datetime.now(), reason=reason,
+                        issuer_id=ctx.author.id, historical=0)
+                utils.conn.execute(mod_query)
+                user_data_query = update(utils.userdata).where(utils.userdata.c.id == user.id) \
+                    .values(mute=1)
+                utils.conn.execute(user_data_query)
+                await utils.emoji(ctx, '✅')
+
+    @commands.command(name="vmute", aliases=['vs', 'vstrike'])
+    @commands.cooldown(1, 86400, commands.BucketType.user)
+    @commands.has_any_role(
+        settings.config["staffRoles"]["moderator"],
+        settings.config["staffRoles"]["semi-moderator"],
+        settings.config["staffRoles"]["trial-mod"],
+        settings.config["statusRoles"]["vip"])
+    async def vmute(self, ctx, user: discord.Member, *, reason=None):
+        """A version of the mute command but for VIPs, has the same functionality of giving the user the mute role, and adding the event to the mod event table, but has a cooldown.
+        Please be aware, abuse of this command will result in the VIP role being removed
+
+        Args:
+            user : This is the user you want to mute
+            reason: This the the reason for the mute, please keep it consise and relevant for future refrence
+        """
+        await self.client.wait_until_ready()
+        muted = False
+        Mute_role = ctx.guild.get_role(settings.config["statusRoles"]["muted"])
+        member_role = ctx.guild.get_role(settings.config["statusRoles"]["member"])
+        for role in user.roles:
+            if role.id == Mute_role.id:
+                muted = True
+        if member_role in user.roles:
+            await remove_member_role(self, ctx, user, member_role)
+        if muted:
+            pass
+        if user is ctx.author:
+            await ctx.send('you cannot mute yourself')
         else:
             if reason is None:
                 await ctx.channel.send('please give reason for mute', delete_after=5)
@@ -123,6 +189,7 @@ class ModCommands(commands.Cog):
                 user_data_query = update(utils.userdata).where(utils.userdata.c.id == user.id) \
                     .values(mute=1)
                 utils.conn.execute(user_data_query)
+                await utils.emoji(ctx, '✅')
 
     @commands.command(name="cooldown", aliases=['c'])
     @commands.has_any_role(
@@ -218,6 +285,7 @@ class ModCommands(commands.Cog):
         user_data_query = update(utils.userdata).where(utils.userdata.c.id == member.id) \
             .values(kicked=1)
         utils.conn.execute(user_data_query)
+        await utils.emoji(ctx, '✅')
 
     @commands.command(name='underage')
     @commands.has_any_role(
@@ -233,19 +301,29 @@ class ModCommands(commands.Cog):
     @commands.cooldown(3, 600, commands.BucketType.user)
     @commands.has_any_role(
         settings.config["staffRoles"]["moderator"])
-    async def ban(self, ctx, member: discord.User = None, *, reason=None):
-        """bans the user from the server"""
+    async def ban(self, ctx, member: discord.User = None, *, reason=None, purge=False):
+        """Generic command to ban a user to the server.  this command can only be exectued three times in a row by the same moderator
+
+        Args
+            member: This is the user you intend to ban.
+            reason: This is the reason for the ban.
+            purge: This is weather or not you want to purge the users past 24 hours of messages, this defaults to false. If you want to purge type in True.
+        """
         if member is None or member == ctx.message.author:
             await ctx.channel.send("You cannot Ban yourself")
             return
         if reason is None:
             reason = "For being a jerk!"
-        await ctx.guild.ban(member, reason=reason)
+        if purge:
+            await ctx.guild.ban(member, reason=reason, delete_message_days=1)
+        else:
+            await ctx.guild.ban(member, reason=reason)
         await utils.doembed(ctx, "Ban", f"{member} has been Banned!", f"**for:** {reason} banned by: <@{ctx.author.id}>.", member)
         await utils.modeventQuery(member.id, 1, datetime.now(), reason, ctx.author.id, 0)
         user_data_query = update(utils.userdata).where(utils.userdata.c.id == member.id) \
             .values(banned=1)
         utils.conn.execute(user_data_query)
+        await utils.emoji(ctx, '✅')
 
     @commands.command(name="automod")
     @commands.has_any_role(
@@ -416,6 +494,30 @@ class ModCommands(commands.Cog):
                     #     .values(member_activation_date=0)
                     # utils.conn.execute(user_data_query)
                     # Discuss idea of zeroing out instead so that anomalies don't occur but data will be lost.
+
+    @Cog.listener()
+    async def on_member_update(self, before_user, after_user):
+        if after_user.nick != before_user.nick:
+            before = before_user.nick
+            after = after_user.nick
+            if before_user.nick is None:
+                before = before_user.display_name + '#' + before_user.discriminator
+            if after_user.nick is None:
+                after = after_user.display_name + '#' + after_user.discriminator
+            nickname_query = utils.name_change_event.insert(). \
+                values(user_id=after_user.id, previous_name=before, change_type=2, new_name=after,
+                   event_time=datetime.now(timezone.utc))
+            utils.conn.execute(nickname_query)
+
+    @Cog.listener()
+    async def on_user_update(self, before_user, after_user):
+        if before_user.display_name != after_user.display_name or before_user.discriminator != after_user.discriminator:
+            before = before_user.display_name + '#' + before_user.discriminator
+            after = after_user.display_name + '#' + after_user.discriminator
+            username_query = utils.name_change_event.insert(). \
+                values(user_id=after_user.id, previous_name=before, change_type=1, new_name=after,
+                       event_time=datetime.now(timezone.utc))
+            utils.conn.execute(username_query)
 
 
 def setup(client):

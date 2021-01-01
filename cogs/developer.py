@@ -31,25 +31,26 @@ async def vi_member(ctx):
     members_lost = []
     missing_members = []
     for user in ctx.guild.members:
-        query = utils.userdata.select().where(utils.userdata.c.id == user.id)
-        result = utils.conn.execute(query).fetchone()
-        if result:
-            member_role = ctx.guild.get_role(settings.config["statusRoles"]["member"])
-            if member_role in user.roles and result[11] == 0:
-                user_data_query = update(utils.userdata).where(utils.userdata.c.id == user.id) \
-                    .values(member=1)
-                utils.conn.execute(user_data_query)
-                members_added.append(user.name)
-            elif member_role not in user.roles and result[11] == 1:
-                user_data_query = update(utils.userdata).where(utils.userdata.c.id == user.id) \
-                    .values(member=0)
-                utils.conn.execute(user_data_query)
-                members_lost.append(user.name)
-        else:
-            missing_members.append(user.name)
+        if not user.bot:
+            query = utils.userdata.select().where(utils.userdata.c.id == user.id)
+            result = utils.conn.execute(query).fetchone()
+            if result:
+                member_role = ctx.guild.get_role(settings.config["statusRoles"]["member"])
+                if member_role in user.roles and result[11] == 0:
+                    user_data_query = update(utils.userdata).where(utils.userdata.c.id == user.id) \
+                        .values(member=1)
+                    utils.conn.execute(user_data_query)
+                    members_added.append(user.name)
+                elif member_role not in user.roles and result[11] == 1:
+                    user_data_query = update(utils.userdata).where(utils.userdata.c.id == user.id) \
+                        .values(member=0)
+                    utils.conn.execute(user_data_query)
+                    members_lost.append(user.name)
+            else:
+                missing_members.append(user.name)
     if len(missing_members) > 0:
         dev_log_channel = ctx.guild.get_channel(settings.config["channels"]["devlog"])
-        await dev_log_channel.send(f'The following users were not in the database: '
+        await dev_log_channel.send(f'{utils.timestr}The following users were not in the database: '
                                 f'{",".join(missing_members)}')
     await ctx.send(f'Amount of users added: {str(len(members_added))}\n'
                 f'Amount of users lost: {str(len(members_lost))}')
@@ -125,17 +126,21 @@ class DeveloperTools(commands.Cog):
         of users within the guild that the command was typed in.
         Note this can not track users who are not in the guild that this was called in, but also might have
         a member value set."""
+        devLogs = ctx.guild.get_channel(settings.config["channels"]["devlog"])
         if action == 'database':
             await utils.emoji(ctx, '✅')
+            await devLogs.send(f'{utils.timestr}databse integrity verified by {ctx.author.mention}')
             await vi_db(ctx)
         elif action == 'member':
             await utils.emoji(ctx, '✅')
+            await devLogs.send(f'{utils.timestr}member integrity verified by {ctx.author.mention}')
             await vi_member(ctx)
 
     @commands.command(name='error')
     @commands.has_any_role(
         settings.config["staffRoles"]["developer"])
     async def errorlog(self, ctx, action=None):
+        devLogs = ctx.guild.get_channel(settings.config["channels"]["devlog"])
         if action is None:
             path = '/root/.pm2/logs/NPC-error.log'
             if os.stat(path).st_size == 0:
@@ -145,9 +150,11 @@ class DeveloperTools(commands.Cog):
         elif action == 'flush':
             os.system("/usr/local/bin/flush")
             await utils.emoji(ctx, '✅')
+            await devLogs.send(f'{utils.timestr}error logs flushed by {ctx.author.mention}')
         elif action == 'delete':
             os.system("/usr/local/bin/del_bkup")
             await utils.emoji(ctx, '✅')
+            await devLogs.send(f'{utils.timestr}error logs backup deleted by {ctx.author.mention}')
 
 def setup(client):
     client.add_cog(DeveloperTools(client))
