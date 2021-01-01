@@ -8,6 +8,7 @@ import aiohttp
 import settings
 import asyncio
 
+from sqlalchemy import text
 import utils
 
 
@@ -70,12 +71,14 @@ class Extra(commands.Cog):
             member_joined_at = (datetime.fromtimestamp((result[14])) -
                                 timedelta(hours=settings.config["memberUpdateInterval"])) \
                 .strftime("%A, %B %d %Y at %H:%M:%S %p")
+        usernames = await self.build_username_list(member)
         date_created = member.created_at.strftime("%A, %B %d %Y at %H:%M:%S %p")
         user_avatar_url = member.avatar_url
         embed = discord.Embed(color=ctx.author.color, timestamp=ctx.message.created_at)
         embed.set_author(name="UI", icon_url=user_avatar_url)
         embed.add_field(name='Account was created at: ', value=f"{date_created}.")
         embed.add_field(name="Member joined at: ", value=f"{member_joined_at}.")
+        embed.add_field(name="Previous Usernames: ", value=usernames)
         await ctx.send(embed=embed)
 
     @commands.command(name="avatar", aliases=["av"])
@@ -124,6 +127,34 @@ class Extra(commands.Cog):
                 link_decoded = (await response.read()).decode()
                 await ctx.send(link_decoded)
 
+
+    async def build_username_list(self, member):
+        with utils.engine.connect() as connection:
+            username_query = text(f'select * from np_db.name_change_event where user_id = {member.id}')
+            result = connection.execute(username_query).fetchall()
+            if result:
+                # This is used to determine how many usernames are allowed to be in the list.
+                # Increase or decrease to your liking
+                max_length = 5
+                # Track the amount of times the loop has executed
+                # while the incrementer worries about going through the results
+                length_tracker = 0
+                name_list = ""
+
+                # If they have more than 5 name changes, the assumption is that they're a frequent name changer,
+                # and so a larger range of names are looked at.
+                incrementing_amount = 1
+                if len(result) > 5:
+                    incrementing_amount = 5
+
+                for i in range(0, len(result), incrementing_amount):
+                    name_list += result[i][2] + "\n"
+                    length_tracker = length_tracker + 1
+                    if length_tracker > max_length:
+                        break
+                return name_list[:-1]
+            else:
+                return "No previous usernames have been saved in the database."
 
 def setup(client):
     client.add_cog(Extra(client))
