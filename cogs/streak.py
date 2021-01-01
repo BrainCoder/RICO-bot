@@ -53,7 +53,7 @@ async def removeStreakRoles(author):
 async def challenge(ctx, role):
     objectRole = ctx.guild.get_role(role)
     await ctx.author.remove_roles(objectRole)
-    no = len(await utils.rolePop(ctx, objectRole))
+    no = len(await utils.role_pop(ctx, objectRole))
     if role == settings.config["challenges"]["monthly-challenge-participant"]:
         channel = ctx.guild.get_channel(settings.config["channels"]["monthly-challenge"])
         await channel.send(f'Monthly Challenge members left: {no}')
@@ -64,7 +64,7 @@ async def challenge(ctx, role):
         channel = ctx.guild.get_channel(settings.config["channels"]["deadpool-challenge"])
         await channel.send(f'Deadpool memebers left: {no}')
 
-async def delayedDelete(message):
+async def delayed_delete(message):
     await asyncio.sleep(5)
     await message.delete()
 
@@ -76,14 +76,14 @@ class Streak(commands.Cog):
         self._last_member = None
 
     @commands.command(name="relapse")
-    # @commands.check(utils.is_in_streak_channel)
-    # @commands.cooldown(1, 60, commands.BucketType.user)
+    @commands.check(utils.is_in_streak_channel)
+    @commands.cooldown(1, 60, commands.BucketType.user)
     async def relapse(self, ctx, *args):
         """resets the users streak to day 0"""
-        Anon = await utils.inRoles(ctx, settings.config["modeRoles"]["anon-streak"])
-        mChal = await utils.inRoles(ctx, settings.config["challenges"]["monthly-challenge-participant"])
-        yChal = await utils.inRoles(ctx, settings.config["challenges"]["yearly-challenge-participant"])
-        dPool = await utils.inRoles(ctx, settings.config["challenges"]["deadpool-participant"])
+        Anon = await utils.in_roles(ctx, settings.config["modeRoles"]["anon-streak"])
+        mChal = await utils.in_roles(ctx, settings.config["challenges"]["monthly-challenge-participant"])
+        yChal = await utils.in_roles(ctx, settings.config["challenges"]["yearly-challenge-participant"])
+        dPool = await utils.in_roles(ctx, settings.config["challenges"]["deadpool-participant"])
         if Anon:
             await ctx.message.delete()
             await removeStreakRoles(ctx.author)
@@ -103,12 +103,12 @@ class Streak(commands.Cog):
             elif(len(args) > 1 and (not args[1].isnumeric() or not 24 > int(args[1]) >= 0)):
                 message = await ctx.channel.send('The provided command arguments are not permitted.')
                 if Anon:
-                    await delayedDelete(message)
+                    await delayed_delete(message)
                 return
         elif(len(args) > 0 and (not args[0].isnumeric() or not maxDays > int(args[0]) >= 0)):
             message = await ctx.channel.send('The provided command arguments are not permitted.')
             if Anon:
-                await delayedDelete(message)
+                await delayed_delete(message)
             return
         current_starting_date = datetime.today() - timedelta(days=n_days, hours=n_hours)
         query = utils.userdata.select().where(utils.userdata.c.id == ctx.author.id)
@@ -136,7 +136,7 @@ class Streak(commands.Cog):
                     message = await ctx.channel.send(
                         content=f'Your streak was {daysStr}{middleStr}{hoursStr} long.')
                     if Anon:
-                        await delayedDelete(message)
+                        await delayed_delete(message)
             if(rows[0]['last_relapse'] is None or total_streak_length <= 60):
                 query = (utils.userdata
                     .update()
@@ -147,7 +147,7 @@ class Streak(commands.Cog):
                     await updateStreakRole(ctx.author, current_starting_date)
                 message = await ctx.channel.send('Streak set successfully.')
                 if Anon:
-                    await delayedDelete(message)
+                    await delayed_delete(message)
         else:
             query = utils.userdata.insert().values(id=ctx.author.id,
                     last_relapse=current_starting_date.timestamp())
@@ -156,7 +156,7 @@ class Streak(commands.Cog):
                 await updateStreakRole(ctx.author, current_starting_date)
             message = await ctx.channel.send('Streak set successfully.')
             if Anon:
-                await delayedDelete(message)
+                await delayed_delete(message)
     @relapse.error
     async def relapse_handler(self, ctx, error):
         if isinstance(error, commands.CheckFailure):
@@ -168,11 +168,11 @@ class Streak(commands.Cog):
             traceback.print_exception(type(error), error, error.__traceback__, file=sys.stderr)
 
     @commands.command(name="update")
-    # @commands.check(utils.is_in_streak_channel)
-    # @commands.cooldown(1, 900, commands.BucketType.user)
+    @commands.check(utils.is_in_streak_channel)
+    @commands.cooldown(1, 900, commands.BucketType.user)
     async def update(self, ctx):
         """updates the users streak"""
-        Anon = await utils.inRoles(ctx, settings.config["modeRoles"]["anon-streak"])
+        Anon = await utils.in_roles(ctx, settings.config["modeRoles"]["anon-streak"])
         if Anon:
             await ctx.message.delete()
             await removeStreakRoles(ctx.author)
@@ -186,11 +186,11 @@ class Streak(commands.Cog):
                 await updateStreakRole(ctx.author, last_starting_date)
             message = await ctx.channel.send(f'Your streak is {daysStr}{middleStr}{hoursStr} long.')
             if Anon:
-                await delayedDelete(message)
+                await delayed_delete(message)
         else:
             message = await ctx.channel.send("No data about you available do !relapse .")
             if Anon:
-                await delayedDelete(message)
+                await delayed_delete(message)
     @update.error
     async def update_handler(self, ctx, error):
         if isinstance(error, commands.CheckFailure):

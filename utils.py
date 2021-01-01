@@ -69,9 +69,9 @@ def init():
     )
 
     name_change_type = Table(
-         'name_change_type', meta,
-         Column('change_type_id', INTEGER, primary_key=True, nullable=False, autoincrement=True),
-         Column('change_type', TEXT, nullable=False)
+        'name_change_type', meta,
+        Column('change_type_id', INTEGER, primary_key=True, nullable=False, autoincrement=True),
+        Column('change_type', TEXT, nullable=False)
     )
 
     name_change_event = Table(
@@ -119,7 +119,7 @@ def readFile(fileName):
 async def emoji(ctx, emji):
     await ctx.message.add_reaction(emji)
 
-async def modeventQuery(recipient_id, event_type, event_time, reason, issuer_id, historical):
+async def mod_event_query(recipient_id, event_type, event_time, reason, issuer_id, historical):
     mod_query = mod_event.insert(). \
         values(recipient_id=recipient_id, event_type=event_type, reason=reason, event_time=event_time,
             issuer_id=issuer_id, historical=historical)
@@ -136,14 +136,13 @@ async def doembed(ctx, aname, fname, fval, user, channel=False):
         else:
             await logs_channel.send(embed=embed)
 
-async def inRoles(ctx, testRole):
+async def in_roles(ctx, searchRole):
     for role in ctx.author.roles:
-        if role.id == testRole:
+        if role.id == searchRole:
             return True
-            pass
     return False
 
-async def rolePop(ctx, role):
+async def role_pop(ctx, role):
     participants = [m for m in ctx.guild.members if role in m.roles]
     return participants
 

@@ -97,8 +97,8 @@ class Extra(commands.Cog):
     @commands.command(name="gfsandwich")
     async def gfsandwich(self, ctx):
         """Evidence that the bot is hounds gf"""
-        Hound = await utils.inRoles(ctx, ctx.guild.get_role(settings.config["staffRoles"]["head-dev"]))
-        if not Hound:
+        hound = await utils.in_roles(ctx, ctx.guild.get_role(settings.config["staffRoles"]["head-dev"]))
+        if not hound:
             await ctx.send('Ur not my dad :c')
         else:
             await ctx.send('uwu what kinda of sandwich does daddy want =^.^=', delete_after=5)
@@ -109,7 +109,7 @@ class Extra(commands.Cog):
     async def remind(self, ctx, *, time: utils.TimeConverter = None):
         """unmute the user"""
         if time is None:
-            await ctx.send('Please specficy the timer', delete_after=5)
+            await ctx.send('Please specify the timer', delete_after=5)
         else:
             await utils.emoji(ctx, '✅')
             await asyncio.sleep(time)
