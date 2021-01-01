@@ -5,7 +5,7 @@
     "memberCommandThreshold": 72,
     "websiteBlacklistFilePath":"website-blacklist.txt",
     "gitlabName":"HellHound0066/noporn-companion",
-    "prefix":"!",
+    "prefix":">>",
     "streakRoles":{
         "1":756719859802308708,
         "3":760411423373000714,

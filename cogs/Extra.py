@@ -119,5 +119,14 @@ class Extra(commands.Cog):
         """Gets an emergency link from emergency.nofap.com website."""
         await utils.get_emergency_picture(ctx)
 
+    @commands.command(name="tip", aliases=["t"])
+    async def tip(self, ctx):
+        tips = []
+        f = open('tips.txt', 'r')
+        for line in f:
+            tips.append(line.strip())
+        await ctx.send(f'{random.choice(tips)}')
+
+
 def setup(client):
     client.add_cog(Extra(client))
