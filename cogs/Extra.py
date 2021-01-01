@@ -106,7 +106,7 @@ class Extra(commands.Cog):
     @commands.command(name="remind", aliases=["remindme"])
     @commands.has_any_role(
         settings.config["statusRoles"]["member"])
-    async def nunmute(self, ctx, *, time: utils.TimeConverter = None):
+    async def remind(self, ctx, *, time: utils.TimeConverter = None):
         """unmute the user"""
         if time is None:
             await ctx.send('Please specficy the timer', delete_after=5)
