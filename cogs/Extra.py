@@ -6,6 +6,7 @@ from datetime import datetime, timedelta
 import random
 import aiohttp
 import settings
+import asyncio
 
 import utils
 
@@ -42,8 +43,7 @@ class Extra(commands.Cog):
             'Very doubtful'
         ]
         if '@everyone' in question or '@here' in question:
-            emoji = '❌'
-            await ctx.message.add_reaction(emoji)
+            await utils.emoji(ctx, '❌')
         else:
             await ctx.send(f' **Question:** {question}\n**Answer:** {random.choice(responses)}')
 
@@ -97,15 +97,23 @@ class Extra(commands.Cog):
     @commands.command(name="gfsandwich")
     async def gfsandwich(self, ctx):
         """Evidence that the bot is hounds gf"""
-        Hound = False
-        HDev = ctx.guild.get_role(settings.config["staffRoles"]["head-dev"])
-        for role in ctx.author.roles:
-            if role.id == HDev.id:
-                Hound = True
-        if not Hound:
+        hound = await utils.in_roles(ctx, ctx.guild.get_role(settings.config["staffRoles"]["head-dev"]))
+        if not hound:
             await ctx.send('Ur not my dad :c')
         else:
             await ctx.send('uwu what kinda of sandwich does daddy want =^.^=', delete_after=5)
+
+    @commands.command(name="remind", aliases=["remindme"])
+    @commands.has_any_role(
+        settings.config["statusRoles"]["member"])
+    async def remind(self, ctx, *, time: utils.TimeConverter = None):
+        """unmute the user"""
+        if time is None:
+            await ctx.send('Please specify the timer', delete_after=5)
+        else:
+            await utils.emoji(ctx, '✅')
+            await asyncio.sleep(time)
+            await ctx.send(f'{ctx.author.mention}')
 
     @commands.command(name="emergency", aliases=['m'])
     async def emergency(self, ctx):

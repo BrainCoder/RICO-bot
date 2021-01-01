@@ -6,6 +6,9 @@ from sqlalchemy.dialects.mysql import BIGINT, INTEGER, TEXT, DATETIME, TINYINT
 from os import listdir
 from os.path import isfile, join
 import discord
+from discord.ext import commands
+import re
+
 
 global engine
 global conn
@@ -66,9 +69,9 @@ def init():
     )
 
     name_change_type = Table(
-         'name_change_type', meta,
-         Column('change_type_id', INTEGER, primary_key=True, nullable=False, autoincrement=True),
-         Column('change_type', TEXT, nullable=False)
+        'name_change_type', meta,
+        Column('change_type_id', INTEGER, primary_key=True, nullable=False, autoincrement=True),
+        Column('change_type', TEXT, nullable=False)
     )
 
     name_change_event = Table(
@@ -89,6 +92,23 @@ ctoday = today.strftime("%d/%m/%Y")
 ctime = today.strftime("%H:%M")
 timestr = f'**[{ctoday}] [{ctime}] -**'
 
+time_regex = re.compile("(?:(\d{1,5})(h|s|m|d))+?")
+time_dict = {"h": 3600, "s": 1, "m": 60, "d": 86400}
+
+class TimeConverter(commands.Converter):
+    async def convert(self, ctx, argument):
+        args = argument.lower()
+        matches = re.findall(time_regex, args)
+        time = 0
+        for v, k in matches:
+            try:
+                time += time_dict[k] * float(v)
+            except KeyError:
+                raise commands.BadArgument("{} is an invalid time-key! h/m/s/d are valid!".format(k))
+            except ValueError:
+                raise commands.BadArgument("{} is not a number!".format(v))
+        return time
+
 def to_dt(t_stamp):
     return datetime.fromtimestamp(t_stamp)
 
@@ -98,6 +118,12 @@ def readFile(fileName):
 
 async def emoji(ctx, emji):
     await ctx.message.add_reaction(emji)
+
+async def mod_event_query(recipient_id, event_type, event_time, reason, issuer_id, historical):
+    mod_query = mod_event.insert(). \
+        values(recipient_id=recipient_id, event_type=event_type, reason=reason, event_time=event_time,
+            issuer_id=issuer_id, historical=historical)
+    conn.execute(mod_query)
 
 async def doembed(ctx, aname, fname, fval, user, channel=False):
     if settings.config["prefix"] == '!':
@@ -109,6 +135,16 @@ async def doembed(ctx, aname, fname, fval, user, channel=False):
             await ctx.send(embed=embed)
         else:
             await logs_channel.send(embed=embed)
+
+async def in_roles(ctx, searchRole):
+    for role in ctx.author.roles:
+        if role.id == searchRole:
+            return True
+    return False
+
+async def role_pop(ctx, role):
+    participants = [m for m in ctx.guild.members if role in m.roles]
+    return participants
 
 """async def waitThenRun(seconds, fn):
     await asyncio.sleep(seconds)

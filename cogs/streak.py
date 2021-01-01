@@ -50,6 +50,24 @@ async def removeStreakRoles(author):
             await author.remove_roles(role)
             return
 
+async def challenge(ctx, role):
+    objectRole = ctx.guild.get_role(role)
+    await ctx.author.remove_roles(objectRole)
+    no = len(await utils.role_pop(ctx, objectRole))
+    if role == settings.config["challenges"]["monthly-challenge-participant"]:
+        channel = ctx.guild.get_channel(settings.config["channels"]["monthly-challenge"])
+        await channel.send(f'Monthly Challenge members left: {no}')
+    elif role == settings.config["challenges"]["yearly-challenge-participant"]:
+        channel = ctx.guild.get_channel(settings.config["channels"]["yearly-challenge"])
+        await channel.send(f'Yearly Challenge members left: {no}')
+    elif role == settings.config["challenges"]["deadpool-participant"]:
+        channel = ctx.guild.get_channel(settings.config["channels"]["deadpool-challenge"])
+        await channel.send(f'Deadpool memebers left: {no}')
+
+async def delayed_delete(message):
+    await asyncio.sleep(5)
+    await message.delete()
+
 
 class Streak(commands.Cog):
 
@@ -62,117 +80,83 @@ class Streak(commands.Cog):
     @commands.cooldown(1, 60, commands.BucketType.user)
     async def relapse(self, ctx, *args):
         """resets the users streak to day 0"""
-        Anon = False
-        anon_role = ctx.guild.get_role(settings.config["modeRoles"]["anon-streak"])
-        for role in ctx.author.roles:
-            if role.id == anon_role.id:
-                Anon = True
-                await ctx.message.delete()
-                await removeStreakRoles(ctx.author)
-        await ctx.guild.fetch_members(limit=None).flatten()
-        for role in ctx.author.roles:
-            if role.id == settings.config["challenges"]["monthly-challenge-participant"]:
-                guild = ctx.guild
-                role = guild.get_role(settings.config["challenges"]["monthly-challenge-participant"])
-                await ctx.author.remove_roles(role)
-                partcipants = [m for m in guild.members if role in m.roles]
-                no = len(partcipants)
-                print(f'{no}')
-                channel = guild.get_channel(settings.config["channels"]["monthly-challenge"])
-                print(f'{channel}')
-                await channel.send(f'Monthly Challenge members left: {no}')
-        for role in ctx.author.roles:
-            if role.id == settings.config["challenges"]["yearly-challenge-participant"]:
-                guild = ctx.guild
-                role = guild.get_role(settings.config["challenges"]["yearly-challenge-participant"])
-                await ctx.author.remove_roles(role)
-                partcipants = [m for m in guild.members if role in m.roles]
-                no = len(partcipants)
-                print(f'{no}')
-                channel = guild.get_channel(settings.config["channels"]["yearly-challenge"])
-                print(f'{channel}')
-                await channel.send(f'Yearly Challenge members left: {no}')
-        for role in ctx.author.roles:
-            if role.id == settings.config["challenges"]["deadpool-participant"]:
-                guild = ctx.guild
-                role = guild.get_role(settings.config["challenges"]["deadpool-participant"])
-                await ctx.author.remove_roles(role)
-                partcipants = [m for m in guild.members if role in m.roles]
-                no = len(partcipants)
-                print(f'{no}')
-                channel = guild.get_channel(settings.config["channels"]["deadpool-challenge"])
-                print(f'{channel}')
-                await channel.send(f'Deadpool Challenge members left: {no}')
-        else:
-            maxDays = 365 * 10
-            n_days = 0
-            n_hours = 0
-            if(len(args) > 0 and args[0].isnumeric() and maxDays > int(args[0]) >= 0):
-                n_days = int(args[0])
-                if(len(args) > 1 and args[1].isnumeric() and 24 > int(args[1]) >= 0):
-                    n_hours = int(args[1])
-                elif(len(args) > 1 and (not args[1].isnumeric() or not 24 > int(args[1]) >= 0)):
-                    message = await ctx.channel.send('The provided command arguments are not permitted.')
-                    if Anon:
-                        await asyncio.sleep(5)
-                        await message.delete()
-                    return
-            elif(len(args) > 0 and (not args[0].isnumeric() or not maxDays > int(args[0]) >= 0)):
+        Anon = await utils.in_roles(ctx, settings.config["modeRoles"]["anon-streak"])
+        mChal = await utils.in_roles(ctx, settings.config["challenges"]["monthly-challenge-participant"])
+        yChal = await utils.in_roles(ctx, settings.config["challenges"]["yearly-challenge-participant"])
+        dPool = await utils.in_roles(ctx, settings.config["challenges"]["deadpool-participant"])
+        if Anon:
+            await ctx.message.delete()
+            await removeStreakRoles(ctx.author)
+        if mChal:
+            await challenge(ctx, settings.config["challenges"]["monthly-challenge-participant"])
+        if yChal:
+            await challenge(ctx, settings.config["challenges"]["yearly-challenge-participant"])
+        if dPool:
+            await challenge(ctx, settings.config["challenges"]["deadpool-participant"])
+        maxDays = 365 * 10
+        n_days = 0
+        n_hours = 0
+        if(len(args) > 0 and args[0].isnumeric() and maxDays > int(args[0]) >= 0):
+            n_days = int(args[0])
+            if(len(args) > 1 and args[1].isnumeric() and 24 > int(args[1]) >= 0):
+                n_hours = int(args[1])
+            elif(len(args) > 1 and (not args[1].isnumeric() or not 24 > int(args[1]) >= 0)):
                 message = await ctx.channel.send('The provided command arguments are not permitted.')
                 if Anon:
-                    await asyncio.sleep(5)
-                    await message.delete()
+                    await delayed_delete(message)
                 return
-            current_starting_date = datetime.today() - timedelta(days=n_days, hours=n_hours)
-            query = utils.userdata.select().where(utils.userdata.c.id == ctx.author.id)
-            rows = utils.conn.execute(query).fetchall()
-            if(len(rows)):
-                if(rows[0]['last_relapse'] is not None):
-                    last_starting_date = utils.to_dt(rows[0]['last_relapse'])
-                    total_streak_length = (current_starting_date - last_starting_date).total_seconds()
-                    if total_streak_length > 60:
-                        [daysStr, middleStr, hoursStr] = getStreakString(total_streak_length)
-                        totalHours, _ = divmod(total_streak_length, 60*60)
-                        if(rows[0]['past_streaks'] is not None):
-                            past_streaks = utils.json.loads(rows[0]['past_streaks'])
-                            past_streaks.append(totalHours)
-                        else:
-                            past_streaks = [totalHours]
-                        query = (utils.userdata
-                        .update()
-                            .where(utils.userdata.c.id == ctx.author.id)
-                            .values(last_relapse=current_starting_date.timestamp(),
-                                    past_streaks=utils.json.dumps(past_streaks)))
-                        utils.conn.execute(query)
-                        if not Anon:
-                            await updateStreakRole(ctx.author, current_starting_date)
-                        message = await ctx.channel.send(
-                            content=f'Your streak was {daysStr}{middleStr}{hoursStr} long.')
-                        if Anon:
-                            await asyncio.sleep(5)
-                            await message.delete()
-                if(rows[0]['last_relapse'] is None or total_streak_length <= 60):
+        elif(len(args) > 0 and (not args[0].isnumeric() or not maxDays > int(args[0]) >= 0)):
+            message = await ctx.channel.send('The provided command arguments are not permitted.')
+            if Anon:
+                await delayed_delete(message)
+            return
+        current_starting_date = datetime.today() - timedelta(days=n_days, hours=n_hours)
+        query = utils.userdata.select().where(utils.userdata.c.id == ctx.author.id)
+        rows = utils.conn.execute(query).fetchall()
+        if(len(rows)):
+            if(rows[0]['last_relapse'] is not None):
+                last_starting_date = utils.to_dt(rows[0]['last_relapse'])
+                total_streak_length = (current_starting_date - last_starting_date).total_seconds()
+                if total_streak_length > 60:
+                    [daysStr, middleStr, hoursStr] = getStreakString(total_streak_length)
+                    totalHours, _ = divmod(total_streak_length, 60*60)
+                    if(rows[0]['past_streaks'] is not None):
+                        past_streaks = utils.json.loads(rows[0]['past_streaks'])
+                        past_streaks.append(totalHours)
+                    else:
+                        past_streaks = [totalHours]
                     query = (utils.userdata
-                        .update()
-                    .where(utils.userdata.c.id == ctx.author.id)
-                        .values(last_relapse=current_starting_date.timestamp()))
+                    .update()
+                        .where(utils.userdata.c.id == ctx.author.id)
+                        .values(last_relapse=current_starting_date.timestamp(),
+                                past_streaks=utils.json.dumps(past_streaks)))
                     utils.conn.execute(query)
                     if not Anon:
                         await updateStreakRole(ctx.author, current_starting_date)
-                    message = await ctx.channel.send('Streak set successfully.')
+                    message = await ctx.channel.send(
+                        content=f'Your streak was {daysStr}{middleStr}{hoursStr} long.')
                     if Anon:
-                        await asyncio.sleep(5)
-                        await message.delete()
-            else:
-                query = utils.userdata.insert().values(id=ctx.author.id,
-                        last_relapse=current_starting_date.timestamp())
+                        await delayed_delete(message)
+            if(rows[0]['last_relapse'] is None or total_streak_length <= 60):
+                query = (utils.userdata
+                    .update()
+                .where(utils.userdata.c.id == ctx.author.id)
+                    .values(last_relapse=current_starting_date.timestamp()))
                 utils.conn.execute(query)
                 if not Anon:
                     await updateStreakRole(ctx.author, current_starting_date)
                 message = await ctx.channel.send('Streak set successfully.')
                 if Anon:
-                    await asyncio.sleep(5)
-                    await message.delete()
+                    await delayed_delete(message)
+        else:
+            query = utils.userdata.insert().values(id=ctx.author.id,
+                    last_relapse=current_starting_date.timestamp())
+            utils.conn.execute(query)
+            if not Anon:
+                await updateStreakRole(ctx.author, current_starting_date)
+            message = await ctx.channel.send('Streak set successfully.')
+            if Anon:
+                await delayed_delete(message)
     @relapse.error
     async def relapse_handler(self, ctx, error):
         if isinstance(error, commands.CheckFailure):
@@ -188,13 +172,10 @@ class Streak(commands.Cog):
     @commands.cooldown(1, 900, commands.BucketType.user)
     async def update(self, ctx):
         """updates the users streak"""
-        Anon = False
-        anon_role = ctx.guild.get_role(settings.config["modeRoles"]["anon-streak"])
-        for role in ctx.author.roles:
-            if role.id == anon_role.id:
-                Anon = True
-                await ctx.message.delete()
-                await removeStreakRoles(ctx.author)
+        Anon = await utils.in_roles(ctx, settings.config["modeRoles"]["anon-streak"])
+        if Anon:
+            await ctx.message.delete()
+            await removeStreakRoles(ctx.author)
         query = utils.userdata.select().where(utils.userdata.c.id == ctx.author.id)
         rows = utils.conn.execute(query).fetchall()
         if(len(rows) and rows[0]['last_relapse'] is not None):
@@ -205,13 +186,11 @@ class Streak(commands.Cog):
                 await updateStreakRole(ctx.author, last_starting_date)
             message = await ctx.channel.send(f'Your streak is {daysStr}{middleStr}{hoursStr} long.')
             if Anon:
-                await asyncio.sleep(5)
-                await message.delete()
+                await delayed_delete(message)
         else:
             message = await ctx.channel.send("No data about you available do !relapse .")
             if Anon:
-                await asyncio.sleep(5)
-                await message.delete()
+                await delayed_delete(message)
     @update.error
     async def update_handler(self, ctx, error):
         if isinstance(error, commands.CheckFailure):
