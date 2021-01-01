@@ -51,14 +51,18 @@ async def removeStreakRoles(author):
             return
 
 async def challenge(ctx, role):
-    await ctx.author.remove_roles(role)
-    no = len(await utils.rolePop(ctx, role))
-    if role == settings.config["channels"]["monthly-challenge"]:
+    objectRole = ctx.guild.get_role(role)
+    await ctx.author.remove_roles(objectRole)
+    no = len(await utils.rolePop(ctx, objectRole))
+    if role == settings.config["challenges"]["monthly-challenge-participant"]:
         channel = ctx.guild.get_channel(settings.config["channels"]["monthly-challenge"])
-        await channel.send(f'Monthly Challenge members left: {no}')
-    if role == settings.config["challenges"]["yearly-challenge-participant"]:
+        await channel.send(f'test - Monthly Challenge members left: {no}')
+    elif role == settings.config["challenges"]["yearly-challenge-participant"]:
         channel = ctx.guild.get_channel(settings.config["channels"]["yearly-challenge"])
-        await channel.send(f'Yearly Challenge members left: {no}')
+        await channel.send(f'test - Yearly Challenge members left: {no}')
+    elif role == settings.config["challenges"]["deadpool-participant"]:
+        channel = ctx.guild.get_channel(settings.config["channels"]["deadpool-challenge"])
+        await channel.send(f'test - Deadpool memebers left: {no}')
 
 async def delayedDelete(message):
     await asyncio.sleep(5)
@@ -72,13 +76,14 @@ class Streak(commands.Cog):
         self._last_member = None
 
     @commands.command(name="relapse")
-    @commands.check(utils.is_in_streak_channel)
-    @commands.cooldown(1, 60, commands.BucketType.user)
+    # @commands.check(utils.is_in_streak_channel)
+    # @commands.cooldown(1, 60, commands.BucketType.user)
     async def relapse(self, ctx, *args):
         """resets the users streak to day 0"""
         Anon = await utils.inRoles(ctx, settings.config["modeRoles"]["anon-streak"])
         mChal = await utils.inRoles(ctx, settings.config["challenges"]["monthly-challenge-participant"])
-        yChal = await utils.inRole(ctx, settings.config["challenges"]["yearly-challenge-participant"])
+        yChal = await utils.inRoles(ctx, settings.config["challenges"]["yearly-challenge-participant"])
+        dPool = await utils.inRoles(ctx, settings.config["challenges"]["deadpool-participant"])
         if Anon:
             await ctx.message.delete()
             await removeStreakRoles(ctx.author)
@@ -86,6 +91,8 @@ class Streak(commands.Cog):
             await challenge(ctx, settings.config["challenges"]["monthly-challenge-participant"])
         if yChal:
             await challenge(ctx, settings.config["challenges"]["yearly-challenge-participant"])
+        if dPool:
+            await challenge(ctx, settings.config["challenges"]["deadpool-participant"])
         maxDays = 365 * 10
         n_days = 0
         n_hours = 0
@@ -161,8 +168,8 @@ class Streak(commands.Cog):
             traceback.print_exception(type(error), error, error.__traceback__, file=sys.stderr)
 
     @commands.command(name="update")
-    @commands.check(utils.is_in_streak_channel)
-    @commands.cooldown(1, 900, commands.BucketType.user)
+    # @commands.check(utils.is_in_streak_channel)
+    # @commands.cooldown(1, 900, commands.BucketType.user)
     async def update(self, ctx):
         """updates the users streak"""
         Anon = await utils.inRoles(ctx, settings.config["modeRoles"]["anon-streak"])

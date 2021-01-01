@@ -122,7 +122,8 @@ async def inRoles(ctx, testRole):
     return False
 
 async def rolePop(ctx, role):
-    [m for m in ctx.guild.members if role in m.roles]
+    participants = [m for m in ctx.guild.members if role in m.roles]
+    return participants
 
 """async def waitThenRun(seconds, fn):
     await asyncio.sleep(seconds)
