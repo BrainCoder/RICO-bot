@@ -131,10 +131,11 @@ class Streak(commands.Cog):
                         .values(last_relapse=current_starting_date.timestamp(),
                                 past_streaks=utils.json.dumps(past_streaks)))
                     utils.conn.execute(query)
+                    message = await ctx.channel.send(f'Your streak was {daysStr}{middleStr}{hoursStr} long.')
                     if not Anon:
                         await updateStreakRole(ctx.author, current_starting_date)
-                    message = await ctx.channel.send(
-                        content=f'Your streak was {daysStr}{middleStr}{hoursStr} long.')
+                        await ctx.send('Dont be dejected')
+                        await utils.get_emergency_picture(ctx)
                     if Anon:
                         await delayed_delete(message)
             if(rows[0]['last_relapse'] is None or total_streak_length <= 60):

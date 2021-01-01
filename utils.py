@@ -1,5 +1,6 @@
 import json
 import settings
+import aiohttp
 from datetime import datetime
 from sqlalchemy import create_engine, MetaData, Table, Column, ForeignKey
 from sqlalchemy.dialects.mysql import BIGINT, INTEGER, TEXT, DATETIME, TINYINT
@@ -145,6 +146,13 @@ async def in_roles(ctx, searchRole):
 async def role_pop(ctx, role):
     participants = [m for m in ctx.guild.members if role in m.roles]
     return participants
+
+async def get_emergency_picture(ctx):
+    url = "https://emergency.nofap.com/director.php?cat=em&religious=false"
+    async with aiohttp.ClientSession() as cs:
+        async with cs.get(url) as response:
+            link_decoded = (await response.read()).decode()
+            await ctx.send(link_decoded)
 
 """async def waitThenRun(seconds, fn):
     await asyncio.sleep(seconds)
