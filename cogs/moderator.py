@@ -130,7 +130,7 @@ class ModeratorTools(commands.Cog):
         The moderation action it queries against will be mutes(strikes) by default,
         but it can take the arguments of ban, kick,
         or will post all moderation actions if any other value is filled in there."""
-        channel = self.client.get_channel(settings.config["channels"]["strike-board"])
+        channel = self.client.get_channel(settings.config["channels"]["administration"])
         mod_action_clause = ""
         if action == "mute":
             mod_action_clause = "and me.event_type = 3"
