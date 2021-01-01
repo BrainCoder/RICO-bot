@@ -223,8 +223,13 @@ class ModCommands(commands.Cog):
         settings.config["staffRoles"]["moderator"],
         settings.config["staffRoles"]["semi-moderator"],
         settings.config["staffRoles"]["trial-mod"])
-    async def nunmute(self, ctx, user: discord.Member = None, *, time: utils.TimeConverter = None):
-        """unmute the user"""
+    async def unmute(self, ctx, user: discord.Member = None, *, time: utils.TimeConverter = None):
+        """unmutes the user in question
+
+        Args:
+            user: This is the user you wish to unmute.
+            time: This is the timer, however this defaults to 0. Please enter your timer in the format 1h 3m 2s
+        """
         await self.client.wait_until_ready()
         if user is None:
             await ctx.send('Please tag the user you want to unmute', delete_after=5)

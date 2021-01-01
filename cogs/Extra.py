@@ -4,7 +4,6 @@ from discord.ext.commands import cooldown
 
 from datetime import datetime, timedelta
 import random
-import aiohttp
 import settings
 import asyncio
 
@@ -121,11 +120,15 @@ class Extra(commands.Cog):
     @commands.command(name="emergency", aliases=['m'])
     async def emergency(self, ctx):
         """Gets an emergency link from emergency.nofap.com website."""
-        url = "https://emergency.nofap.com/director.php?cat=em&religious=false"
-        async with aiohttp.ClientSession() as cs:
-            async with cs.get(url) as response:
-                link_decoded = (await response.read()).decode()
-                await ctx.send(link_decoded)
+        await utils.get_emergency_picture(ctx)
+
+    @commands.command(name="tip", aliases=["t"])
+    async def tip(self, ctx):
+        tips = []
+        f = open('tips.txt', 'r')
+        for line in f:
+            tips.append(line.strip())
+        await ctx.send(f'{random.choice(tips)}')
 
 
     async def build_username_list(self, member):
