@@ -135,7 +135,7 @@ class Streak(commands.Cog):
                     if not Anon:
                         await updateStreakRole(ctx.author, current_starting_date)
                         await ctx.send('Dont be dejected')
-                        await utils.get_emergency_picture(ctx)
+                        await utils.get_emergency_picture(ctx, relapse=True)
                     if Anon:
                         await delayed_delete(message)
             if(rows[0]['last_relapse'] is None or total_streak_length <= 60):

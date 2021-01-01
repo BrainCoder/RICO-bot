@@ -147,8 +147,11 @@ async def role_pop(ctx, role):
     participants = [m for m in ctx.guild.members if role in m.roles]
     return participants
 
-async def get_emergency_picture(ctx):
-    url = "https://emergency.nofap.com/director.php?cat=em&religious=false"
+async def get_emergency_picture(ctx, relapse=False):
+    if relapse:
+        url = "https://emergency.nofap.com/director.php?cat=rel&religious=false"
+    else:
+        url = "https://emergency.nofap.com/director.php?cat=em&religious=false"
     async with aiohttp.ClientSession() as cs:
         async with cs.get(url) as response:
             link_decoded = (await response.read()).decode()

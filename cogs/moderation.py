@@ -223,7 +223,7 @@ class ModCommands(commands.Cog):
         settings.config["staffRoles"]["moderator"],
         settings.config["staffRoles"]["semi-moderator"],
         settings.config["staffRoles"]["trial-mod"])
-    async def nunmute(self, ctx, user: discord.Member = None, *, time: utils.TimeConverter = None):
+    async def unmute(self, ctx, user: discord.Member = None, *, time: utils.TimeConverter = None):
         """unmutes the user in question
 
         Args:
