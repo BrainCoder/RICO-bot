@@ -31,22 +31,23 @@ async def vi_member(ctx):
     members_lost = []
     missing_members = []
     for user in ctx.guild.members:
-        query = utils.userdata.select().where(utils.userdata.c.id == user.id)
-        result = utils.conn.execute(query).fetchone()
-        if result:
-            member_role = ctx.guild.get_role(settings.config["statusRoles"]["member"])
-            if member_role in user.roles and result[11] == 0:
-                user_data_query = update(utils.userdata).where(utils.userdata.c.id == user.id) \
-                    .values(member=1)
-                utils.conn.execute(user_data_query)
-                members_added.append(user.name)
-            elif member_role not in user.roles and result[11] == 1:
-                user_data_query = update(utils.userdata).where(utils.userdata.c.id == user.id) \
-                    .values(member=0)
-                utils.conn.execute(user_data_query)
-                members_lost.append(user.name)
-        else:
-            missing_members.append(user.name)
+        if not user.bot:
+            query = utils.userdata.select().where(utils.userdata.c.id == user.id)
+            result = utils.conn.execute(query).fetchone()
+            if result:
+                member_role = ctx.guild.get_role(settings.config["statusRoles"]["member"])
+                if member_role in user.roles and result[11] == 0:
+                    user_data_query = update(utils.userdata).where(utils.userdata.c.id == user.id) \
+                        .values(member=1)
+                    utils.conn.execute(user_data_query)
+                    members_added.append(user.name)
+                elif member_role not in user.roles and result[11] == 1:
+                    user_data_query = update(utils.userdata).where(utils.userdata.c.id == user.id) \
+                        .values(member=0)
+                    utils.conn.execute(user_data_query)
+                    members_lost.append(user.name)
+            else:
+                missing_members.append(user.name)
     if len(missing_members) > 0:
         dev_log_channel = ctx.guild.get_channel(settings.config["channels"]["devlog"])
         await dev_log_channel.send(f'{utils.timestr}The following users were not in the database: '
