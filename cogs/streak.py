@@ -56,13 +56,13 @@ async def challenge(ctx, role):
     no = len(await utils.rolePop(ctx, objectRole))
     if role == settings.config["challenges"]["monthly-challenge-participant"]:
         channel = ctx.guild.get_channel(settings.config["channels"]["monthly-challenge"])
-        await channel.send(f'test - Monthly Challenge members left: {no}')
+        await channel.send(f'Monthly Challenge members left: {no}')
     elif role == settings.config["challenges"]["yearly-challenge-participant"]:
         channel = ctx.guild.get_channel(settings.config["channels"]["yearly-challenge"])
-        await channel.send(f'test - Yearly Challenge members left: {no}')
+        await channel.send(f'Yearly Challenge members left: {no}')
     elif role == settings.config["challenges"]["deadpool-participant"]:
         channel = ctx.guild.get_channel(settings.config["channels"]["deadpool-challenge"])
-        await channel.send(f'test - Deadpool memebers left: {no}')
+        await channel.send(f'Deadpool memebers left: {no}')
 
 async def delayedDelete(message):
     await asyncio.sleep(5)
