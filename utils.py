@@ -143,8 +143,20 @@ async def in_roles(ctx, searchRole):
             return True
     return False
 
+async def is_staff(ctx):
+    staff_roles = []
+    staff_roles.append(await in_roles(ctx, settings.config["staffRoles"]["admin"]))
+    staff_roles.append(await in_roles(ctx, settings.config["staffRoles"]["head-dev"]))
+    staff_roles.append(await in_roles(ctx, settings.config["staffRoles"]["developer"]))
+    staff_roles.append(await in_roles(ctx, settings.config["staffRoles"]["facilitator"]))
+    staff_roles.append(await in_roles(ctx, settings.config["staffRoles"]["head-moderator"]))
+    staff_roles.append(await in_roles(ctx, settings.config["staffRoles"]["moderator"]))
+    staff_roles.append(await in_roles(ctx, settings.config["staffRoles"]["semi-moderator"]))
+    return True in staff_roles
+
 async def role_pop(ctx, role):
-    participants = [m for m in ctx.guild.members if role in m.roles]
+    role_to_search = ctx.guild.get_role(role)
+    participants = [m for m in ctx.guild.members if role_to_search in m.roles]
     return participants
 
 async def get_emergency_picture(ctx, relapse=False):

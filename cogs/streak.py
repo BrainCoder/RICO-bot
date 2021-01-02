@@ -1,5 +1,5 @@
 from discord.ext import commands
-
+import discord
 from utils import idData
 import utils
 import settings
@@ -50,6 +50,16 @@ async def removeStreakRoles(author):
             await author.remove_roles(role)
             return
 
+
+async def check_permitted_streak_set_amount(ctx, number):
+    if (number > 30 and not await utils.in_roles(ctx, settings.config["statusRoles"]["vip"]) and
+            number > 30 and not await utils.in_roles(ctx, settings.config["statusRoles"]["boost-vip"])):
+        return -1
+    elif number > 90 and not await utils.is_staff(ctx):
+        return -1
+    return number
+
+
 async def challenge(ctx, role):
     objectRole = ctx.guild.get_role(role)
     await ctx.author.remove_roles(objectRole)
@@ -63,6 +73,7 @@ async def challenge(ctx, role):
     elif role == settings.config["challenges"]["deadpool-participant"]:
         channel = ctx.guild.get_channel(settings.config["channels"]["deadpool-challenge"])
         await channel.send(f'Deadpool memebers left: {no}')
+
 
 async def delayed_delete(message):
     await asyncio.sleep(5)
@@ -97,6 +108,11 @@ class Streak(commands.Cog):
         n_days = 0
         n_hours = 0
         if(len(args) > 0 and args[0].isnumeric() and maxDays > int(args[0]) >= 0):
+            if (await check_permitted_streak_set_amount(ctx, int(args[0]))) == -1:
+                message = await ctx.channel.send('You cannot set your streak this high without moderator help.')
+                if Anon:
+                    await delayed_delete(message)
+                return
             n_days = int(args[0])
             if(len(args) > 1 and args[1].isnumeric() and 24 > int(args[1]) >= 0):
                 n_hours = int(args[1])
@@ -202,6 +218,36 @@ class Streak(commands.Cog):
             print('Ignoring exception in command {}:'.format(ctx.command), file=sys.stderr)
             traceback.print_exception(type(error), error, error.__traceback__, file=sys.stderr)
 
+    @commands.command(name="fstreak")
+    @commands.has_any_role(
+        settings.config["staffRoles"]["moderator"],
+        settings.config["staffRoles"]["head-moderator"])
+    async def set_streak(self, ctx, member: discord.Member, *args):
+        """forces someone's streak to a certain time.
+
+        Takes the same arguments as if you were to set your streak for the first time in relapse.
+        second argument must be less than 24 hours, and a user that is already in the database must be provided."""
+
+        if member is None:
+            await ctx.channel.send("You need to specify a user.")
+
+        new_starting_date = datetime.today()
+        if len(args) >= 1:
+            n_days = int(args[0])
+            new_starting_date = new_starting_date - timedelta(days=n_days)
+        if len(args) >= 2 and int(args[1]) < 24:
+            n_hours = int(args[1])
+            new_starting_date = new_starting_date - timedelta(hours=n_hours)
+        elif len(args) >= 2 and int(args[1]) > 24:
+            await ctx.channel.send("Please send a value less than or equal to 24 hours")
+            return
+        query = (utils.userdata
+                 .update()
+                 .where(utils.userdata.c.id == member.id)
+                 .values(last_relapse=new_starting_date.timestamp()))
+        utils.conn.execute(query)
+        await updateStreakRole(ctx.author, new_starting_date)
+        await ctx.channel.send("Streak set successfully.")
 
 def setup(client):
     client.add_cog(Streak(client))

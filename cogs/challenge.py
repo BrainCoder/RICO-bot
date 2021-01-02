@@ -86,10 +86,10 @@ class MonthlyChallenge(commands.Cog):
     @commands.command(name="participation", pass_context=True)
     async def participation_amount(self, ctx):
         """sends the current number of users with the M-Challenge participant role"""
-        mpartcipants = len(await utils.rolePop(ctx, settings.config["challenges"]["monthly-challenge-participant"]))
-        ypartcipants = len(await utils.rolePop(ctx, settings.config["challenges"]["yearly-challenge-participant"]))
-        dparticipants = len(await utils.rolePop(settings.config["challenges"]["deadpool-participant"]))
-        await utils.doembed(ctx, "Challenge statics", "Participation", f"\nMonthly Challenge Memebers left: {mpartcipants}\nYearly Challenge Members left: {ypartcipants}\nDeadpool Challenge Members Left: {dparticipants}", ctx.author, True)
+        mpartcipants = len(await utils.role_pop(ctx, settings.config["challenges"]["monthly-challenge-participant"]))
+        ypartcipants = len(await utils.role_pop(ctx, settings.config["challenges"]["yearly-challenge-participant"]))
+        dparticipants = len(await utils.role_pop(ctx, settings.config["challenges"]["deadpool-participant"]))
+        await utils.doembed(ctx, "Challenge statics", "Participation", f"\nMonthly Challenge Members left: {mpartcipants}\nYearly Challenge Members left: {ypartcipants}\nDeadpool Challenge Members Left: {dparticipants}", ctx.author, True)
 
     @commands.command(name="yearlychallenge")
     async def yearlychallenge(self, ctx):
