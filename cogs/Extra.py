@@ -99,7 +99,7 @@ class Extra(commands.Cog):
     @commands.command(name="gfsandwich")
     async def gfsandwich(self, ctx):
         """Evidence that the bot is hounds gf"""
-        hound = await utils.in_roles(ctx, ctx.guild.get_role(settings.config["staffRoles"]["head-dev"]))
+        hound = await utils.in_roles(ctx, settings.config["staffRoles"]["head-dev"])
         if not hound:
             await ctx.send('Ur not my dad :c')
         else:
