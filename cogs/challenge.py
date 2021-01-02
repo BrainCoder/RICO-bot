@@ -89,7 +89,7 @@ class MonthlyChallenge(commands.Cog):
         mpartcipants = len(await utils.role_pop(ctx, settings.config["challenges"]["monthly-challenge-participant"]))
         ypartcipants = len(await utils.role_pop(ctx, settings.config["challenges"]["yearly-challenge-participant"]))
         dparticipants = len(await utils.role_pop(ctx, settings.config["challenges"]["deadpool-participant"]))
-        await utils.doembed(ctx, "Challenge statics", "Participation", f"\nMonthly Challenge Memebers left: {mpartcipants}\nYearly Challenge Members left: {ypartcipants}\nDeadpool Challenge Members Left: {dparticipants}", ctx.author, True)
+        await utils.doembed(ctx, "Challenge statics", "Participation", f"\nMonthly Challenge Members left: {mpartcipants}\nYearly Challenge Members left: {ypartcipants}\nDeadpool Challenge Members Left: {dparticipants}", ctx.author, True)
 
     @commands.command(name="yearlychallenge")
     async def yearlychallenge(self, ctx):
