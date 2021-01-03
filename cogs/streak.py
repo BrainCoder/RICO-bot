@@ -61,9 +61,9 @@ async def check_permitted_streak_set_amount(ctx, number):
 
 
 async def challenge(ctx, role):
-    objectRole = ctx.guild.get_role(role)
-    await ctx.author.remove_roles(role)
-    no = len(await utils.role_pop(ctx, objectRole))
+    object_role = ctx.guild.get_role(role)
+    await ctx.author.remove_roles(object_role)
+    no = len(await utils.role_pop(ctx, role))
     if role == settings.config["challenges"]["monthly-challenge-participant"]:
         channel = ctx.guild.get_channel(settings.config["channels"]["monthly-challenge"])
         await channel.send(f'Monthly Challenge members left: {no}')
