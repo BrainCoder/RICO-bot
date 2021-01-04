@@ -161,50 +161,5 @@ class DeveloperTools(commands.Cog):
             await utils.emoji(ctx, '✅')
             await devLogs.send(f'{utils.timestr}error logs backup deleted by {ctx.author.mention}')
 
-    @commands.command(name='eval')
-    @commands.has_any_role(
-        settings.config["staffRoles"]["developer"])
-    async def _eval(self, ctx, *, body: str):
-        env = {
-            'client': self.client,
-            'ctx': ctx,
-            'channel': ctx.channel,
-            'author': ctx.author,
-            'guild': ctx.guild,
-            'message': ctx.message,
-            '_': self._last_result}
-        env.update(globals())
-        body = self.cleanup_code(body)
-        stdout = io.StringIO()
-        to_compile = f'async def func():\n{textwrap.indent(body, "  ")}'
-        try:
-            exec(to_compile, env)
-        except Exception as e:
-            return await ctx.send(f'```py\n{e.__class__.__name__}: {e}\n```')
-        func = env['func']
-        try:
-            with redirect_stdout(stdout):
-                ret = await func()
-        except Exception:
-            value = stdout.getvalue()
-            await ctx.send(f'```py\n{value}{traceback.format_exc()}\n```')
-        else:
-            value = stdout.getvalue()
-            try:
-                await ctx.message.add_reaction('\u2705')
-            except:
-                pass
-            if ret is None:
-                if value:
-                    await ctx.send(f'```py\n{value}\n```')
-            else:
-                self._last_result = ret
-                await ctx.send(f'```py\n{value}{ret}\n```')
-
-    def cleanup_code(self, content):
-        if content.startswith('```') and content.endswith('```'):
-            return '\n'.join(content.split('\n')[1:-1])
-        return content.strip('` \n')
-
 def setup(client):
     client.add_cog(DeveloperTools(client))
