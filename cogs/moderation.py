@@ -361,10 +361,14 @@ class ModCommands(commands.Cog):
     # @commands.cooldown(1, 5)
     async def rules(self, ctx, rule: int = None):
         if rule is None:
-            await ctx.send('Rules menu not build yet')
+            pass
         else:
-            rules = await utils.build_rules()
-            await utils.doembed(ctx, "Rules", f"Rule {rule}", rules[rule - 1], ctx.author, True)
+            rules = await utils.extract_data('rules.txt')
+            embed = discord.Embed(color=ctx.author.color, timestamp=ctx.message.created_at)
+            embed.set_author(name="Rules", icon_url=ctx.author.avatar_url)
+            embed.add_field(name=f"Rule {rule}", value=rules[rule - 1])
+            await ctx.send(embed=embed)
+            # Couldnt get this working w/ utils.doembed for some reason, this is something thall have to be addressed in the future
 
     @commands.command(name="lynch")
     @commands.has_any_role(
