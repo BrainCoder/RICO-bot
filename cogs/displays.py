@@ -25,7 +25,7 @@ class SetReaction(commands.Cog):
     async def BuildRulesEmbed(self, ctx):
         embed = discord.Embed(title="Rules", url="https://tenor.com/view/idiot-lafuddyduddy-rules-follow-the-rules-penguin-gif-16685859", color=0x00dcff)
         embed.set_author(name="NoPorn", url="https://discord.gg/CFR9bt", icon_url="https://cdn.discordapp.com/icons/519330541720436736/a_2bdbaecdd90c85cdc8e9108d8a8c5907.png?size=128")
-        rules = await utils.extract_txt('rules.txt')
+        rules = await utils.extract_data('resources/rules.txt')
         for rule in rules:
             embed.add_field(name=f'Rule {rules.index(rule)+1}', value=rule, inline=False)
         embed.set_footer(text="NoPorn Companion was made by the NoPorn development team, please DM the bot for more information")
