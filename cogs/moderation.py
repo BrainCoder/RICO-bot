@@ -358,11 +358,9 @@ class ModCommands(commands.Cog):
             await ctx.send(invarg)
 
     @commands.command(name='rule', aliases=['rules'])
-    # @commands.cooldown(1, 5)
+    @commands.cooldown(1, 5)
     async def rules(self, ctx, rule: int = None):
-        if rule is None:
-            pass
-        else:
+        if rule is not None:
             rules = await utils.extract_data('rules.txt')
             embed = discord.Embed(color=ctx.author.color, timestamp=ctx.message.created_at)
             embed.set_author(name="Rules", icon_url=ctx.author.avatar_url)
