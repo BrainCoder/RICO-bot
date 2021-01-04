@@ -357,6 +357,15 @@ class ModCommands(commands.Cog):
         else:
             await ctx.send(invarg)
 
+    @commands.command(name='rule', aliases=['rules'])
+    # @commands.cooldown(1, 5)
+    async def rules(self, ctx, rule: int = None):
+        if rule is None:
+            await ctx.send('Rules menu not build yet')
+        else:
+            rules = await utils.build_rules()
+            await utils.doembed(ctx, "Rules", f"Rule {rule}", rules[rule - 1], ctx.author, True)
+
     @commands.command(name="lynch")
     @commands.has_any_role(
         settings.config["statusRoles"]["member"],
