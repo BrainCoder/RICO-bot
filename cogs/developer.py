@@ -4,14 +4,11 @@ import re
 import settings
 import traceback
 import sys
-import io
-import textwrap
 
 from discord import File
 from discord.ext import commands
 from sqlalchemy import update
 from re import search
-from contextlib import redirect_stdout
 
 import utils
 
