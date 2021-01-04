@@ -6,3 +6,4 @@ ecosystem.config.js
 website-blacklist.txt
 blacklist.txt
 whitelist.txt
+cogs/__pycache__/*
