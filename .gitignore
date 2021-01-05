@@ -1,9 +1,7 @@
 .vscode
+resources/*
 __pycache__/
 ids/test.json
 .idea/*
 ecosystem.config.js
-website-blacklist.txt
-blacklist.txt
-whitelist.txt
 cogs/__pycache__/*
