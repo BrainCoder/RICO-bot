@@ -150,7 +150,7 @@ class Streak(commands.Cog):
                     message = await ctx.channel.send(f'Your streak was {daysStr}{middleStr}{hoursStr} long.')
                     if not Anon:
                         await updateStreakRole(ctx.author, current_starting_date)
-                        await ctx.send('Dont be dejected')
+                        await ctx.send('Don’t be dejected')
                         await utils.get_emergency_picture(ctx, relapse=True)
                     if Anon:
                         await delayed_delete(message)
