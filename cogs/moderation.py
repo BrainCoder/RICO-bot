@@ -14,13 +14,13 @@ import traceback
 import sys
 
 whitelist = []
-with open('whitelist.txt', 'r') as f:
+with open('resources/whitelist.txt', 'r') as f:
     whitelist = [line.strip() for line in f]
 
 url_regex = r"(?i)\b((?:https?://|www\d{0,3}[.]|[a-z0-9.\-]+[.][a-z]{2,4}/)(?:[^\s()<>]+|\(([^\s()<>]+|(\([^\s()<>]+\)))*\))+(?:\(([^\s()<>]+|(\([^\s()<>]+\)))*\)|[^\s`!()\[\]{};:'\".,<>?«»“”‘’]))"
 invite_regex = r"(?:https?://)?discord(?:(?:app)?\.com/invite|\.gg)/?[a-zA-Z0-9]+/?"
 
-profanity.load_censor_words_from_file('blacklist.txt', whitelist_words=whitelist)
+profanity.load_censor_words_from_file('resources/blacklist.txt', whitelist_words=whitelist)
 
 
 async def remove_member_role(self, ctx, user, member_role):
@@ -339,23 +339,34 @@ class ModCommands(commands.Cog):
         if arg is None:
             await ctx.send(invarg)
         elif arg == 'add':
-            with open('blacklist.txt', "a", encoding="utf-8") as f:
+            with open('resources/blacklist.txt', "a", encoding="utf-8") as f:
                 f.write("".join([f"{w}\n" for w in words]))
                 await utils.emoji(ctx, '✅')
-            profanity.load_censor_words_from_file('blacklist.txt', whitelist_words=whitelist)
+            profanity.load_censor_words_from_file('resources/blacklist.txt', whitelist_words=whitelist)
             await devlogs.send(f'{utils.timestr}Reloaded `blacklist.txt` and `whitelist.txt` due to edit')
         elif arg == 'remove':
-            with open('blacklist.txt', "r", encoding="utf-8") as f:
+            with open('resources/blacklist.txt', "r", encoding="utf-8") as f:
                 stored = [w.strip() for w in f.readlines()]
-            with open('blacklist.txt', "w", encoding="utf-8") as f:
+            with open('resources/blacklist.txt', "w", encoding="utf-8") as f:
                 f.write("".join([f"{w}\n" for w in stored if w not in words]))
-                profanity.load_censor_words_from_file('blacklist.txt', whitelist_words=whitelist)
+                profanity.load_censor_words_from_file('resources/blacklist.txt', whitelist_words=whitelist)
                 await devlogs.send(f'{utils.timestr}Reloaded `blacklist.txt` and `whitelist.txt` due to edit')
             await utils.emoji(ctx, '✅')
         elif arg == 'blacklist':
-            await ctx.send(file=File('blacklist.txt'))
+            await ctx.send(file=File('resources/blacklist.txt'))
         else:
             await ctx.send(invarg)
+
+    @commands.command(name='rule', aliases=['rules'])
+    @commands.cooldown(1, 5)
+    async def rules(self, ctx, rule: int = None):
+        if rule is not None:
+            rules = await utils.extract_data('resources/rules.txt')
+            embed = discord.Embed(color=ctx.author.color, timestamp=ctx.message.created_at)
+            embed.set_author(name="Rules", icon_url=ctx.author.avatar_url)
+            embed.add_field(name=f"Rule {rule}", value=rules[rule - 1])
+            await ctx.send(embed=embed)
+            # Couldnt get this working w/ utils.doembed for some reason, this is something thall have to be addressed in the future
 
     @commands.command(name="lynch")
     @commands.has_any_role(

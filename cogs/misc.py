@@ -124,10 +124,7 @@ class Extra(commands.Cog):
 
     @commands.command(name="tip", aliases=["t"])
     async def tip(self, ctx):
-        tips = []
-        f = open('tips.txt', 'r')
-        for line in f:
-            tips.append(line.strip())
+        tips = await utils.extract_data('resources/tips.txt')
         await ctx.send(f'{random.choice(tips)}')
 
 

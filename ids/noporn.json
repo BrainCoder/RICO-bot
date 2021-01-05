@@ -3,7 +3,7 @@
     "botId":749836263955103774,
     "memberUpdateInterval":168,
     "memberCommandThreshold": 72,
-    "websiteBlacklistFilePath":"website-blacklist.txt",
+    "websiteBlacklistFilePath":"resources/website-blacklist.txt",
     "gitlabName":"HellHound0066/noporn-companion",
     "prefix":"!",
     "streakRoles":{

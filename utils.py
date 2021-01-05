@@ -186,6 +186,13 @@ async def is_in_complaint_channel(ctx):
 async def NotInBump(ctx):
     return ctx.channel.id != settings.config["channels"]["bump"]
 
+async def extract_data(file):
+    data = []
+    f = open(file, 'r')
+    for line in f:
+        data.append(line.strip())
+    return data
+
 """
 def hasPerms(ctx, requiredLevel):
     for role in idData['streakRoles']:
