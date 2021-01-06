@@ -412,7 +412,7 @@ class ModCommands(commands.Cog):
                     .values(lynch_count=current_lynches,
                             lynch_expiration_time=(datetime.now() + timedelta(hours=8)).timestamp())
                 utils.conn.execute(query)
-                await utils.mod_event_query(member.id, 6, datetime.now(), None, ctx.atuhor.id, 0)
+                await utils.mod_event_query(member.id, 6, datetime.now(), None, ctx.author.id, 0)
             member_role = ctx.guild.get_role(settings.config["statusRoles"]["member"])
             await ctx.author.remove_roles(member_role)
 
