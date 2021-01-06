@@ -68,10 +68,8 @@ class ModCommands(commands.Cog):
         Selfmute_Role = ctx.guild.get_role(settings.config["statusRoles"]["self-mute"])
         if Selfmute_Role in ctx.author.roles:
             await ctx.author.remove_roles(Selfmute_Role)
-            await utils.doembed(ctx, "Selfmute", f'{ctx.author} is no longer selfmuted!', 'They may run free amongst the hills like a wild rabbit', ctx.author)
         else:
             await ctx.author.add_roles(Selfmute_Role)
-            await utils.doembed(ctx, "Selfmute", f'{ctx.author} selfmuted!', 'They shall remain inside the selfmute channel until they choose to leave', ctx.author)
 
     @commands.command(name="purge", aliases=["clear"])
     @commands.has_any_role(
