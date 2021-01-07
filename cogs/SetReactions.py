@@ -4,57 +4,6 @@ from discord.ext.commands import Cog
 
 import settings
 
-s_guide = '773732031771181076'
-util = '774274027601920010'
-gender = '774274069821784104'
-religion = '774274107247296523'
-location = '774274252941426688'
-hobbies = '774274285430636604'
-misc = '774274316883591168'
-
-reaction_roles = [
-    (s_guide, (settings.config["modeRoles"]["classicmode"]), '🟢'),
-    (s_guide, (settings.config["modeRoles"]["hardmode"]), '🟡'),
-    (s_guide, (settings.config["modeRoles"]["monkmode"]), '🔴'),
-
-    (util, (settings.config["otherRoles"]["helper"]), '🆘'),
-    (util, (settings.config["otherRoles"]["support-group"]), '⚕️'),
-    (util, (settings.config["otherRoles"]["monthly-challenge"]), '🎮'),
-    (util, (settings.config["otherRoles"]["acc-partner"]), '👥'),
-    (util, (settings.config["otherRoles"]["urge-killer"]), ':cockroach:'),
-    (util, (settings.config["modeRoles"]["anon-streak"]), '🕵️'),
-    (util, (settings.config["otherRoles"]["virgin"]), ':regional_indicator_v:'),
-    (util, (settings.config["otherRoles"]["cavemanmode"]), '📵'),
-    (util, (settings.config["otherRoles"]["retention"]), ':regional_indicator_r:'),
-
-    (gender, (settings.config["genderRoles"]["male"]), '♂️'),
-    (gender, (settings.config["genderRoles"]["female"]), '♀️'),
-
-    (religion, (settings.config["religionRoles"]['islam']), '☪️'),
-    (religion, (settings.config["religionRoles"]['christianity']), '✝️'),
-    (religion, (settings.config["religionRoles"]['judaism']), '🔯'),
-    (religion, (settings.config["religionRoles"]['religious-else']), '♾️'),
-
-    (location, (settings.config["continentRoles"]["antarctica"]), ':flag_aq:'),
-    (location, (settings.config["continentRoles"]["oceania"]), ':flag_au:'),
-    (location, (settings.config["continentRoles"]["north-america"]), ':flag_um:'),
-    (location, (settings.config["continentRoles"]["south-america"]), ':flag_mx:'),
-    (location, (settings.config["continentRoles"]["europe"]), ':flag_eu:'),
-    (location, (settings.config["continentRoles"]["africa"]), ':flag_za:'),
-    (location, (settings.config["continentRoles"]["asia"]), ':flag_cn:'),
-
-    (hobbies, (settings.config["hobbies"]["hydrator"]), '💧'),
-    (hobbies, (settings.config["otherRoles"]["productivity"]), '✍'),
-    (hobbies, (settings.config["otherRoles"]["book-club"]), '📚'),
-    (hobbies, (settings.config["hobbies"]["fitness"]), '🏋️‍♂️'),
-    (hobbies, (settings.config["hobbies"]["chess"]), '♟️'),
-    (hobbies, (settings.config["hobbies"]["discussions"]), '🗣️'),
-    (hobbies, (settings.config["hobbies"]["relationships"]), '👫'),
-
-    (misc, (settings.config["misc"]["memes"]), '🚽'),
-    (misc, (settings.config["misc"]["media"]), '🗞️'),
-    (misc, (settings.config["misc"]["polls"]), '🗳️'),
-    (misc, (settings.config["misc"]["asylum"]), '🤯')]
 
 class reactroles(commands.Cog):
 
@@ -73,6 +22,21 @@ class reactroles(commands.Cog):
                         await user.remove_roles(role)
                     if r_type == 'add':
                         await user.add_roles(role)
+
+    async def build_embed(self, ctx, title, fname, fval):
+        embed = discord.Embed(title=title, url="https://www.youtube.com/watch?v=hv-ODnbbP7U", color=0x00dcff)
+        embed.set_author(name="NoPorn", url="https://discord.gg/CFR9bt", icon_url="https://cdn.discordapp.com/icons/519330541720436736/a_2bdbaecdd90c85cdc8e9108d8a8c5907.png?size=128")
+        embed.add_field(name=fname, value=fval, inline=False)
+        embed.set_footer(text="NoPorn Companion was made by the NoPorn development team, please DM the bot for more information")
+        await ctx.send(embed=embed)
+
+    @commands.command(name='rr_autocreate')
+    @commands.has_any_role(
+        settings.config['staffRoles']['developer'])
+    async def rr_autocreate(self, ctx, channel):
+        channel = ctx.guild.get_channel(channel)
+        await ctx.channel.purge(limit=100)
+
 
     @Cog.listener()
     async def on_raw_reaction_add(self, payload):

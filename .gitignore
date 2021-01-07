@@ -1,7 +1,8 @@
 .vscode
-resources/*
 __pycache__/
 ids/test.json
 .idea/*
 ecosystem.config.js
 cogs/__pycache__/*
+
+resources/*.txt
