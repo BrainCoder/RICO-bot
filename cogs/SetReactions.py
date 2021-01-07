@@ -3,6 +3,12 @@ from discord.ext import commands
 from discord.ext.commands import Cog
 
 import settings
+import json
+
+configFile = open('resources/reactRoles.json', 'r')
+jsondata = configFile.read()
+
+obj = json.loads(jsondata)
 
 
 class reactroles(commands.Cog):
@@ -12,7 +18,7 @@ class reactroles(commands.Cog):
         self._last_member = None
 
     async def reaction(self, payload, r_type=None):
-        for reaction_info in reaction_roles:
+        for category in obj:
             if payload.message_id == reaction_info[0]:
                 if payload.emoji.name == reaction_info[2]:
                     guild = self.client.get_guild(settings.config["serverId"])
@@ -24,11 +30,7 @@ class reactroles(commands.Cog):
                         await user.add_roles(role)
 
     async def build_embed(self, ctx, title, fname, fval):
-        embed = discord.Embed(title=title, url="https://www.youtube.com/watch?v=hv-ODnbbP7U", color=0x00dcff)
-        embed.set_author(name="NoPorn", url="https://discord.gg/CFR9bt", icon_url="https://cdn.discordapp.com/icons/519330541720436736/a_2bdbaecdd90c85cdc8e9108d8a8c5907.png?size=128")
-        embed.add_field(name=fname, value=fval, inline=False)
-        embed.set_footer(text="NoPorn Companion was made by the NoPorn development team, please DM the bot for more information")
-        await ctx.send(embed=embed)
+
 
     @commands.command(name='rr_autocreate')
     @commands.has_any_role(
@@ -36,6 +38,12 @@ class reactroles(commands.Cog):
     async def rr_autocreate(self, ctx, channel):
         channel = ctx.guild.get_channel(channel)
         await ctx.channel.purge(limit=100)
+        for category in obj:
+            embed = discord.Embed(title=title, url="https://www.youtube.com/watch?v=hv-ODnbbP7U", color=0x00dcff)
+            embed.set_author(name="NoPorn", url="https://discord.gg/CFR9bt", icon_url="https://cdn.discordapp.com/icons/519330541720436736/a_2bdbaecdd90c85cdc8e9108d8a8c5907.png?size=128")
+            embed.add_field(name=fname, value=fval, inline=False)
+            embed.set_footer(text="NoPorn Companion was made by the NoPorn development team, please DM the bot for more information")
+            await ctx.send(embed=embed)
 
 
     @Cog.listener()
