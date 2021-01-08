@@ -202,7 +202,7 @@ class ModCommands(commands.Cog):
         if time:
             await user.add_roles(cooldown_role)
             await utils.doembed(ctx, "Cooldown", f'{user} cooled-down by {ctx.author}', f'The cooldown will be removed in {time}s, or a moderator will have to remove it manually', user)
-            await utils.mod_event_query(user.id, 5, datetime.now(), ctx.author.id, 0)
+            await utils.mod_event_query(user.id, 5, datetime.now(), None, ctx.author.id, 0)
             user_data_query = update(utils.userdata).where(utils.userdata.c.id == user.id) \
                 .values(cooldown=1)
             utils.conn.execute(user_data_query)
