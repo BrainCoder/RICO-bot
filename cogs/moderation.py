@@ -274,7 +274,7 @@ class ModCommands(commands.Cog):
                         utils.conn.execute(user_data_query)
 
     @commands.command(name="kick")
-    @commands.cooldown(3, 600, commands.BucketType.user)
+    @commands.cooldown(15, 600, commands.BucketType.user)
     @commands.has_any_role(
         settings.config["staffRoles"]["moderator"])
     async def kick(self, ctx, member: discord.User = None, *, reason=None):
@@ -303,7 +303,7 @@ class ModCommands(commands.Cog):
         await utils.emoji(ctx, '✅')
 
     @commands.command(name="ban")
-    @commands.cooldown(3, 600, commands.BucketType.user)
+    @commands.cooldown(15, 600, commands.BucketType.user)
     @commands.has_any_role(
         settings.config["staffRoles"]["moderator"])
     async def ban(self, ctx, member: discord.User = None, *, reason=None, purge=False):

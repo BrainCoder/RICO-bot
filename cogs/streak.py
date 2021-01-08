@@ -88,7 +88,7 @@ class Streak(commands.Cog):
 
     @commands.command(name="relapse")
     @commands.check(utils.is_in_streak_channel)
-    @commands.cooldown(1, 60, commands.BucketType.user)
+    @commands.cooldown(3, 60, commands.BucketType.user)
     async def relapse(self, ctx, *args):
         """resets the users streak to day 0"""
         Anon = await utils.in_roles(ctx, settings.config["modeRoles"]["anon-streak"])
@@ -186,7 +186,7 @@ class Streak(commands.Cog):
 
     @commands.command(name="update")
     @commands.check(utils.is_in_streak_channel)
-    @commands.cooldown(1, 900, commands.BucketType.user)
+    @commands.cooldown(3, 900, commands.BucketType.user)
     async def update(self, ctx):
         """updates the users streak"""
         Anon = await utils.in_roles(ctx, settings.config["modeRoles"]["anon-streak"])
