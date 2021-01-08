@@ -444,9 +444,9 @@ class ModCommands(commands.Cog):
                         website = website.replace("\n", "")
                         if website in message.content:
                             staff_chat = self.client.get_channel(settings.config["channels"]["staff-lounge"])
-                            dev_chat = self.client.get_channel(settings.config["channels"]["developer"])
+                            dev_chat = self.client.get_channel(settings.config["channels"]["development"])
                             if message.author.id == bot_id:
-                                if message.channel.id != settings.config["channels"]["developer"]:
+                                if message.channel.id != settings.config["channels"]["development"]:
                                     await dev_chat.send(f'{message.author.name} tried to post ```{message.content}```')
                                     break
                             else:
