@@ -445,10 +445,16 @@ class ModCommands(commands.Cog):
                     for website in blocked_file:
                         website = website.replace("\n", "")
                         if website in message.content:
-                            await message.delete()
-                            staff_chat = self.client.get_channel(settings.config["channels"]["staff-lounge"])
-                            await staff_chat.send(f'{message.author.name} tried to post a link from the blacklist.')
-                            break
+                            dev_chat = self.client.get_channel(settings.config["channels"]["development"])
+                            if message.author.id == bot_id:
+                                if message.channel.id != settings.config["channels"]["development"]:
+                                    await dev_chat.send(f'{message.author.name} tried to post ```{message.content}```')
+                                    break
+                            else:
+                                await message.delete()
+                                staff_chat = self.client.get_channel(settings.config["channels"]["staff-lounge"])
+                                await staff_chat.send(f'{message.author.name} tried to post a link from the blacklist.')
+                                break
                 member = False
                 # I would like to add a staff check to allow staff memebers to post invite links however i dont know how to do this, this is a job for the future
                 member_role = message.guild.get_role(settings.config["statusRoles"]["member"])
