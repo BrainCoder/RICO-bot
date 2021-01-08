@@ -443,7 +443,6 @@ class ModCommands(commands.Cog):
                     for website in blocked_file:
                         website = website.replace("\n", "")
                         if website in message.content:
-                            staff_chat = self.client.get_channel(settings.config["channels"]["staff-lounge"])
                             dev_chat = self.client.get_channel(settings.config["channels"]["development"])
                             if message.author.id == bot_id:
                                 if message.channel.id != settings.config["channels"]["development"]:
