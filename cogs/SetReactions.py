@@ -37,22 +37,28 @@ class reactroles(commands.Cog):
                         if r_type == 'add':
                             await user.add_role(role)
 
-    async def build_embed(self, ctx, title, fname, fval):
-        pass
+    async def build_embed(self, ctx, title, fname):
+
+        fval = ""
+        for entry in category:
+            fval = fval + f'{entry[1]} - "role name"'
+
+        embed = discord.Embed(title=title, url="https://www.youtube.com/watch?v=hv-ODnbbP7U", color=0x00dcff)
+        embed.set_author(name="NoPorn", url="https://discord.gg/CFR9bt", icon_url="https://cdn.discordapp.com/icons/519330541720436736/a_2bdbaecdd90c85cdc8e9108d8a8c5907.png?size=128")
+        embed.add_field(name=fname, value=" ", inline=False)
+        embed.set_footer(text="NoPorn Companion was made by the NoPorn development team, please DM the bot for more information")
+        await ctx.send(embed=embed)
 
 
     @commands.command(name='rr_autocreate')
     @commands.has_any_role(
         settings.config['staffRoles']['developer'])
-    async def rr_autocreate(self, ctx, channel, title, fname, fval):
+    async def rr_autocreate(self, ctx, channel):
         channel = ctx.guild.get_channel(channel)
         await ctx.channel.purge(limit=100)
         for category in obj:
-            embed = discord.Embed(title=title, url="https://www.youtube.com/watch?v=hv-ODnbbP7U", color=0x00dcff)
-            embed.set_author(name="NoPorn", url="https://discord.gg/CFR9bt", icon_url="https://cdn.discordapp.com/icons/519330541720436736/a_2bdbaecdd90c85cdc8e9108d8a8c5907.png?size=128")
-            embed.add_field(name=fname, value=fval, inline=False)
-            embed.set_footer(text="NoPorn Companion was made by the NoPorn development team, please DM the bot for more information")
-            await ctx.send(embed=embed)
+            await self.build_embed(ctx, "Utility Roles", " ")
+
 
     @Cog.listener()
     async def on_raw_reaction_add(self, payload):
