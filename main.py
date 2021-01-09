@@ -43,7 +43,7 @@ async def cogs_load():
         await devlogs.send(f'{utils.timestr}`all cogs loaded')
         print('all cogs loaded')
     else:
-        client.load_extension('cogs.cogs')
+        client.load_extension('cogs.developer')
         client.load_extension('cogs.errors')
 
 @client.command(name="logout", aliases=["killswitch"])
@@ -60,7 +60,7 @@ async def logout(ctx):
 async def creset(ctx):
     devlogs = client.get_channel(settings.config["channels"]["devlog"])
     log = f'{utils.timestr}`cogs` loaded manually using !creset command'
-    client.load_extension('cogs.cogs')
+    client.load_extension('cogs.developer')
     await utils.emoji(ctx, '✅')
     if settings.config["prefix"] == '!':
         await devlogs.send(log)

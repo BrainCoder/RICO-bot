@@ -12,50 +12,6 @@ from re import search
 
 import utils
 
-async def vi_db(ctx):
-    new_entries = 0
-    current_users = len(utils.conn.execute(utils.userdata.select()).fetchall())
-    for user in ctx.guild.members:
-        query = utils.userdata.select().where(utils.userdata.c.id == user.id)
-        result = utils.conn.execute(query).fetchone()
-        if not result and not user.bot:
-            query = utils.userdata.insert(). \
-                values(id=user.id)
-            utils.conn.execute(query)
-            new_entries += 1
-    new_count = len(utils.conn.execute(utils.userdata.select()).fetchall())
-    await ctx.channel.send("The old amount of users was " + str(current_users) + \
-                        "\nThe new amount of users is " + str(new_count))
-
-async def vi_member(ctx):
-    members_added = []
-    members_lost = []
-    missing_members = []
-    for user in ctx.guild.members:
-        if not user.bot:
-            query = utils.userdata.select().where(utils.userdata.c.id == user.id)
-            result = utils.conn.execute(query).fetchone()
-            if result:
-                member_role = ctx.guild.get_role(settings.config["statusRoles"]["member"])
-                if member_role in user.roles and result[11] == 0:
-                    user_data_query = update(utils.userdata).where(utils.userdata.c.id == user.id) \
-                        .values(member=1)
-                    utils.conn.execute(user_data_query)
-                    members_added.append(user.name)
-                elif member_role not in user.roles and result[11] == 1:
-                    user_data_query = update(utils.userdata).where(utils.userdata.c.id == user.id) \
-                        .values(member=0)
-                    utils.conn.execute(user_data_query)
-                    members_lost.append(user.name)
-            else:
-                missing_members.append(user.name)
-    if len(missing_members) > 0:
-        dev_log_channel = ctx.guild.get_channel(settings.config["channels"]["devlog"])
-        await dev_log_channel.send(f'{utils.timestr}The following users were not in the database: '
-                                f'{",".join(missing_members)}')
-    await ctx.send(f'Amount of users added: {str(len(members_added))}\n'
-                f'Amount of users lost: {str(len(members_lost))}')
-
 class DeveloperTools(commands.Cog):
 
     def __init__(self, client):
@@ -72,6 +28,39 @@ class DeveloperTools(commands.Cog):
     @commands.command(name='test')
     async def test(self, ctx):
         await utils.doembed(ctx, 'aname', 'fname', 'fval')
+
+    @commands.command(name="cog", aliases=["cogs"])
+    @commands.has_any_role(
+        settings.config["staffRoles"]["developer"])
+    async def cog(self, ctx, action, extension):
+        """Command to manually toggle cogs. For action use either\n**load** - load the cog\n**unload** - unload the cog\n**reload** - reload the cog"""
+        devlogs = self.client.get_channel(settings.config["channels"]["devlog"])
+        log = f'{utils.timestr}`{extension}` {action}ed manually'
+        prefix = settings.config["prefix"]
+        if action == 'load':
+            self.client.load_extension(f'cogs.{extension}')
+            await utils.emoji(ctx, '✅')
+            if prefix == "!":
+                await devlogs.send(log)
+        elif action == 'unload':
+            if extension == 'cogs':
+                await utils.emoji(ctx, '❌')
+            else:
+                self.client.unload_extension(f'cogs.{extension}')
+                await utils.emoji(ctx, '✅')
+                if prefix == "!":
+                    await devlogs.send(log)
+        elif action == 'reload':
+            self.client.unload_extension(f'cogs.{extension}')
+            self.client.load_extension(f'cogs.{extension}')
+            await utils.emoji(ctx, '✅')
+            if prefix == "!":
+                await devlogs.send(log)
+    @cog.error
+    async def cog_handler(self, ctx, error):
+        await utils.emoji(ctx, '❌')
+        print('Ignoring exception in command {}:'.format(ctx.command), file=sys.stderr)
+        traceback.print_exception(type(error), error, error.__traceback__, file=sys.stderr)
 
     @commands.command(name="checklist", aliases=['cl'])
     @commands.has_any_role(
@@ -132,11 +121,55 @@ class DeveloperTools(commands.Cog):
         if action == 'database':
             await utils.emoji(ctx, '✅')
             await devLogs.send(f'{utils.timestr}databse integrity verified by {ctx.author.mention}')
-            await vi_db(ctx)
+            await self.vi_db(ctx)
         elif action == 'member':
             await utils.emoji(ctx, '✅')
             await devLogs.send(f'{utils.timestr}member integrity verified by {ctx.author.mention}')
-            await vi_member(ctx)
+            await self.vi_member(ctx)
+
+    async def vi_db(ctx):
+        new_entries = 0
+        current_users = len(utils.conn.execute(utils.userdata.select()).fetchall())
+        for user in ctx.guild.members:
+            query = utils.userdata.select().where(utils.userdata.c.id == user.id)
+            result = utils.conn.execute(query).fetchone()
+            if not result and not user.bot:
+                query = utils.userdata.insert(). \
+                    values(id=user.id)
+                utils.conn.execute(query)
+                new_entries += 1
+        new_count = len(utils.conn.execute(utils.userdata.select()).fetchall())
+        await ctx.channel.send("The old amount of users was " + str(current_users) + \
+                            "\nThe new amount of users is " + str(new_count))
+
+    async def vi_member(ctx):
+        members_added = []
+        members_lost = []
+        missing_members = []
+        for user in ctx.guild.members:
+            if not user.bot:
+                query = utils.userdata.select().where(utils.userdata.c.id == user.id)
+                result = utils.conn.execute(query).fetchone()
+                if result:
+                    member_role = ctx.guild.get_role(settings.config["statusRoles"]["member"])
+                    if member_role in user.roles and result[11] == 0:
+                        user_data_query = update(utils.userdata).where(utils.userdata.c.id == user.id) \
+                            .values(member=1)
+                        utils.conn.execute(user_data_query)
+                        members_added.append(user.name)
+                    elif member_role not in user.roles and result[11] == 1:
+                        user_data_query = update(utils.userdata).where(utils.userdata.c.id == user.id) \
+                            .values(member=0)
+                        utils.conn.execute(user_data_query)
+                        members_lost.append(user.name)
+                else:
+                    missing_members.append(user.name)
+        if len(missing_members) > 0:
+            dev_log_channel = ctx.guild.get_channel(settings.config["channels"]["devlog"])
+            await dev_log_channel.send(f'{utils.timestr}The following users were not in the database: '
+                                    f'{",".join(missing_members)}')
+        await ctx.send(f'Amount of users added: {str(len(members_added))}\n'
+                    f'Amount of users lost: {str(len(members_lost))}')
 
     @commands.command(name='error')
     @commands.has_any_role(

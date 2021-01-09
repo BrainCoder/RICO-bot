@@ -6,53 +6,29 @@ import traceback
 from datetime import datetime, timedelta
 
 
-async def chal_toggle(ctx, beforeRole, afterRole):
-    await utils.emoji(ctx, '✅')
-    newParticipants = []
-    print('Starting new month now.')
-    before = ctx.guild.get_role(beforeRole)
-    after = ctx.guild.get_role(afterRole)
-    members = await ctx.guild.fetch_members(limit=None).flatten()
-    for member in members:
-        for role in member.roles:
-            if role.id == beforeRole:
-                await member.add_roles(after)
-                newParticipants.append(member)
-                await member.remove_roles(before)
-                break
-    await ctx.send(f"Challenge participants {len(newParticipants)}")
-    print(len(newParticipants))
-
-
-async def monthly(ctx, action):
-    channel = ctx.guild.get_channel(settings.config["channels"]["monthly-challenge"])
-    role = ctx.guild.get_role(settings.config["challenges"]["monthly-challenge-participant"])
-    if action == 'start':
-        await chal_toggle(ctx, settings.config["challenges"]["monthly-challenge-signup"], settings.config["challenges"]["monthly-challenge-participant"])
-        await channel.send(f'{role.mention} the new monthly challenge has started! Please be sure to grab the role again to be signed up for the next one')
-    if action == 'stop':
-        await chal_toggle(ctx, settings.config["challenges"]["monthly-challenge-participant"], settings.config["challenges"]["monthly-challenge-winner"])
-
-
-async def yearly(ctx, action):
-    if action == 'start':
-        await chal_toggle(ctx, settings.config["challenges"]["yearly-challenge-signup"], settings.config["challenges"]["yearly-challenge-participant"])
-    if action == 'stop':
-        await chal_toggle(ctx, settings.config["challenges"]["yearly-challenge-participant"], settings.config["challenges"]["2021-challenge-winner"])
-
-
-async def deadpool(ctx, action):
-    if action == 'start':
-        await chal_toggle(ctx, settings.config["challenges"]["deadpool-signup"], settings.config["challenges"]["deadpool-participant"])
-    if action == 'stop':
-        await chal_toggle(ctx, settings.config["challenges"]["deadpool-participant"], settings.config["challenges"]["deadpool-winner"])
-
-
 class MonthlyChallenge(commands.Cog):
 
     def __init__(self, client):
         self.client = client
         self._last_member = None
+
+    async def chal_toggle(self, ctx, beforeRole, afterRole):
+        await utils.emoji(ctx, '✅')
+        newParticipants = []
+        print('Starting new month now.')
+        before = ctx.guild.get_role(beforeRole)
+        after = ctx.guild.get_role(afterRole)
+        members = await ctx.guild.fetch_members(limit=None).flatten()
+        for member in members:
+            for role in member.roles:
+                if role.id == beforeRole:
+                    await member.add_roles(after)
+                    newParticipants.append(member)
+                    await member.remove_roles(before)
+                    break
+        await ctx.send(f"Challenge participants {len(newParticipants)}")
+        print(len(newParticipants))
+
 
     @commands.command(name='challenge', aliases=['chal'])
     @commands.has_any_role(
@@ -68,11 +44,23 @@ class MonthlyChallenge(commands.Cog):
               about how long it taking please contact a developer"
         """
         if challenge == 'monthly':
-            await monthly(ctx, action)
+            channel = ctx.guild.get_channel(settings.config["channels"]["monthly-challenge"])
+            role = ctx.guild.get_role(settings.config["challenges"]["monthly-challenge-participant"])
+            if action == 'start':
+                await self.chal_toggle(ctx, settings.config["challenges"]["monthly-challenge-signup"], settings.config["challenges"]["monthly-challenge-participant"])
+                await channel.send(f'{role.mention} the new monthly challenge has started! Please be sure to grab the role again to be signed up for the next one')
+            if action == 'stop':
+                await self.chal_toggle(ctx, settings.config["challenges"]["monthly-challenge-participant"], settings.config["challenges"]["monthly-challenge-winner"])
         if challenge == 'yearly':
-            await yearly(ctx, action)
+            if action == 'start':
+                await self.chal_toggle(ctx, settings.config["challenges"]["yearly-challenge-signup"], settings.config["challenges"]["yearly-challenge-participant"])
+            if action == 'stop':
+                await self.chal_toggle(ctx, settings.config["challenges"]["yearly-challenge-participant"], settings.config["challenges"]["2021-challenge-winner"])
         if challenge == 'deadpool':
-            await deadpool(ctx, action)
+            if action == 'start':
+                await self.chal_toggle(ctx, settings.config["challenges"]["deadpool-signup"], settings.config["challenges"]["deadpool-participant"])
+            if action == 'stop':
+                await self.chal_toggle(ctx, settings.config["challenges"]["deadpool-participant"], settings.config["challenges"]["deadpool-winner"])
     @challenge.error
     async def challeneHandler(self, ctx, error):
         if isinstance(error, commands.CheckFailure):
@@ -90,6 +78,13 @@ class MonthlyChallenge(commands.Cog):
         ypartcipants = len(await utils.role_pop(ctx, settings.config["challenges"]["yearly-challenge-participant"]))
         dparticipants = len(await utils.role_pop(ctx, settings.config["challenges"]["deadpool-participant"]))
         await utils.doembed(ctx, "Challenge statics", "Participation", f"\nMonthly Challenge Members left: {mpartcipants}\nYearly Challenge Members left: {ypartcipants}\nDeadpool Challenge Members Left: {dparticipants}", ctx.author, True)
+
+    @commands.command(name='monthlychallenge')
+    async def MonthlyChallenge(self, ctx):
+        """command you use to give yourself the Monthly Challenge Signup role"""
+        signup_role = ctx. guild.get_role(settings.config["challenges"]["monthly-challenge-signup"])
+        await ctx.author.add_roles(signup_role)
+        await utils.emoji(ctx, '✅')
 
     @commands.command(name="yearlychallenge")
     async def yearlychallenge(self, ctx):
