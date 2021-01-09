@@ -123,7 +123,7 @@ class ModCommands(commands.Cog):
         muted = await utils.in_roles(ctx, ctx.guild.get_role(settings.config["statusRoles"]["muted"]))
         member_role = ctx.guild.get_role(settings.config["statusRoles"]["member"])
         if member_role in user.roles:
-            if not utils.is_staff(ctx):
+            if not await utils.is_staff(ctx):
                 await remove_member_role(self, ctx, user, member_role)
         if muted:
             await self.client.wait_until_ready()
@@ -173,7 +173,7 @@ class ModCommands(commands.Cog):
             if role.id == Mute_role.id:
                 muted = True
         if member_role in user.roles:
-            if not utils.is_staff(ctx):
+            if not await utils.is_staff(ctx):
                 await remove_member_role(self, ctx, user, member_role)
         if muted:
             pass
