@@ -7,7 +7,6 @@ import json
 
 configFile = open('resources/reactRoles.json', 'r')
 jsondata = configFile.read()
-
 obj = json.loads(jsondata)
 
 
@@ -17,25 +16,35 @@ class reactroles(commands.Cog):
         self.client = client
         self._last_member = None
 
-    async def reaction(self, payload, r_type=None):
+    async def build_raw(self):
+        raw_dict = []
         for category in obj:
-            if payload.message_id == reaction_info[0]:
-                if payload.emoji.name == reaction_info[2]:
-                    guild = self.client.get_guild(settings.config["serverId"])
-                    user = guild.get_member(payload.user_id)
-                    role = discord.utils.get(guild.roles, id=reaction_info[1])
-                    if r_type == 'remove':
-                        await user.remove_roles(role)
-                    if r_type == 'add':
-                        await user.add_roles(role)
+            for sub_cat in category:
+                raw_dict.append(sub_cat)
+        return raw_dict
+
+    async def reaction(self, payload, r_type=None):
+        raw_data = await self.build_raw()
+        for entry in raw_data:
+            if payload.channel.id == obj["streakGuideChannel"] or obj["reactRolesChannel"]:
+                for entry in raw_data:
+                    if payload.emoji.name == entry[1]:
+                        guild = self.client.get_guild(settings.config["serverId"])
+                        user = guild.get_member(payload.user_id)
+                        role = discord.utils.get(guild.roles, id=entry[2])
+                        if r_type == 'remove':
+                            await user.remove_role(role)
+                        if r_type == 'add':
+                            await user.add_role(role)
 
     async def build_embed(self, ctx, title, fname, fval):
+        pass
 
 
     @commands.command(name='rr_autocreate')
     @commands.has_any_role(
         settings.config['staffRoles']['developer'])
-    async def rr_autocreate(self, ctx, channel):
+    async def rr_autocreate(self, ctx, channel, title, fname, fval):
         channel = ctx.guild.get_channel(channel)
         await ctx.channel.purge(limit=100)
         for category in obj:
@@ -44,7 +53,6 @@ class reactroles(commands.Cog):
             embed.add_field(name=fname, value=fval, inline=False)
             embed.set_footer(text="NoPorn Companion was made by the NoPorn development team, please DM the bot for more information")
             await ctx.send(embed=embed)
-
 
     @Cog.listener()
     async def on_raw_reaction_add(self, payload):
