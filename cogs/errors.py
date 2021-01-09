@@ -3,6 +3,8 @@ from discord.ext import commands
 import traceback
 import sys
 
+import utils
+
 class ErrorHandler(commands.Cog):
 
     def __init__(self, client):
@@ -32,7 +34,8 @@ class ErrorHandler(commands.Cog):
             if ctx.command.qualified_name == 'tag list':
                 await ctx.send('I could not find that member. Please try again.')
         elif isinstance(error, commands.CommandOnCooldown):
-            await ctx.send(content=f'This command is on cooldown. Please wait {error.retry_after}s', delete_after=5)
+            better_time = await utils.convert_from_seconds(error.retry_after)
+            await ctx.send(content=f'This command is on cooldown. Please wait {better_time}', delete_after=5)
         elif isinstance(error, commands.MissingAnyRole):
             pass
         elif isinstance(error, discord.Forbidden):

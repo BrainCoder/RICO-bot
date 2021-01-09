@@ -9,6 +9,7 @@ from os.path import isfile, join
 import discord
 from discord.ext import commands
 import re
+import time
 
 
 global engine
@@ -192,6 +193,12 @@ async def extract_data(file):
     for line in f:
         data.append(line.strip())
     return data
+
+async def convert_from_seconds(input):
+    sec = input
+    ty_res = time.gmtime(sec)
+    res = time.strftime("%H:%M:%S", ty_res)
+    return res
 
 """
 def hasPerms(ctx, requiredLevel):

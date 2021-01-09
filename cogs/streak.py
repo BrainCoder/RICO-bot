@@ -179,7 +179,8 @@ class Streak(commands.Cog):
         if isinstance(error, commands.CheckFailure):
             await ctx.send('That command cannot be used in this channel')
         elif isinstance(error, commands.CommandOnCooldown):
-            await ctx.send(content=f'This command is on cooldown. Please wait {error.retry_after}s', delete_after=5)
+            better_time = await utils.convert_from_seconds(error.retry_after)
+            await ctx.send(content=f'This command is on cooldown. Please wait {better_time}', delete_after=5)
         else:
             print('Ignoring exception in command {}:'.format(ctx.command), file=sys.stderr)
             traceback.print_exception(type(error), error, error.__traceback__, file=sys.stderr)
@@ -213,7 +214,8 @@ class Streak(commands.Cog):
         if isinstance(error, commands.CheckFailure):
             await ctx.send('That command cannot be used in this channel')
         elif isinstance(error, commands.CommandOnCooldown):
-            await ctx.send(content=f'This command is on cooldown. Please wait {error.retry_after}s', delete_after=5)
+            better_time = await utils.convert_from_seconds(error.retry_after)
+            await ctx.send(content=f'This command is on cooldown. Please wait {better_time}', delete_after=5)
         else:
             print('Ignoring exception in command {}:'.format(ctx.command), file=sys.stderr)
             traceback.print_exception(type(error), error, error.__traceback__, file=sys.stderr)

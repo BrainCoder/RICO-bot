@@ -200,8 +200,9 @@ class ModCommands(commands.Cog):
         """takes the user out of the general channel for a specific amount of time"""
         cooldown_role = user.guild.get_role(settings.config["statusRoles"]["cooldown"])
         if time:
+            better_time = await utils.convert_from_seconds(time)
             await user.add_roles(cooldown_role)
-            await utils.doembed(ctx, "Cooldown", f'{user} cooled-down by {ctx.author}', f'The cooldown will be removed in {time}s, or a moderator will have to remove it manually', user)
+            await utils.doembed(ctx, "Cooldown", f'{user} cooled-down by {ctx.author}', f'The cooldown will be removed in {better_time}', user)
             await utils.mod_event_query(user.id, 5, datetime.now(), None, ctx.author.id, 0)
             user_data_query = update(utils.userdata).where(utils.userdata.c.id == user.id) \
                 .values(cooldown=1)
@@ -241,7 +242,8 @@ class ModCommands(commands.Cog):
             muted_role = ctx.guild.get_role(settings.config["statusRoles"]["muted"])
             double_role = ctx.guild.get_role(settings.config["statusRoles"]["double-muted"])
             if time:
-                await utils.doembed(ctx, "Unmute", f"{user} will be unmuted in {time}s!", f"Unmuted by: <@{ctx.author.id}>.", user)
+                better_time = await utils.convert_from_seconds(time)
+                await utils.doembed(ctx, "Unmute", f"{user} will be unmuted in {better_time}", f"Unmuted by: <@{ctx.author.id}>.", user)
                 await asyncio.sleep(time)
             if muted_role in user.roles:
                 if double_role not in user.roles:
