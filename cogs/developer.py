@@ -25,9 +25,11 @@ class DeveloperTools(commands.Cog):
         self.project = server.projects.get(self.project_name)
         self._last_result = None
 
+
     @commands.command(name='test')
     async def test(self, ctx):
         await utils.doembed(ctx, 'aname', 'fname', 'fval')
+
 
     @commands.command(name="cog", aliases=["cogs"])
     @commands.has_any_role(
@@ -62,6 +64,7 @@ class DeveloperTools(commands.Cog):
         print('Ignoring exception in command {}:'.format(ctx.command), file=sys.stderr)
         traceback.print_exception(type(error), error, error.__traceback__, file=sys.stderr)
 
+
     @commands.command(name="checklist", aliases=['cl'])
     @commands.has_any_role(
         settings.config["staffRoles"]["moderator"],
@@ -81,18 +84,37 @@ class DeveloperTools(commands.Cog):
         else:
             await ctx.send('Please enter your job in the following format\n```!cl {job title} - {job description}```')
 
+
     @commands.command(name="ping")
     async def ping(self, ctx):
         """Check the latency of the bot"""
         await ctx.send(f'pong! Latency is {self.client.latency * 1000}ms')
 
-    @commands.command(name="getchannel")
+
+    @commands.command(name='get')
     @commands.has_any_role(
         settings.config["staffRoles"]["developer"])
+    async def get(self, ctx, _type, id):
+        """Developer tool used to get roles or channels based on ids"""
+        if _type == 'channel':
+            await self.getchannel(ctx, id)
+        if _type == 'role':
+            await self.getrole(ctx, id)
+
     async def getchannel(self, ctx, id):
-        """Find a channel with the channel ID"""
         channel = ctx.guild.get_channel(int(id))
-        await ctx.send(f'{channel}')
+        try:
+            await ctx.send(f'{channel.mention}')
+        except:
+            await ctx.send('This channel does not exist')
+
+    async def getrole(self, ctx, id):
+        obj_role = ctx.guild.get_role(int(id))
+        try:
+            await ctx.send(f'{obj_role.mention}')
+        except:
+            await ctx.send('This role does not exist')
+
 
     @commands.command(name='repeat', aliases=['mimic', 'copy'])
     @commands.has_any_role(
@@ -108,6 +130,7 @@ class DeveloperTools(commands.Cog):
             else:
                 print('Ignoring exception in command {}:'.format(ctx.command), file=sys.stderr)
                 traceback.print_exception(type(error), error, error.__traceback__, file=sys.stderr)
+
 
     @commands.command(name='verifyintegrity', aliases=['vi', 'verify'])
     @commands.has_any_role(
@@ -171,6 +194,7 @@ class DeveloperTools(commands.Cog):
         await ctx.send(f'Amount of users added: {str(len(members_added))}\n'
                     f'Amount of users lost: {str(len(members_lost))}')
 
+
     @commands.command(name='error')
     @commands.has_any_role(
         settings.config["staffRoles"]["developer"])
@@ -190,6 +214,7 @@ class DeveloperTools(commands.Cog):
             os.system("/usr/local/bin/del_bkup")
             await utils.emoji(ctx, '✅')
             await devLogs.send(f'{utils.timestr}error logs backup deleted by {ctx.author.mention}')
+
 
 def setup(client):
     client.add_cog(DeveloperTools(client))
