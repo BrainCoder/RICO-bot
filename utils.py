@@ -50,7 +50,8 @@ def init():
         Column('member', TINYINT, nullable=0, default=0),
         Column('kicked', TINYINT, nullable=0, default=0),
         Column('banned', TINYINT, nullable=0, default=0),
-        Column('member_activation_date', BIGINT, nullable=False, default=0)
+        Column('member_activation_date', BIGINT, nullable=False, default=0),
+        Column('noperms', TINYINT, nullable=0, default=0)
     )
 
     mod_event_type = Table(
