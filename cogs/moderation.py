@@ -13,32 +13,13 @@ import asyncio
 import traceback
 import sys
 
+
 whitelist = []
 with open('resources/whitelist.txt', 'r') as f:
     whitelist = [line.strip() for line in f]
 
-url_regex = r"(?i)\b((?:https?://|www\d{0,3}[.]|[a-z0-9.\-]+[.][a-z]{2,4}/)(?:[^\s()<>]+|\(([^\s()<>]+|(\([^\s()<>]+\)))*\))+(?:\(([^\s()<>]+|(\([^\s()<>]+\)))*\)|[^\s`!()\[\]{};:'\".,<>?«»“”‘’]))"
-invite_regex = r"(?:https?://)?discord(?:(?:app)?\.com/invite|\.gg)/?[a-zA-Z0-9]+/?"
-
 profanity.load_censor_words_from_file('resources/blacklist.txt', whitelist_words=whitelist)
 
-
-async def remove_member_role(self, ctx, user, member_role):
-    await user.remove_roles(member_role)
-    await utils.doembed(ctx, "Member", f"{user} no longer has member!", f"Member taken by: <@{ctx.author.id}>.", user)
-    await utils.mod_event_query(user.id, 9, datetime.now(), None, ctx.author.id, 0)
-    user_data_query = update(utils.userdata).where(utils.userdata.c.id == user.id) \
-        .values(member=0)
-    utils.conn.execute(user_data_query)
-
-
-async def add_member_role(self, ctx, user, member_role):
-    await user.add_roles(member_role)
-    await utils.doembed(ctx, "Member", f"{user} has been given member!", f"Member given by: <@{ctx.author.id}>.", user)
-    await utils.mod_event_query(user.id, 8, datetime.now(), None, ctx.author.id, 0)
-    user_data_query = update(utils.userdata).where(utils.userdata.c.id == user.id) \
-        .values(member=1)
-    utils.conn.execute(user_data_query)
 
 class ModCommands(commands.Cog):
 
@@ -46,6 +27,24 @@ class ModCommands(commands.Cog):
         self.client = client
         self._last_member = None
         self.check_member_status.start()
+        self.url_regex = r"(?i)\b((?:https?://|www\d{0,3}[.]|[a-z0-9.\-]+[.][a-z]{2,4}/)(?:[^\s()<>]+|\(([^\s()<>]+|(\([^\s()<>]+\)))*\))+(?:\(([^\s()<>]+|(\([^\s()<>]+\)))*\)|[^\s`!()\[\]{};:'\".,<>?«»“”‘’]))"
+        self.invite_regex = r"(?:https?://)?discord(?:(?:app)?\.com/invite|\.gg)/?[a-zA-Z0-9]+/?"
+
+    async def remove_member_role(self, ctx, user, member_role):
+        await user.remove_roles(member_role)
+        await utils.doembed(ctx, "Member", f"{user} no longer has member!", f"Member taken by: <@{ctx.author.id}>.", user)
+        await utils.mod_event_query(user.id, 9, datetime.now(), None, ctx.author.id, 0)
+        user_data_query = update(utils.userdata).where(utils.userdata.c.id == user.id) \
+            .values(member=0)
+        utils.conn.execute(user_data_query)
+
+    async def add_member_role(self, ctx, user, member_role):
+        await user.add_roles(member_role)
+        await utils.doembed(ctx, "Member", f"{user} has been given member!", f"Member given by: <@{ctx.author.id}>.", user)
+        await utils.mod_event_query(user.id, 8, datetime.now(), None, ctx.author.id, 0)
+        user_data_query = update(utils.userdata).where(utils.userdata.c.id == user.id) \
+            .values(member=1)
+        utils.conn.execute(user_data_query)
 
 
     @commands.command(name='d')
@@ -123,12 +122,15 @@ class ModCommands(commands.Cog):
                                 timedelta(hours=settings.config["memberUpdateInterval"]))
         member_role = ctx.guild.get_role(settings.config["statusRoles"]["member"])
         if member_role in user.roles:
-            await remove_member_role(self, ctx, user, member_role)
+            await self.remove_member_role(self, ctx, user, member_role)
             await utils.emoji(ctx, '✅')
         else:
-            if datetime.now() >= (member_joined_at + timedelta(hours=settings.config["memberCommandThreshold"])):
-                await add_member_role(self, ctx, user, member_role)
+            if datetime.now() >= (member_joined_at + timedelta(hours=settings.config["memberCommandThreshold"])) \
+                    or result and result[15] != 1:
+                await self.add_member_role(self, ctx, user, member_role)
                 await utils.emoji(ctx, '✅')
+            elif result[15] == 1:
+                await ctx.send("User current has NoPerms role")
             else:
                 await ctx.send("User has not been around long enough to be automatically given member.")
 
@@ -150,7 +152,7 @@ class ModCommands(commands.Cog):
         member_role = ctx.guild.get_role(settings.config["statusRoles"]["member"])
         if member_role in user.roles:
             if not await utils.is_staff(user):
-                await remove_member_role(self, ctx, user, member_role)
+                await self.remove_member_role(self, ctx, user, member_role)
         if muted:
             await self.client.wait_until_ready()
             double_role = ctx.guild.get_role(settings.config["statusRoles"]["double-muted"])
@@ -201,7 +203,7 @@ class ModCommands(commands.Cog):
                 muted = True
         if member_role in user.roles:
             if not await utils.is_staff(user):
-                await remove_member_role(self, ctx, user, member_role)
+                await self.remove_member_role(self, ctx, user, member_role)
         if muted:
             pass
         if user is ctx.author:
@@ -499,9 +501,9 @@ class ModCommands(commands.Cog):
                         utils.conn.execute(user_data_query)
                     if profanity.contains_profanity(message.content):
                         await message.delete()
-                    elif not member and search(url_regex, message.content):
+                    elif not member and search(self.url_regex, message.content):
                         await message.delete()
-                    elif search(invite_regex, message.content):
+                    elif search(self.invite_regex, message.content):
                         await message.delete()
                         await logs_channel.send(f'<@{message.author.id}> tried to post:\n{message.content}')
 
