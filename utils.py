@@ -139,21 +139,21 @@ async def doembed(ctx, aname, fname, fval, user, channel=False):
         else:
             await logs_channel.send(embed=embed)
 
-async def in_roles(ctx, searchRole):
-    for role in ctx.author.roles:
+async def in_roles(user, searchRole):
+    for role in user.roles:
         if role.id == searchRole:
             return True
     return False
 
-async def is_staff(ctx):
+async def is_staff(user):
     staff_roles = []
-    staff_roles.append(await in_roles(ctx, settings.config["staffRoles"]["admin"]))
-    staff_roles.append(await in_roles(ctx, settings.config["staffRoles"]["head-dev"]))
-    staff_roles.append(await in_roles(ctx, settings.config["staffRoles"]["developer"]))
-    staff_roles.append(await in_roles(ctx, settings.config["staffRoles"]["facilitator"]))
-    staff_roles.append(await in_roles(ctx, settings.config["staffRoles"]["head-moderator"]))
-    staff_roles.append(await in_roles(ctx, settings.config["staffRoles"]["moderator"]))
-    staff_roles.append(await in_roles(ctx, settings.config["staffRoles"]["semi-moderator"]))
+    staff_roles.append(await in_roles(user, settings.config["staffRoles"]["admin"]))
+    staff_roles.append(await in_roles(user, settings.config["staffRoles"]["head-dev"]))
+    staff_roles.append(await in_roles(user, settings.config["staffRoles"]["developer"]))
+    staff_roles.append(await in_roles(user, settings.config["staffRoles"]["facilitator"]))
+    staff_roles.append(await in_roles(user, settings.config["staffRoles"]["head-moderator"]))
+    staff_roles.append(await in_roles(user, settings.config["staffRoles"]["moderator"]))
+    staff_roles.append(await in_roles(user, settings.config["staffRoles"]["semi-moderator"]))
     return True in staff_roles
 
 async def role_pop(ctx, role):

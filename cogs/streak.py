@@ -52,8 +52,8 @@ async def removeStreakRoles(author):
 
 
 async def check_permitted_streak_set_amount(ctx, number):
-    if (number > 30 and not await utils.in_roles(ctx, settings.config["statusRoles"]["vip"]) and
-            number > 30 and not await utils.in_roles(ctx, settings.config["statusRoles"]["boost-vip"])):
+    if (number > 30 and not await utils.in_roles(ctx.author, settings.config["statusRoles"]["vip"]) and
+            number > 30 and not await utils.in_roles(ctx.author, settings.config["statusRoles"]["boost-vip"])):
         return -1
     elif number > 90 and not await utils.is_staff(ctx):
         return -1
@@ -91,10 +91,10 @@ class Streak(commands.Cog):
     @commands.cooldown(3, 60, commands.BucketType.user)
     async def relapse(self, ctx, *args):
         """resets the users streak to day 0"""
-        Anon = await utils.in_roles(ctx, settings.config["modeRoles"]["anon-streak"])
-        mChal = await utils.in_roles(ctx, settings.config["challenges"]["monthly-challenge-participant"])
-        yChal = await utils.in_roles(ctx, settings.config["challenges"]["yearly-challenge-participant"])
-        dPool = await utils.in_roles(ctx, settings.config["challenges"]["deadpool-participant"])
+        Anon = await utils.in_roles(ctx.author, settings.config["modeRoles"]["anon-streak"])
+        mChal = await utils.in_roles(ctx.author, settings.config["challenges"]["monthly-challenge-participant"])
+        yChal = await utils.in_roles(ctx.author, settings.config["challenges"]["yearly-challenge-participant"])
+        dPool = await utils.in_roles(ctx.author, settings.config["challenges"]["deadpool-participant"])
         if Anon:
             await ctx.message.delete()
             await removeStreakRoles(ctx.author)
@@ -190,7 +190,7 @@ class Streak(commands.Cog):
     @commands.cooldown(3, 900, commands.BucketType.user)
     async def update(self, ctx):
         """updates the users streak"""
-        Anon = await utils.in_roles(ctx, settings.config["modeRoles"]["anon-streak"])
+        Anon = await utils.in_roles(ctx.author, settings.config["modeRoles"]["anon-streak"])
         if Anon:
             await ctx.message.delete()
             await removeStreakRoles(ctx.author)

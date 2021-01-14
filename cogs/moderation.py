@@ -95,7 +95,7 @@ class ModCommands(commands.Cog):
         user_query = utils.userdata.select().where(utils.userdata.c.i == user.id)
         result = utils.conn.execute(user_query).fetchone()
         if result and result[15] != 0:
-            mod = await utils.in_roles(ctx, settings.config["staffRoles"]["moderator"])
+            mod = await utils.in_roles(ctx.author, settings.config["staffRoles"]["moderator"])
             if mod:
                 user_data_query = update(utils.userdata).where(utils.userdata.c.id == user.id) \
                     .values(noperms=0)
@@ -146,10 +146,10 @@ class ModCommands(commands.Cog):
             reason: This the the reason for the mute, please keep it consise and relevant for future refrence
         """
         await self.client.wait_until_ready()
-        muted = await utils.in_roles(ctx, ctx.guild.get_role(settings.config["statusRoles"]["muted"]))
+        muted = await utils.in_roles(user, settings.config["statusRoles"]["muted"])
         member_role = ctx.guild.get_role(settings.config["statusRoles"]["member"])
         if member_role in user.roles:
-            if not await utils.is_staff(ctx):
+            if not await utils.is_staff(user):
                 await remove_member_role(self, ctx, user, member_role)
         if muted:
             await self.client.wait_until_ready()
@@ -200,7 +200,7 @@ class ModCommands(commands.Cog):
             if role.id == Mute_role.id:
                 muted = True
         if member_role in user.roles:
-            if not await utils.is_staff(ctx):
+            if not await utils.is_staff(user):
                 await remove_member_role(self, ctx, user, member_role)
         if muted:
             pass
@@ -470,6 +470,41 @@ class ModCommands(commands.Cog):
             traceback.print_exception(type(error), error, error.__traceback__, file=sys.stderr)
 
 
+    @Cog.listener()
+    async def on_message(self, message):
+        if settings.config["prefix"] == "!" \
+                and type(message.author) is not discord.bot \
+                and await utils.is_staff(message.author):
+            if message.guild is None:
+                await self.modMail(message)
+            else:
+                await self.websiteBlacklist(message)
+                member = await utils.in_roles(message.author, settings.config["statusRoles"]["member"])
+                logs_channel = message.guild.get_channel(settings.config["channels"]["log"])
+                def _check(m):
+                    return (m.author == message.author and len(m.mentions) and (datetime.utcnow()-m.created_at).seconds < 15)
+                if type(message.author) is discord.User:
+                    return
+                if not message.author.bot:
+                    if len((list(filter(lambda m: _check(m), self.client.cached_messages)))) >= 5:
+                        await message.author.add_roles(message.guild.get_role(settings.config["statusRoles"]["muted"]))
+                        embed = discord.Embed(color=message.author.color, timestamp=message.created_at)
+                        embed.set_author(name="Mute", icon_url=message.author.avatar_url)
+                        embed.add_field(name=f"{message.author} has been Muted! ", value="muted for mention spamming")
+                        await logs_channel.send(embed=embed)
+                        reason = 'auto muted for spam pinging'
+                        await utils.mod_event_query(message.author.id, 3, datetime.now(), reason, settings.config["botId"], 0)
+                        user_data_query = update(utils.userdata).where(utils.userdata.c.id == message.author.id) \
+                            .values(mute=1)
+                        utils.conn.execute(user_data_query)
+                    if profanity.contains_profanity(message.content):
+                        await message.delete()
+                    elif not member and search(url_regex, message.content):
+                        await message.delete()
+                    elif search(invite_regex, message.content):
+                        await message.delete()
+                        await logs_channel.send(f'<@{message.author.id}> tried to post:\n{message.content}')
+
     async def modMail(self, message):
         complaints_channel = self.client.get_channel(settings.config["channels"]["complaints"])
         if message.author.id != settings.config["botId"]:
@@ -490,45 +525,6 @@ class ModCommands(commands.Cog):
                         staff_chat = self.client.get_channel(settings.config["channels"]["staff-lounge"])
                         await staff_chat.send(f'{message.author.name} tried to post a link from the blacklist.')
                         break
-
-    @Cog.listener()
-    async def on_message(self, message):
-        prefix = settings.config["prefix"]
-        if prefix == "!":
-            if message.guild is None:
-                await self.modMail(message)
-            else:
-                await self.websiteBlacklist(message)
-                member = False
-                # I would like to add a staff check to allow staff memebers to post invite links however i dont know how to do this, this is a job for the future
-                muted_role = message.guild.get_role(settings.config["statusRoles"]["muted"])
-                logs_channel = message.guild.get_channel(settings.config["channels"]["log"])
-                def _check(m):
-                    return (m.author == message.author and len(m.mentions) and (datetime.utcnow()-m.created_at).seconds < 15)
-                if type(message.author) is discord.User:
-                    return
-                for role in message.author.roles:
-                    if role.id == message.guild.get_role(settings.config["statusRoles"]["member"]):
-                        member = True
-                if not message.author.bot:
-                    if len((list(filter(lambda m: _check(m), self.client.cached_messages)))) >= 5:
-                        await message.author.add_roles(muted_role)
-                        embed = discord.Embed(color=message.author.color, timestamp=message.created_at)
-                        embed.set_author(name="Mute", icon_url=message.author.avatar_url)
-                        embed.add_field(name=f"{message.author} has been Muted! ", value="muted for mention spamming")
-                        await logs_channel.send(embed=embed)
-                        reason = 'auto muted for spam pinging'
-                        await utils.mod_event_query(message.author.id, 3, datetime.now(), reason, settings.config["botId"], 0)
-                        user_data_query = update(utils.userdata).where(utils.userdata.c.id == message.author.id) \
-                            .values(mute=1)
-                        utils.conn.execute(user_data_query)
-                    if profanity.contains_profanity(message.content):
-                        await message.delete()
-                    elif not member and search(url_regex, message.content):
-                        await message.delete()
-                    elif search(invite_regex, message.content):
-                        await message.delete()
-                        await logs_channel.send(f'<@{message.author.id}> tried to post:\n{message.content}')
 
 
     @tasks.loop(hours=settings.config["memberUpdateInterval"])
