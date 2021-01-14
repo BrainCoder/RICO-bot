@@ -487,6 +487,7 @@ class ModCommands(commands.Cog):
             else:
                 await self.websiteBlacklist(message)
                 member = await utils.in_roles(message.author, settings.config["statusRoles"]["member"])
+                await self.spamFilter(message)
                 if profanity.contains_profanity(message.content):
                     await message.delete()
                 elif not member and search(self.url_regex, message.content):
