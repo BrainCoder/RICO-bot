@@ -29,6 +29,7 @@ class ModCommands(commands.Cog):
         self.check_member_status.start()
         self.url_regex = r"(?i)\b((?:https?://|www\d{0,3}[.]|[a-z0-9.\-]+[.][a-z]{2,4}/)(?:[^\s()<>]+|\(([^\s()<>]+|(\([^\s()<>]+\)))*\))+(?:\(([^\s()<>]+|(\([^\s()<>]+\)))*\)|[^\s`!()\[\]{};:'\".,<>?«»“”‘’]))"
         self.invite_regex = r"(?:https?://)?discord(?:(?:app)?\.com/invite|\.gg)/?[a-zA-Z0-9]+/?"
+        self.logs_channel = self.client.get_channel(settings.config["channels"]["log"])
 
     async def remove_member_role(self, ctx, user, member_role, noperms=False):
         await user.remove_roles(member_role)
@@ -96,7 +97,6 @@ class ModCommands(commands.Cog):
         await self.client.wait_until_ready()
         user_query = utils.userdata.select().where(utils.userdata.c.i == user.id)
         result = utils.conn.execute(user_query).fetchone()
-        
         if result and result[15] != 0:
             mod = await utils.in_roles(ctx.author, settings.config["staffRoles"]["moderator"])
             if mod:
@@ -481,36 +481,19 @@ class ModCommands(commands.Cog):
     async def on_message(self, message):
         if settings.config["prefix"] == "!" \
                 and type(message.author) is not discord.bot \
-                and await utils.is_staff(message.author):
+                and not await utils.is_staff(message.author):
             if message.guild is None:
                 await self.modMail(message)
             else:
                 await self.websiteBlacklist(message)
                 member = await utils.in_roles(message.author, settings.config["statusRoles"]["member"])
-                logs_channel = message.guild.get_channel(settings.config["channels"]["log"])
-                def _check(m):
-                    return (m.author == message.author and len(m.mentions) and (datetime.utcnow()-m.created_at).seconds < 15)
-                if type(message.author) is discord.User:
-                    return
-                if not message.author.bot:
-                    if len((list(filter(lambda m: _check(m), self.client.cached_messages)))) >= 5:
-                        await message.author.add_roles(message.guild.get_role(settings.config["statusRoles"]["muted"]))
-                        embed = discord.Embed(color=message.author.color, timestamp=message.created_at)
-                        embed.set_author(name="Mute", icon_url=message.author.avatar_url)
-                        embed.add_field(name=f"{message.author} has been Muted! ", value="muted for mention spamming")
-                        await logs_channel.send(embed=embed)
-                        reason = 'auto muted for spam pinging'
-                        await utils.mod_event_query(message.author.id, 3, datetime.now(), reason, settings.config["botId"], 0)
-                        user_data_query = update(utils.userdata).where(utils.userdata.c.id == message.author.id) \
-                            .values(mute=1)
-                        utils.conn.execute(user_data_query)
-                    if profanity.contains_profanity(message.content):
-                        await message.delete()
-                    elif not member and search(self.url_regex, message.content):
-                        await message.delete()
-                    elif search(self.invite_regex, message.content):
-                        await message.delete()
-                        await logs_channel.send(f'<@{message.author.id}> tried to post:\n{message.content}')
+                if profanity.contains_profanity(message.content):
+                    await message.delete()
+                elif not member and search(self.url_regex, message.content):
+                    await message.delete()
+                elif search(self.invite_regex, message.content):
+                    await message.delete()
+                    await self.logs_channel.send(f'<@{message.author.id}> tried to post:\n{message.content}')
 
     async def modMail(self, message):
         complaints_channel = self.client.get_channel(settings.config["channels"]["complaints"])
@@ -532,6 +515,21 @@ class ModCommands(commands.Cog):
                         staff_chat = self.client.get_channel(settings.config["channels"]["staff-lounge"])
                         await staff_chat.send(f'{message.author.name} tried to post a link from the blacklist.')
                         break
+
+    async def spamFilter(self, message):
+        def _check(m):
+            return (m.author == message.author and len(m.mentions) and (datetime.utcnow()-m.created_at).seconds < 15)
+        if len((list(filter(lambda m: _check(m), self.client.cached_messages)))) >= 5:
+            await message.author.add_roles(message.guild.get_role(settings.config["statusRoles"]["muted"]))
+            embed = discord.Embed(color=message.author.color, timestamp=message.created_at)
+            embed.set_author(name="Mute", icon_url=message.author.avatar_url)
+            embed.add_field(name=f"{message.author} has been Muted! ", value="muted for mention spamming")
+            await self.logs_channel.send(embed=embed)
+            reason = 'auto muted for spam pinging'
+            await utils.mod_event_query(message.author.id, 3, datetime.now(), reason, settings.config["botId"], 0)
+            user_data_query = update(utils.userdata).where(utils.userdata.c.id == message.author.id) \
+                .values(mute=1)
+            utils.conn.execute(user_data_query)
 
 
     @tasks.loop(hours=settings.config["memberUpdateInterval"])
