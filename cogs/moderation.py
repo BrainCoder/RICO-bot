@@ -30,10 +30,13 @@ class ModCommands(commands.Cog):
         self.url_regex = r"(?i)\b((?:https?://|www\d{0,3}[.]|[a-z0-9.\-]+[.][a-z]{2,4}/)(?:[^\s()<>]+|\(([^\s()<>]+|(\([^\s()<>]+\)))*\))+(?:\(([^\s()<>]+|(\([^\s()<>]+\)))*\)|[^\s`!()\[\]{};:'\".,<>?«»“”‘’]))"
         self.invite_regex = r"(?:https?://)?discord(?:(?:app)?\.com/invite|\.gg)/?[a-zA-Z0-9]+/?"
 
-    async def remove_member_role(self, ctx, user, member_role):
+    async def remove_member_role(self, ctx, user, member_role, noperms=False):
         await user.remove_roles(member_role)
         await utils.doembed(ctx, "Member", f"{user} no longer has member!", f"Member taken by: <@{ctx.author.id}>.", user)
-        await utils.mod_event_query(user.id, 9, datetime.now(), None, ctx.author.id, 0)
+        if noperms:
+            await utils.mod_event_query(user.id, 11, datetime.now(), None, ctx.author.id, 0)
+        else:
+            await utils.mod_event_query(user.id, 9, datetime.now(), None, ctx.author.id, 0)
         user_data_query = update(utils.userdata).where(utils.userdata.c.id == user.id) \
             .values(member=0)
         utils.conn.execute(user_data_query)
@@ -93,6 +96,7 @@ class ModCommands(commands.Cog):
         await self.client.wait_until_ready()
         user_query = utils.userdata.select().where(utils.userdata.c.i == user.id)
         result = utils.conn.execute(user_query).fetchone()
+        
         if result and result[15] != 0:
             mod = await utils.in_roles(ctx.author, settings.config["staffRoles"]["moderator"])
             if mod:
@@ -100,8 +104,9 @@ class ModCommands(commands.Cog):
                     .values(noperms=0)
                 utils.conn.execute(user_data_query)
             else:
-                pass
+                await ctx.send("Only moderators and above can remove NoPerms")
         else:
+            await self.remove_member_role(ctx, user, ctx.guild.get_role(settings.config["statusRoles"]["member"]))
             user_data_query = update(utils.userdata).where(utils.userdata.c.id == user.id) \
                 .values(noperms=1)
             utils.conn.execute(user_data_query)
