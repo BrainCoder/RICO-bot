@@ -28,6 +28,7 @@ async def on_ready():
     await client.wait_until_ready()
     devlogs = client.get_channel(settings.config["channels"]["devlog"])
     if settings.config["prefix"] == '!':
+        await devlogs.send('---')
         await devlogs.send(f'{utils.timestr}Bot is online')
         await devlogs.send(f'{utils.timestr}Loaded `blacklist.txt` & `whitelist.txt` due to startup')
     await cogs_load()
@@ -40,7 +41,7 @@ async def cogs_load():
                 client.load_extension(f'cogs.{filename[:-3]}')
                 await devlogs.send(f'{utils.timestr}`{filename}` loadeded due to startup')
                 print(f'loaded {filename}')
-        await devlogs.send(f'{utils.timestr}`all cogs loaded')
+        await devlogs.send(f'{utils.timestr}**all cogs loaded**')
         print('all cogs loaded')
     else:
         client.load_extension('cogs.developer')
@@ -61,7 +62,7 @@ async def creset(ctx):
     devlogs = client.get_channel(settings.config["channels"]["devlog"])
     log = f'{utils.timestr}`cogs` loaded manually using !creset command'
     client.load_extension('cogs.developer')
-    await utils.emoji(ctx, '✅')
+    await utils.emoji(ctx)
     if settings.config["prefix"] == '!':
         await devlogs.send(log)
 
