@@ -13,7 +13,7 @@ class MonthlyChallenge(commands.Cog):
         self._last_member = None
 
     async def chal_toggle(self, ctx, beforeRole, afterRole):
-        await utils.emoji(ctx, '✅')
+        await utils.emoji(ctx)
         newParticipants = []
         print('Starting new month now.')
         before = ctx.guild.get_role(beforeRole)
@@ -84,14 +84,14 @@ class MonthlyChallenge(commands.Cog):
         """command you use to give yourself the Monthly Challenge Signup role"""
         signup_role = ctx. guild.get_role(settings.config["challenges"]["monthly-challenge-signup"])
         await ctx.author.add_roles(signup_role)
-        await utils.emoji(ctx, '✅')
+        await utils.emoji(ctx)
 
     @commands.command(name="yearlychallenge")
     async def yearlychallenge(self, ctx):
         """Command you use to give yourself the Yearly Challenge Signup role"""
         signup_role = ctx.guild.get_role(settings.config["challenges"]["yearly-challenge-signup"])
         await ctx.author.add_roles(signup_role)
-        await utils.emoji(ctx, '✅')
+        await utils.emoji(ctx)
 
     @commands.command(name='deadpool')
     async def deadpool_signup(self, ctx):
@@ -108,7 +108,7 @@ class MonthlyChallenge(commands.Cog):
             return
         signupRole = ctx.guild.get_role(settings.config["challenges"]["deadpool-signup"])
         await ctx.author.add_roles(signupRole)
-        await utils.emoji(ctx, '✅')
+        await utils.emoji(ctx)
 
 def setup(client):
     client.add_cog(MonthlyChallenge(client))

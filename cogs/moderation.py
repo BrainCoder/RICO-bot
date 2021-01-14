@@ -95,7 +95,7 @@ class ModCommands(commands.Cog):
         settings.config["staffRoles"]["semi-moderator"])
     async def memeber(self, ctx, user: discord.Member):
         await self.client.wait_until_ready()
-        user_query = utils.userdata.select().where(utils.userdata.c.i == user.id)
+        user_query = utils.userdata.select().where(utils.userdata.c.id == user.id)
         result = utils.conn.execute(user_query).fetchone()
         if result and result[15] != 0:
             mod = await utils.in_roles(ctx.author, settings.config["staffRoles"]["moderator"])
@@ -103,6 +103,7 @@ class ModCommands(commands.Cog):
                 user_data_query = update(utils.userdata).where(utils.userdata.c.id == user.id) \
                     .values(noperms=0)
                 utils.conn.execute(user_data_query)
+                await utils.emoji(ctx)
             else:
                 await ctx.send("Only moderators and above can remove NoPerms")
         else:
@@ -110,6 +111,7 @@ class ModCommands(commands.Cog):
             user_data_query = update(utils.userdata).where(utils.userdata.c.id == user.id) \
                 .values(noperms=1)
             utils.conn.execute(user_data_query)
+            await utils.emoji(ctx)
 
 
     @commands.command(name="member")
@@ -127,13 +129,13 @@ class ModCommands(commands.Cog):
                                 timedelta(hours=settings.config["memberUpdateInterval"]))
         member_role = ctx.guild.get_role(settings.config["statusRoles"]["member"])
         if member_role in user.roles:
-            await self.remove_member_role(self, ctx, user, member_role)
-            await utils.emoji(ctx, '✅')
+            await self.remove_member_role(ctx, user, member_role)
+            await utils.emoji(ctx)
         else:
-            if datetime.now() >= (member_joined_at + timedelta(hours=settings.config["memberCommandThreshold"])) \
-                    or result and result[15] != 1:
-                await self.add_member_role(self, ctx, user, member_role)
-                await utils.emoji(ctx, '✅')
+            if datetime.now() >= (member_joined_at + timedelta(hours=settings.config["memberCommandThreshold"])):
+                if result and result[15] != 1:
+                    await self.add_member_role(ctx, user, member_role)
+                    await utils.emoji(ctx)
             elif result[15] == 1:
                 await ctx.send("User current has NoPerms role")
             else:
@@ -167,7 +169,7 @@ class ModCommands(commands.Cog):
             user_data_query = update(utils.userdata).where(utils.userdata.c.id == user.id) \
                 .values(double_mute=1)
             utils.conn.execute(user_data_query)
-            await utils.emoji(ctx, '✅')
+            await utils.emoji(ctx)
         else:
             if reason is None:
                 await ctx.channel.send('please give reason for mute', delete_after=5)
@@ -181,7 +183,7 @@ class ModCommands(commands.Cog):
                 user_data_query = update(utils.userdata).where(utils.userdata.c.id == user.id) \
                     .values(mute=1)
                 utils.conn.execute(user_data_query)
-                await utils.emoji(ctx, '✅')
+                await utils.emoji(ctx)
 
 
     @commands.command(name="vmute", aliases=['vs', 'vstrike'])
@@ -223,7 +225,7 @@ class ModCommands(commands.Cog):
                 user_data_query = update(utils.userdata).where(utils.userdata.c.id == user.id) \
                     .values(mute=1)
                 utils.conn.execute(user_data_query)
-                await utils.emoji(ctx, '✅')
+                await utils.emoji(ctx)
 
 
     @commands.command(name="cooldown", aliases=['c'])
@@ -270,6 +272,7 @@ class ModCommands(commands.Cog):
         await self.client.wait_until_ready()
         if user is None:
             await ctx.send('Please tag the user you want to unmute', delete_after=5)
+
         else:
             muted = False
             self_muted = False
@@ -284,12 +287,15 @@ class ModCommands(commands.Cog):
             if muted_role in user.roles:
                 if double_role not in user.roles:
                     await user.remove_roles(muted_role)
+                    await utils.emoji(ctx)
                     muted = True
             if self_mute_role in user.roles:
                 await user.remove_roles(self_mute_role)
+                await utils.emoji(ctx)
                 self_muted = True
             if double_role in user.roles:
                 await user.remove_roles(double_role)
+                await utils.emoji(ctx)
                 double = True
             if muted or self_muted or double:
                 await utils.doembed(ctx, "Unmute", f"{user} has been Unmuted!", f"Unmuted by: <@{ctx.author.id}>.", user)
@@ -302,6 +308,7 @@ class ModCommands(commands.Cog):
                         user_data_query = update(utils.userdata).where(utils.userdata.c.id == user.id) \
                             .values(mute=0)
                         utils.conn.execute(user_data_query)
+
                     else:
                         await utils.mod_event_query(user.id, 4, datetime.now(), None, ctx.author.id, 0)
                         prior_mute_queries = text(f'update mod_event set historical = 1 where recipient_id = {user.id} '
@@ -329,7 +336,7 @@ class ModCommands(commands.Cog):
         user_data_query = update(utils.userdata).where(utils.userdata.c.id == member.id) \
             .values(kicked=1)
         utils.conn.execute(user_data_query)
-        await utils.emoji(ctx, '✅')
+        await utils.emoji(ctx)
 
 
     @commands.command(name='underage')
@@ -340,7 +347,7 @@ class ModCommands(commands.Cog):
     async def underage(self, ctx, member: discord.Member):
         underage_role = ctx.guild.get_role(settings.config["statusRoles"]["underage"])
         await member.add_roles(underage_role)
-        await utils.emoji(ctx, '✅')
+        await utils.emoji(ctx)
 
 
     @commands.command(name="ban")
@@ -369,7 +376,7 @@ class ModCommands(commands.Cog):
         user_data_query = update(utils.userdata).where(utils.userdata.c.id == member.id) \
             .values(banned=1)
         utils.conn.execute(user_data_query)
-        await utils.emoji(ctx, '✅')
+        await utils.emoji(ctx)
 
 
     @commands.command(name="automod")
@@ -383,7 +390,7 @@ class ModCommands(commands.Cog):
         elif arg == 'add':
             with open('resources/blacklist.txt', "a", encoding="utf-8") as f:
                 f.write("".join([f"{w}\n" for w in words]))
-                await utils.emoji(ctx, '✅')
+                await utils.emoji(ctx)
             profanity.load_censor_words_from_file('resources/blacklist.txt', whitelist_words=whitelist)
             await devlogs.send(f'{utils.timestr}Reloaded `blacklist.txt` and `whitelist.txt` due to edit')
         elif arg == 'remove':
@@ -393,7 +400,7 @@ class ModCommands(commands.Cog):
                 f.write("".join([f"{w}\n" for w in stored if w not in words]))
                 profanity.load_censor_words_from_file('resources/blacklist.txt', whitelist_words=whitelist)
                 await devlogs.send(f'{utils.timestr}Reloaded `blacklist.txt` and `whitelist.txt` due to edit')
-            await utils.emoji(ctx, '✅')
+            await utils.emoji(ctx)
         elif arg == 'blacklist':
             await ctx.send(file=File('resources/blacklist.txt'))
         else:
@@ -451,7 +458,7 @@ class ModCommands(commands.Cog):
                 bot = ctx.guild.get_member(settings.config["botId"])
                 await utils.doembed(ctx, "Lynch", f"User {member} was lynched! ", f"lynched by: {lyncher_list}", bot)
             else:
-                await utils.emoji(ctx, '✅')
+                await utils.emoji(ctx)
                 query = update(utils.userdata).where(utils.userdata.c.id == member.id) \
                     .values(lynch_count=current_lynches,
                             lynch_expiration_time=(datetime.now() + timedelta(hours=8)).timestamp())
@@ -467,7 +474,7 @@ class ModCommands(commands.Cog):
         """messages the given user through the bot"""
         channel = await member.create_dm()
         await channel.send(content)
-        await utils.emoji(ctx, '✅')
+        await utils.emoji(ctx)
     @dm.error
     async def dm_handler(self, ctx, error):
         if isinstance(error, commands.CheckFailure):
@@ -479,12 +486,11 @@ class ModCommands(commands.Cog):
 
     @Cog.listener()
     async def on_message(self, message):
-        if settings.config["prefix"] == "!" \
-                and type(message.author) is not discord.bot \
-                and not await utils.is_staff(message.author):
+        if settings.config["prefix"] == "!":
             if message.guild is None:
                 await self.modMail(message)
-            else:
+            elif not await utils.is_staff(message.author) \
+                    and not await utils.in_roles(message.author, settings.config["statusRoles"]["bot-role"]):
                 await self.websiteBlacklist(message)
                 member = await utils.in_roles(message.author, settings.config["statusRoles"]["member"])
                 await self.spamFilter(message)

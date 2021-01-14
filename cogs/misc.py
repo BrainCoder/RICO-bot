@@ -113,7 +113,7 @@ class Extra(commands.Cog):
         if time is None:
             await ctx.send('Please specify the timer', delete_after=5)
         else:
-            await utils.emoji(ctx, '✅')
+            await utils.emoji(ctx)
             await asyncio.sleep(time)
             await ctx.send(f'{ctx.author.mention}')
 

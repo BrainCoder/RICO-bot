@@ -119,7 +119,7 @@ def readFile(fileName):
     with open(fileName, 'r') as myfile:
         return myfile.read()
 
-async def emoji(ctx, emji):
+async def emoji(ctx, emji='✅'):
     await ctx.message.add_reaction(emji)
 
 async def mod_event_query(recipient_id, event_type, event_time, reason, issuer_id, historical):
