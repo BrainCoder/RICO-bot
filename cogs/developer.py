@@ -150,7 +150,7 @@ class DeveloperTools(commands.Cog):
             await devLogs.send(f'{utils.timestr}member integrity verified by {ctx.author.mention}')
             await self.vi_member(ctx)
 
-    async def vi_db(ctx):
+    async def vi_db(self, ctx):
         new_entries = 0
         current_users = len(utils.conn.execute(utils.userdata.select()).fetchall())
         for user in ctx.guild.members:
@@ -165,7 +165,7 @@ class DeveloperTools(commands.Cog):
         await ctx.channel.send("The old amount of users was " + str(current_users) + \
                             "\nThe new amount of users is " + str(new_count))
 
-    async def vi_member(ctx):
+    async def vi_member(self, ctx):
         members_added = []
         members_lost = []
         missing_members = []

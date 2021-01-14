@@ -99,7 +99,7 @@ class Extra(commands.Cog):
     @commands.command(name="gfsandwich")
     async def gfsandwich(self, ctx):
         """Evidence that the bot is hounds gf"""
-        hound = await utils.in_roles(ctx, settings.config["staffRoles"]["head-dev"])
+        hound = await utils.in_roles(ctx.author, settings.config["staffRoles"]["head-dev"])
         if not hound:
             await ctx.send('Ur not my dad :c')
         else:
@@ -113,7 +113,7 @@ class Extra(commands.Cog):
         if time is None:
             await ctx.send('Please specify the timer', delete_after=5)
         else:
-            await utils.emoji(ctx, '✅')
+            await utils.emoji(ctx)
             await asyncio.sleep(time)
             await ctx.send(f'{ctx.author.mention}')
 
