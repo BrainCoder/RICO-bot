@@ -47,6 +47,7 @@ class ModCommands(commands.Cog):
         self._last_member = None
         self.check_member_status.start()
 
+
     @commands.command(name='d')
     @commands.check(utils.NotInBump)
     async def dBumpChannel(self, ctx, *, args):
@@ -60,6 +61,7 @@ class ModCommands(commands.Cog):
             print('Ignoring exception in command {}:'.format(ctx.command), file=sys.stderr)
             traceback.print_exception(type(error), error, error.__traceback__, file=sys.stderr)
 
+
     @commands.command(name='selfmute')
     @commands.has_any_role(
         settings.config["statusRoles"]["member"])
@@ -71,6 +73,7 @@ class ModCommands(commands.Cog):
         else:
             await ctx.author.add_roles(Selfmute_Role)
 
+
     @commands.command(name="purge", aliases=["clear"])
     @commands.has_any_role(
         settings.config["staffRoles"]["moderator"])
@@ -81,6 +84,29 @@ class ModCommands(commands.Cog):
         else:
             await ctx.message.delete()
             await ctx.channel.purge(limit=amount)
+
+
+    @commands.command(name='noperms')
+    @commands.has_any_role(
+        settings.config["staffRoles"]["moderator"],
+        settings.config["staffRoles"]["semi-moderator"])
+    async def memeber(self, ctx, user: discord.Member):
+        await self.client.wait_until_ready()
+        user_query = utils.userdata.select().where(utils.userdata.c.i == user.id)
+        result = utils.conn.execute(user_query).fetchone()
+        if result and result[15] != 0:
+            mod = await utils.in_roles(ctx, settings.config["staffRoles"]["moderator"])
+            if mod:
+                user_data_query = update(utils.userdata).where(utils.userdata.c.id == user.id) \
+                    .values(noperms=0)
+                utils.conn.execute(user_data_query)
+            else:
+                pass
+        else:
+            user_data_query = update(utils.userdata).where(utils.userdata.c.id == user.id) \
+                .values(noperms=1)
+            utils.conn.execute(user_data_query)
+
 
     @commands.command(name="member")
     @commands.has_any_role(
@@ -150,6 +176,7 @@ class ModCommands(commands.Cog):
                 utils.conn.execute(user_data_query)
                 await utils.emoji(ctx, '✅')
 
+
     @commands.command(name="vmute", aliases=['vs', 'vstrike'])
     @commands.cooldown(1, 86400, commands.BucketType.user)
     @commands.has_any_role(
@@ -191,6 +218,7 @@ class ModCommands(commands.Cog):
                 utils.conn.execute(user_data_query)
                 await utils.emoji(ctx, '✅')
 
+
     @commands.command(name="cooldown", aliases=['c'])
     @commands.has_any_role(
         settings.config["staffRoles"]["moderator"],
@@ -218,6 +246,7 @@ class ModCommands(commands.Cog):
             utils.conn.execute(user_data_query)
         else:
             await ctx.send('Please give a timer for the cooldown')
+
 
     @commands.command(name="unmute")
     @commands.has_any_role(
@@ -275,6 +304,7 @@ class ModCommands(commands.Cog):
                             .values(double_mute=0)
                         utils.conn.execute(user_data_query)
 
+
     @commands.command(name="kick")
     @commands.cooldown(15, 600, commands.BucketType.user)
     @commands.has_any_role(
@@ -294,6 +324,7 @@ class ModCommands(commands.Cog):
         utils.conn.execute(user_data_query)
         await utils.emoji(ctx, '✅')
 
+
     @commands.command(name='underage')
     @commands.has_any_role(
         settings.config["staffRoles"]["moderator"],
@@ -303,6 +334,7 @@ class ModCommands(commands.Cog):
         underage_role = ctx.guild.get_role(settings.config["statusRoles"]["underage"])
         await member.add_roles(underage_role)
         await utils.emoji(ctx, '✅')
+
 
     @commands.command(name="ban")
     @commands.cooldown(15, 600, commands.BucketType.user)
@@ -332,6 +364,7 @@ class ModCommands(commands.Cog):
         utils.conn.execute(user_data_query)
         await utils.emoji(ctx, '✅')
 
+
     @commands.command(name="automod")
     @commands.has_any_role(
         settings.config["staffRoles"]["moderator"])
@@ -359,6 +392,7 @@ class ModCommands(commands.Cog):
         else:
             await ctx.send(invarg)
 
+
     @commands.command(name='rule', aliases=['rules'])
     @commands.cooldown(1, 5)
     async def rules(self, ctx, rule: int = None):
@@ -369,6 +403,7 @@ class ModCommands(commands.Cog):
             embed.add_field(name=f"Rule {rule}", value=rules[rule - 1])
             await ctx.send(embed=embed)
             # Couldnt get this working w/ utils.doembed for some reason, this is something thall have to be addressed in the future
+
 
     @commands.command(name="lynch")
     @commands.has_any_role(
@@ -418,6 +453,7 @@ class ModCommands(commands.Cog):
             member_role = ctx.guild.get_role(settings.config["statusRoles"]["member"])
             await ctx.author.remove_roles(member_role)
 
+
     @commands.command(name="dm", aliases=['message'])
     @commands.check(utils.is_in_complaint_channel)
     async def dm(self, ctx, member: discord.Member, *, content):
@@ -433,54 +469,57 @@ class ModCommands(commands.Cog):
             print('Ignoring exception in command {}:'.format(ctx.command), file=sys.stderr)
             traceback.print_exception(type(error), error, error.__traceback__, file=sys.stderr)
 
+
+    async def modMail(self, message):
+        complaints_channel = self.client.get_channel(settings.config["channels"]["complaints"])
+        if message.author.id != settings.config["botId"]:
+            await complaints_channel.send(f"<@{message.author.id}> said: {message.content}")
+
+    async def websiteBlacklist(self, message):
+        with open(settings.config["websiteBlacklistFilePath"]) as blocked_file:
+            for website in blocked_file:
+                website = website.replace("\n", "")
+                if website in message.content:
+                    dev_chat = self.client.get_channel(settings.config["channels"]["development"])
+                    if message.author.id == settings.config["botId"]:
+                        if message.channel.id != settings.config["channels"]["development"]:
+                            await dev_chat.send(f'{message.author.name} tried to post ```{message.content}```')
+                            break
+                    else:
+                        await message.delete()
+                        staff_chat = self.client.get_channel(settings.config["channels"]["staff-lounge"])
+                        await staff_chat.send(f'{message.author.name} tried to post a link from the blacklist.')
+                        break
+
     @Cog.listener()
     async def on_message(self, message):
         prefix = settings.config["prefix"]
-        bot_id = settings.config["botId"]
         if prefix == "!":
-            complaints_channel = self.client.get_channel(settings.config["channels"]["complaints"])
             if message.guild is None:
-                if message.author.id != bot_id:
-                    await complaints_channel.send(f"<@{message.author.id}> said: {message.content}")
+                await self.modMail(message)
             else:
-                with open(settings.config["websiteBlacklistFilePath"]) as blocked_file:
-                    for website in blocked_file:
-                        website = website.replace("\n", "")
-                        if website in message.content:
-                            dev_chat = self.client.get_channel(settings.config["channels"]["development"])
-                            if message.author.id == bot_id:
-                                if message.channel.id != settings.config["channels"]["development"]:
-                                    await dev_chat.send(f'{message.author.name} tried to post ```{message.content}```')
-                                    break
-                            else:
-                                await message.delete()
-                                staff_chat = self.client.get_channel(settings.config["channels"]["staff-lounge"])
-                                await staff_chat.send(f'{message.author.name} tried to post a link from the blacklist.')
-                                break
+                await self.websiteBlacklist(message)
                 member = False
                 # I would like to add a staff check to allow staff memebers to post invite links however i dont know how to do this, this is a job for the future
-                member_role = message.guild.get_role(settings.config["statusRoles"]["member"])
                 muted_role = message.guild.get_role(settings.config["statusRoles"]["muted"])
                 logs_channel = message.guild.get_channel(settings.config["channels"]["log"])
-                author = message.author
-                userAvatarUrl = author.avatar_url
                 def _check(m):
-                    return (m.author == author and len(m.mentions) and (datetime.utcnow()-m.created_at).seconds < 15)
-                if type(author) is discord.User:
+                    return (m.author == message.author and len(m.mentions) and (datetime.utcnow()-m.created_at).seconds < 15)
+                if type(message.author) is discord.User:
                     return
-                for role in author.roles:
-                    if role.id == member_role.id:
+                for role in message.author.roles:
+                    if role.id == message.guild.get_role(settings.config["statusRoles"]["member"]):
                         member = True
-                if not author.bot:
+                if not message.author.bot:
                     if len((list(filter(lambda m: _check(m), self.client.cached_messages)))) >= 5:
-                        await author.add_roles(muted_role)
-                        embed = discord.Embed(color=author.color, timestamp=message.created_at)
-                        embed.set_author(name="Mute", icon_url=userAvatarUrl)
-                        embed.add_field(name=f"{author} has been Muted! ", value="muted for mention spamming")
+                        await message.author.add_roles(muted_role)
+                        embed = discord.Embed(color=message.author.color, timestamp=message.created_at)
+                        embed.set_author(name="Mute", icon_url=message.author.avatar_url)
+                        embed.add_field(name=f"{message.author} has been Muted! ", value="muted for mention spamming")
                         await logs_channel.send(embed=embed)
                         reason = 'auto muted for spam pinging'
-                        await utils.mod_event_query(author.id, 3, datetime.now(), reason, bot_id, 0)
-                        user_data_query = update(utils.userdata).where(utils.userdata.c.id == author.id) \
+                        await utils.mod_event_query(message.author.id, 3, datetime.now(), reason, settings.config["botId"], 0)
+                        user_data_query = update(utils.userdata).where(utils.userdata.c.id == message.author.id) \
                             .values(mute=1)
                         utils.conn.execute(user_data_query)
                     if profanity.contains_profanity(message.content):
@@ -489,7 +528,8 @@ class ModCommands(commands.Cog):
                         await message.delete()
                     elif search(invite_regex, message.content):
                         await message.delete()
-                        await logs_channel.send(f'<@{author.id}> tried to post:\n{message.content}')
+                        await logs_channel.send(f'<@{message.author.id}> tried to post:\n{message.content}')
+
 
     @tasks.loop(hours=settings.config["memberUpdateInterval"])
     async def check_member_status(self):
@@ -519,6 +559,7 @@ class ModCommands(commands.Cog):
                     # utils.conn.execute(user_data_query)
                     # Discuss idea of zeroing out instead so that anomalies don't occur but data will be lost.
 
+
     @Cog.listener()
     async def on_member_update(self, before_user, after_user):
         if after_user.nick != before_user.nick:
@@ -532,6 +573,7 @@ class ModCommands(commands.Cog):
                 values(user_id=after_user.id, previous_name=before, change_type=2, new_name=after,
                    event_time=datetime.now(timezone.utc))
             utils.conn.execute(nickname_query)
+
 
     @Cog.listener()
     async def on_user_update(self, before_user, after_user):
