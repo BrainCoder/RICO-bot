@@ -134,11 +134,14 @@ class ModCommands(commands.Cog):
         if member_role in user.roles:
             await self.remove_member_role(ctx, user, member_role)
             await utils.emoji(ctx)
+
         else:
             if datetime.now() >= (member_joined_at + timedelta(hours=settings.config["memberCommandThreshold"])):
                 if result and result[15] != 1:
                     await self.add_member_role(ctx, user, member_role)
                     await utils.emoji(ctx)
+                else:
+                    await ctx.send('User current has NoPerms role')
             elif result[15] == 1:
                 await ctx.send("User current has NoPerms role")
             else:
