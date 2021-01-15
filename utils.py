@@ -140,10 +140,13 @@ async def doembed(ctx, aname, fname, fval, user, channel=False):
             await logs_channel.send(embed=embed)
 
 async def in_roles(user, searchRole):
-    for role in user.roles:
-        if role.id == searchRole:
-            return True
-    return False
+    try:
+        for role in user.roles:
+            if role.id == searchRole:
+                return True
+        return False
+    except:
+        return False
 
 async def is_staff(user):
     staff_roles = []
