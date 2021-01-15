@@ -41,7 +41,7 @@ class reactroles(commands.Cog):
 
         fval = ""
         for entry in category:
-            fval = fval + f'{entry[1]} - "role name"'
+            fval = fval + f'{entry[1]} - {entry[3]}'
 
         embed = discord.Embed(title=title, url="https://www.youtube.com/watch?v=hv-ODnbbP7U", color=0x00dcff)
         embed.set_author(name="NoPorn", url="https://discord.gg/CFR9bt", icon_url="https://cdn.discordapp.com/icons/519330541720436736/a_2bdbaecdd90c85cdc8e9108d8a8c5907.png?size=128")
