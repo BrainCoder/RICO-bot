@@ -190,6 +190,10 @@ class ModCommands(commands.Cog):
                     .values(mute=1)
                 utils.conn.execute(user_data_query)
                 await utils.emoji(ctx)
+    @mute.error
+    async def on_command_error(self, ctx, error):
+        print('Ignoring exception in command {}:'.format(ctx.command), file=sys.stderr)
+        traceback.print_exception(type(error), error, error.__traceback__, file=sys.stderr)
 
 
     @commands.command(name="vmute", aliases=['vs', 'vstrike'])
