@@ -201,19 +201,16 @@ class DeveloperTools(commands.Cog):
     async def errorlog(self, ctx, action=None):
         devLogs = ctx.guild.get_channel(settings.config["channels"]["devlog"])
         if action is None:
-            path = '/root/.pm2/logs/NPC-error.log'
+            path = '/root/.pm2/logs/npc-error.log'
             if os.stat(path).st_size == 0:
                 await ctx.send('Error file is empty')
             else:
                 await ctx.send(file=File(path))
         elif action == 'flush':
             os.system("/usr/local/bin/flush")
-            await utils.emoji(ctx, '✅')
-            await devLogs.send(f'{utils.timestr}error logs flushed by {ctx.author.mention}')
-        elif action == 'delete':
             os.system("/usr/local/bin/del_bkup")
             await utils.emoji(ctx, '✅')
-            await devLogs.send(f'{utils.timestr}error logs backup deleted by {ctx.author.mention}')
+            await devLogs.send(f'{utils.timestr}error logs flushed by {ctx.author.mention}')
 
 
 def setup(client):
