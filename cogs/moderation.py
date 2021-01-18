@@ -165,7 +165,7 @@ class ModCommands(commands.Cog):
         member_role = ctx.guild.get_role(settings.config["statusRoles"]["member"])
         if member_role in user.roles:
             if not await utils.is_staff(user):
-                await self.remove_member_role(self, ctx, user, member_role)
+                await self.remove_member_role(ctx, user, member_role)
         if muted:
             await self.client.wait_until_ready()
             double_role = ctx.guild.get_role(settings.config["statusRoles"]["double-muted"])
