@@ -534,6 +534,10 @@ class ModCommands(commands.Cog):
             raw_output = f'For {user}:\n'
         raw_output = await self.build_raw_output(raw_output, table)
         await self.output_to_channel(channel, ctx, output_format, raw_output, table_output)
+    @report.error
+    async def report_command_error(self, ctx, error):
+        print('Ignoring exception in command {}:'.format(ctx.command), file=sys.stderr)
+        traceback.print_exception(type(error), error, error.__traceback__, file=sys.stderr)
 
     async def extract_table_from_results(self, results, table, user):
         for result in results:
