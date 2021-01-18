@@ -24,6 +24,35 @@ class reactroles(commands.Cog):
                 raw_dict.append(obj[key][sub_k])
         return raw_dict
 
+    # Embed builder
+
+    @commands.command(name="rr_autocreate")
+    @commands.has_any_role(
+        settings.config["staffRoles"]["developer"])
+    async def rr_autocreate(self, ctx):
+        for key in self.obj:
+            if key == "streakGuide":
+
+
+
+            await self.build_embed(ctx)
+    
+    async def build_streakGuide(self, ctx):
+        
+
+    async def build_embeds(self, ctx):
+        pass
+
+    # Emoji toggle detection
+
+    @Cog.listener()
+    async def on_raw_reaction_add(self, payload):
+        await reactroles.reaction(self, payload=payload, r_type='add')
+
+    @Cog.listener()
+    async def on_raw_reaction_remove(self, payload):
+        await self.reaction(self, payload=payload, r_type='remove')
+
     async def reaction(self, payload, r_type=None):
         raw_data = await self.build_raw(self.obj)
         for entry in raw_data:
@@ -38,14 +67,6 @@ class reactroles(commands.Cog):
                         if r_type == 'add':
                             await user.add_role(role)
 
-
-    @Cog.listener()
-    async def on_raw_reaction_add(self, payload):
-        await reactroles.reaction(self, payload=payload, r_type='add')
-
-    @Cog.listener()
-    async def on_raw_reaction_remove(self, payload):
-        await reactroles.reaction(self, payload=payload, r_type='remove')
 
 def setup(client):
     client.add_cog(reactroles(client))
