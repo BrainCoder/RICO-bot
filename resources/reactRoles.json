@@ -1,29 +1,27 @@
 {
-    "streakGuideChannel":519627611836776490,
-    "reactRolesChannel":567283111273037834,
     "streakGuide":{
-        "classicmode":["🟢",520919546727497739, "classicmode"],
-        "hardmode":["🟡", 520919681767440386, "hardmode"],
-        "monkmode":["🔴", 520920165702172704, "monkmode"],
-        "anonStreak":["🕵️", 763078830352891916, "anonStreak"]
+        "classicmode":[":green_circle: ",520919546727497739, "classicmode"],
+        "hardmode":["yellow_circle", 520919681767440386, "hardmode"],
+        "monkmode":["red_circle", 520920165702172704, "monkmode"],
+        "anonStreak":[":detective:", 763078830352891916, "anonStreak"]
     },
     "utilityRoles":{
-        "helper":["🆘", 558231394548056065, "helper"],
-        "supportGroup":["⚕️", 739323525218828350, "supportGroup"],
+        "helper":[":sos:", 558231394548056065, "helper"],
+        "supportGroup":[":medical_symbol:", 739323525218828350, "supportGroup"],
         "urgeKiller":[":cockroach:", 657623824258564116, "urgeKiller"],
         "virgin":[":regional_indicator_v:", 706927842835038238, "virgin"],
-        "caveman":["📵", 656553241492062218, "caveman"],
+        "caveman":[":no_mobile_phones:", 656553241492062218, "caveman"],
         "retention":[":regional_indicator_r:", 703263347776290917, "retention"]
     },
     "gender":{
-        "male":["♂️", 665530855778680832, "male"],
-        "female":["♀️", 562047851484545044, "female"]
+        "male":[":male_sign:", 665530855778680832, "male"],
+        "female":[":female_sign:", 562047851484545044, "female"]
     },
     "religion":{
-        "islam":["☪️", 593479319951638554, "islam"],
-        "christianity":["✝️", 593479459173302272, "christianity"],
-        "judaism":["🔯", 687702087487717454, "judaism"],
-        "else":["♾️", 522107857899094023, "else"]
+        "islam":[":star_and_crescent:", 593479319951638554, "islam"],
+        "christianity":[":cross:", 593479459173302272, "christianity"],
+        "judaism":[":six_pointed_star:", 687702087487717454, "judaism"],
+        "else":[":infinity:", 522107857899094023, "else"]
     },
     "location":{
         "antarctica":[":flag_aq:", 739327468040880138, "antarctica"],
@@ -35,18 +33,18 @@
         "asia":[":flag_cn:", 739327332938154057, "asia"]
     },
     "hobbies":{
-        "hydrator":["💧", 665204133586010112, "hydrator"],
-        "productivity":["✍", 739524735083217056, "productivity"],
-        "book-club":["📚", 698536415146803200, "book-club"],
-        "fitness":["🏋️‍♂️", 770098228598145057, "fitness"],
-        "chess":["♟️", 770127237265227787, "chess"],
-        "discussions":["🗣️", 770135846060818434, "discussions"],
-        "relationships":["👫", 770860605288349696, "relationships"]
+        "hydrator":[":droplet:", 665204133586010112, "hydrator"],
+        "productivity":[":writing_hand:", 739524735083217056, "productivity"],
+        "book-club":[":books:", 698536415146803200, "book-club"],
+        "fitness":[":man_lifting_weights:", 770098228598145057, "fitness"],
+        "chess":[":chess_pawn:", 770127237265227787, "chess"],
+        "discussions":[":speaking_head:", 770135846060818434, "discussions"],
+        "relationships":[":couple:", 770860605288349696, "relationships"]
     },
     "misc":{
-        "memes":["🚽", 770159198263574538, "memes"],
-        "media":["🗞️", 770860672250019850, "media"],
-        "polls":["🗳️", 771288337532452894, "polls"],
-        "asylum":["🤯", 771288349406265375, "asylum"]
+        "memes":[":toilet:", 770159198263574538, "memes"],
+        "media":[":newspaper2:", 770860672250019850, "media"],
+        "polls":[":ballot_box:", 771288337532452894, "polls"],
+        "asylum":[":exploding_head:", 771288349406265375, "asylum"]
     }
 }
