@@ -28,7 +28,7 @@ class DeveloperTools(commands.Cog):
 
     @commands.command(name='test')
     async def test(self, ctx):
-        await utils.doembed(ctx, 'aname', 'fname', 'fval')
+        await ctx.message.add_reaction(':green_circle:')
 
 
     @commands.command(name="cog", aliases=["cogs"])

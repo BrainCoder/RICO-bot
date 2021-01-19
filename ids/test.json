@@ -5,6 +5,7 @@
     "memberCommandThreshold": 72,
     "websiteBlacklistFilePath":"resources/website-blacklist.txt",
     "gitlabName":"HellHound0066/noporn-companion",
+    "invite":"https://discord.gg/RsqYVvmX",
     "prefix":"!",
     "streakRoles":{
         "1":798698943600132145,
@@ -40,6 +41,21 @@
         "deadpool-participant":798698943600132141,
         "deadpool-winner":798698943600132142
     },
+    "modeRoles":{
+        "classicmode":798698943596462082,
+        "hardmode":798698943596462083,
+        "monkmode":798698943596462084,
+        "anon-streak":798698943600132144
+    },
+    "otherRoles":{
+        "helper":798698943588204606,
+        "cavemanmode":798698943575883831,
+        "book-club":798698943583748135,
+        "retention":798698943583748132,
+        "virgin":798698943583748127,
+        "support-group":798698943588204605,
+        "urge-killer":798698943583748128
+    },
     "genderRoles":{
         "male":798698943596462081,
         "female":798698943588204613
@@ -59,14 +75,14 @@
         "europe":798698943575883826,
         "oceania":798698943570903046
     },
-    "otherRoles":{
-        "helper":798698943588204606,
-        "cavemanmode":798698943575883831,
-        "book-club":798698943583748135,
-        "retention":798698943583748132,
-        "virgin":798698943583748127,
-        "support-group":798698943588204605,
-        "productivity":798698943583748134
+    "hobbies":{
+        "hydrator": 798698943583748129,
+        "productivity": 798698943583748134,
+        "book-club": 798698943583748135,
+        "fitness": 798698943583748131,
+        "chess": 798698943575883835,
+        "discussions": 798698943583748133,
+        "relationships":798698943583748130 
     },
     "statusRoles":{
         "bc-facilitator":798698943616647171,
@@ -82,11 +98,11 @@
         "boost-vip":613518541127286806,
         "bot-role":798698943570903045
     },
-    "modeRoles":{
-        "classicmode":798698943596462082,
-        "hardmode":798698943596462083,
-        "monkmode":798698943596462084,
-        "anon-streak":798698943600132144
+    "misc":{
+        "memes":798698943583748126,
+        "media":798698943575883833,
+        "polls":798698943575883834,
+        "asylum":798698943575883832
     },
     "channels":{
         "development":798698943620972583,

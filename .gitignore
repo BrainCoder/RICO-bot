@@ -1,6 +1,7 @@
 .vscode
-resources/*
 __pycache__/
 .idea/*
 ecosystem.config.js
 cogs/__pycache__/*
+
+resources/*.txt
