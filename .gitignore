@@ -1,6 +1,5 @@
 .vscode
 __pycache__/
-ids/test.json
 .idea/*
 ecosystem.config.js
 cogs/__pycache__/*
