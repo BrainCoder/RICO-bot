@@ -28,6 +28,7 @@ class reactroles(commands.Cog):
     @commands.has_any_role(
         settings.config["staffRoles"]["developer"])
     async def rr_autocreate(self, ctx):
+        await ctx.channel.purge(limit=300)
         for key in self.obj:
             if key == "streakGuide":
                 await self.build_streakGuide(ctx, key)
@@ -62,7 +63,6 @@ class reactroles(commands.Cog):
 
         for sub_k in self.obj[key]:
             emoji = self.obj[key][sub_k][0]
-            print(emoji)
             await message.add_reaction(emoji)
 
     async def build_embed(self, ctx):
@@ -72,25 +72,26 @@ class reactroles(commands.Cog):
 
     @Cog.listener()
     async def on_raw_reaction_add(self, payload):
-        await self.reaction(self, payload=payload, r_type='add')
+        await self.reaction(payload=payload, r_type='add')
 
     @Cog.listener()
     async def on_raw_reaction_remove(self, payload):
-        await self.reaction(self, payload=payload, r_type='remove')
+        await self.reaction(payload=payload, r_type='remove')
 
     async def reaction(self, payload, r_type=None):
-        raw_data = self.build_raw(self.obj)
-        for entry in raw_data:
-            if payload.channel_id == settings.config["channels"]["streak-guide"] or settings.config["channels"]["roles"]:
+        if payload.channel_id == settings.config["channels"]["streak-guide"] or settings.config["channels"]["roles"]:
+            if payload.user_id != settings.config["botId"]:
+                raw_data = self.build_raw()
                 for entry in raw_data:
-                    if payload.emoji.name == entry[1]:
+                    if payload.emoji.name == entry[0]:
+                        print('1')
                         guild = self.client.get_guild(settings.config["serverId"])
                         user = guild.get_member(payload.user_id)
-                        role = discord.utils.get(guild.roles, id=entry[2])
+                        role = guild.get_role(entry[1])
                         if r_type == 'remove':
-                            await user.remove_role(role)
+                            await user.remove_roles(role)
                         if r_type == 'add':
-                            await user.add_role(role)
+                            await user.add_roles(role)
 
 
 def setup(client):
