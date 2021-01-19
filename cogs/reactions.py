@@ -79,7 +79,7 @@ class reactroles(commands.Cog):
         string = string + "​"
         embed.add_field(name="Pick one of these", value=string, inline=False)
         if key == "Utility":
-            embed.add_field(name="Please Note", value="It is against server rules to troll or harras member when they are seeking help, this is refrenced in rule 4", inline=False)
+            embed.add_field(name="Please Note", value="It is against server rules to troll or harras member when they are seeking help, this is refrenced in rule 4.", inline=False)
         elif key == "Gender":
             embed.add_field(name="Please Note", value="It is against server rules to take the wrong gender role, regardlles of the reason, this is refrenced in rule 12.", inline=False)
         elif key == "Religion":
@@ -89,7 +89,7 @@ class reactroles(commands.Cog):
         elif key == "Hobbies":
             embed.add_field(name="Please Note", value="The fitness channel holds a weekly event called physique Friday. During this time, certain members could be exposed to triggering material. If this personally affects you, it is the staff team’s recommendation that you do not take the fitness role.", inline=False)
         elif key == "Misc":
-            embed.add_field(name="Please Note", value="Be self-aware of what you say and the content you post inside the mems channel, due to Discord TOS", inline=False)
+            embed.add_field(name="Please Note", value="Be self-aware of what you say and the content you post inside the memes channel, due to Discord TOS.", inline=False)
         message = await self.rolesc.send(embed=embed)
         await self.add_emoji(message, key)
 
@@ -118,10 +118,8 @@ class reactroles(commands.Cog):
                         role = guild.get_role(entry[1])
                         if r_type == 'remove':
                             await user.remove_roles(role)
-                            print('removed')
                         if r_type == 'add':
                             await user.add_roles(role)
-                            print('added')
 
 
 def setup(client):
