@@ -3,9 +3,8 @@ from discord.ext import commands
 from discord.ext.commands import Cog
 
 import settings
-import json
 
-import utils
+from resources.reactRoles import r_dict
 
 
 class reactroles(commands.Cog):
@@ -13,17 +12,14 @@ class reactroles(commands.Cog):
     def __init__(self, client):
         self.client = client
         self._last_member = None
-        self.obj = self.getJson("resources/reactRoles.json")
+        self.obj = r_dict
 
-    def getJson(self, path):
-        with open(path, 'r') as fp:
-            return json.load(fp)
 
-    def build_raw(self, obj):
+    def build_raw(self):
         raw_dict = []
-        for key in obj:
-            for sub_k in obj[key]:
-                raw_dict.append(obj[key][sub_k])
+        for key in self.obj:
+            for sub_k in self.obj[key]:
+                raw_dict.append(self.obj[key][sub_k])
         return raw_dict
 
     # Embed builder
@@ -69,7 +65,6 @@ class reactroles(commands.Cog):
             print(emoji)
             await message.add_reaction(emoji)
 
-
     async def build_embed(self, ctx):
         pass
 
@@ -77,7 +72,7 @@ class reactroles(commands.Cog):
 
     @Cog.listener()
     async def on_raw_reaction_add(self, payload):
-        await reactroles.reaction(self, payload=payload, r_type='add')
+        await self.reaction(self, payload=payload, r_type='add')
 
     @Cog.listener()
     async def on_raw_reaction_remove(self, payload):
