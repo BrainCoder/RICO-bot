@@ -11,7 +11,7 @@ r_dict = {
         "AnonStreak": ["🕵", settings.config["modeRoles"]["anon-streak"],
             "Assigns you the anon-streak role, this allows you to keep your current streak secret"]
     },
-    "utilityRoles": {
+    "Utility": {
         "helper": ["🆘", settings.config["otherRoles"]["helper"]],
         "supportGroup": ["⚕", settings.config["otherRoles"]["support-group"]],
         "urgeKiller": ["🪳", settings.config["otherRoles"]["urge-killer"]],
@@ -19,17 +19,17 @@ r_dict = {
         "caveman": ["📵", settings.config["otherRoles"]["cavemanmode"]],
         "retention": ["⚓", settings.config["otherRoles"]["retention"]]
     },
-    "gender": {
+    "Gender": {
         "male": ["♂", settings.config["genderRoles"]["male"]],
         "female": ["♀", settings.config["genderRoles"]["female"]]
     },
-    "religion": {
+    "Religion": {
         "islam": ["☪", settings.config["religionRoles"]["islam"]],
         "christianity": ["✝", settings.config["religionRoles"]["christianity"]],
         "judaism": ["✡", settings.config["religionRoles"]["judaism"]],
         "else": ["♾", settings.config["religionRoles"]["religious-else"]]
     },
-    "location": {
+    "Location": {
         "antarctica": ["🇦🇶", settings.config["continentRoles"]["antarctica"]],
         "oceania": ["🇦🇺", settings.config["continentRoles"]["oceania"]],
         "north-america": ["🇺🇸", settings.config["continentRoles"]["north-america"]],
@@ -38,7 +38,7 @@ r_dict = {
         "africa": ["🇿🇦", settings.config["continentRoles"]["africa"]],
         "asia": ["🇨🇳", settings.config["continentRoles"]["asia"]]
     },
-    "hobbies": {
+    "Hobbies": {
         "hydrator": ["💧", settings.config["hobbies"]["hydrator"]],
         "productivity": ["✍", settings.config["hobbies"]["productivity"]],
         "book-club": ["📚", settings.config["hobbies"]["book-club"]],
@@ -47,7 +47,7 @@ r_dict = {
         "discussions": ["🗣", settings.config["hobbies"]["discussions"]],
         "relationships": ["💑", settings.config["hobbies"]["relationships"]]
     },
-    "misc": {
+    "Misc": {
         "memes": ["🚽", settings.config["misc"]["memes"]],
         "media": ["🗞", settings.config["misc"]["media"]],
         "polls": ["🗳", settings.config["misc"]["polls"]],

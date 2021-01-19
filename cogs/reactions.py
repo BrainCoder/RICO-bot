@@ -13,6 +13,8 @@ class reactroles(commands.Cog):
         self.client = client
         self._last_member = None
         self.obj = r_dict
+        self.sguide = self.client.get_channel(settings.config["channels"]["streak-guide"])
+        self.rolesc = self.client.get_channel(settings.config["channels"]["roles"])
 
 
     def build_raw(self):
@@ -28,18 +30,14 @@ class reactroles(commands.Cog):
     @commands.has_any_role(
         settings.config["staffRoles"]["developer"])
     async def rr_autocreate(self, ctx):
-        await ctx.channel.purge(limit=300)
-        for key in self.obj:
-            if key == "streakGuide":
-                await self.build_streakGuide(ctx, key)
-            else:
-                await self.build_embed(ctx)
 
-    async def build_streakGuide(self, ctx, key):
-        channel = ctx.guild.get_channel(settings.config["channels"]["streak-guide"])
+        # purge previous messages
+        await self.sguide.purge(limit=300)
+        await self.rolesc.purge(limit=300)
 
-        # info message
-        embed = discord.Embed(title="React Roles", url="https://www.youtube.com/watch?v=dvWxtXgCD0Q", color=0x00dcff,
+        # add intro messages
+
+        embed = discord.Embed(title="Streak Guide", url="https://www.youtube.com/watch?v=dvWxtXgCD0Q", color=0x00dcff,
             description=f"This channel explains and highlights how to start and maintain your streak. To interact with the bot, both \
                 covertly and overtly type all relevant commands in <#{settings.config['channels']['streaks']}>\n​")
         embed.set_author(name="NoPorn", url="https://discord.gg/CFR9bt", icon_url="https://cdn.discordapp.com/icons/519330541720436736/a_2bdbaecdd90c85cdc8e9108d8a8c5907.png?size=128")
@@ -49,7 +47,26 @@ class reactroles(commands.Cog):
                 following arguments to the end of the !relapse command. \n\n```!relapse <DAY COUNT>\n!relapse <DAY COUNT> <HOUR COUNT>```\n \
                 To update your streak, type !update in your preferred streak channel.", inline=False)
         embed.set_footer(text="NoPorn Companion was made by the NoPorn development team, please DM the bot for more information")
-        await channel.send(embed=embed)
+        await self.sguide.send(embed=embed)
+
+        mod_role = ctx.guild.get_role(settings.config["staffRoles"]["moderator"])
+        embed = discord.Embed(title="Roles & Access", url="https://www.youtube.com/watch?v=hv-ODnbbP7U", color=0x00dcff)
+        embed.set_author(name='NoPorn', url="https://discord.gg/CFR9bt", icon_url="https://cdn.discordapp.com/icons/519330541720436736/a_2bdbaecdd90c85cdc8e9108d8a8c5907.png?size=128")
+        embed.add_field(name='Getting your roles',
+            value=f"Welcome to the Roles & Access channel. This is where you grab all relevant roles that caters to your interests. If you have any questions, please ping a {mod_role.mention}.\n \
+        \nTo claim your role, simply react with the corresponding emoji.")
+        embed.set_footer(text="NoPorn Companion was made by the NoPorn development team, please DM the bot for more information")
+        await self.rolesc.send(embed=embed)
+
+        # add roles roles embeds
+
+        for key in self.obj:
+            if key == "streakGuide":
+                await self.build_streakGuide(ctx, key)
+            else:
+                await self.build_embed(ctx, key)
+
+    async def build_streakGuide(self, ctx, key):
 
         # roles message
         embed = discord.Embed(title="Modes and Roles", color=0x00faa8)
@@ -57,7 +74,7 @@ class reactroles(commands.Cog):
         for sub_k in self.obj[key]:
             embed.add_field(name=f'{self.obj[key][sub_k][0]} - {sub_k}', value=self.obj[key][sub_k][2], inline=False)
         embed.set_footer(text="It is against server rules to harass/intimidate other users based on streak length or streak roles. We politely ask you to respect how other users intend to pursue their NoFap journey.")
-        message = await channel.send(embed=embed)
+        message = await self.sguide.send(embed=embed)
 
         # add reactions
 
@@ -65,8 +82,37 @@ class reactroles(commands.Cog):
             emoji = self.obj[key][sub_k][0]
             await message.add_reaction(emoji)
 
-    async def build_embed(self, ctx):
-        pass
+    async def build_embed(self, ctx, key):
+
+        # roles message
+
+        string = ""
+        embed = discord.Embed(title=key, url="https://pngimg.com/uploads/trollface/trollface_PNG31.png", color=0x00faa8)
+        embed.set_author(name="NoPorn", url="https://discord.gg/CFR9bt", icon_url="https://cdn.discordapp.com/icons/519330541720436736/a_2bdbaecdd90c85cdc8e9108d8a8c5907.png?size=128")
+        for sub_k in self.obj[key]:
+            entry = f"{self.obj[key][sub_k][0]} - {sub_k}\n"
+            string = string + entry
+        string = string + "​"
+        embed.add_field(name="Pick one of these", value=string, inline=False)
+        if key == "Utility":
+            embed.add_field(name="Please Note", value="It is against server rules to troll or harras member when they are seeking help, this is refrenced in rule 4", inline=False)
+        elif key == "Gender":
+            embed.add_field(name="Please Note", value="It is against server rules to take the wrong gender role, regardlles of the reason, this is refrenced in rule 12.", inline=False)
+        elif key == "Religion":
+            embed.add_field(name="Please Note", value="While it is not against server rules to take roles of a religion of which you do not subscribe, we poltiely ask if you do please respect the beleifs of the users of that relgions channel.", inline=False)
+        elif key == "Location":
+            embed.add_field(name="Please Note", value="It is against the server rules to harass and intimidate other users based on their country of origin (Rule 8). Please do not attack another user based on the roles they adopt.", inline=False)
+        elif key == "Hobbies":
+            embed.add_field(name="Please Note", value="The fitness channel holds a weekly event called physique Friday. During this time, certain members could be exposed to triggering material. If this personally affects you, it is the staff team’s recommendation that you do not take the fitness role.", inline=False)
+        elif key == "Misc":
+            embed.add_field(name="Please Note", value="Be self-aware of what you say and the content you post inside the mems channel, due to Discord TOS", inline=False)
+        message = await self.rolesc.send(embed=embed)
+
+        # add reactions
+
+        for sub_k in self.obj[key]:
+            emoji = self.obj[key][sub_k][0]
+            await message.add_reaction(emoji)
 
     # Emoji toggle detection
 
