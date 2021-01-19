@@ -6,7 +6,7 @@
     "websiteBlacklistFilePath":"resources/website-blacklist.txt",
     "gitlabName":"HellHound0066/noporn-companion",
     "invite":"https://discord.gg/gsJFypED",
-    "prefix":"!",
+    "prefix":">>",
     "streakRoles":{
         "1":756719859802308708,
         "3":760411423373000714,
@@ -47,7 +47,7 @@
         "monkmode":520920165702172704,
         "anon-streak":763078830352891916
     },
-    "utilityRoles":{
+    "otherRoles":{
         "helper":558231394548056065,
         "cavemanmode":656553241492062218,
         "book-club":698536415146803200,
@@ -111,8 +111,8 @@
         "staff-lounge":526417286219825152,
         "rules":519455164894019584,
         "emergency":547858092021514250,
-        "streak-guide":519627611836776490,
-        "roles-and-access":567283111273037834,
+        "streak-guide":767871942056869938,
+        "roles-and-access":767742624739622932,
         "relationships":567289603632136213,
         "fitness":567289642895015936,
         "books":567289623852613662,
