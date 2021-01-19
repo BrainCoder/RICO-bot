@@ -16,7 +16,6 @@ class reactroles(commands.Cog):
         self.sguide = self.client.get_channel(settings.config["channels"]["streak-guide"])
         self.rolesc = self.client.get_channel(settings.config["channels"]["roles"])
 
-
     def build_raw(self):
         raw_dict = []
         for key in self.obj:
@@ -24,71 +23,55 @@ class reactroles(commands.Cog):
                 raw_dict.append(self.obj[key][sub_k])
         return raw_dict
 
-    # Embed builder
 
     @commands.command(name="rr_autocreate")
     @commands.has_any_role(
         settings.config["staffRoles"]["developer"])
     async def rr_autocreate(self, ctx):
-
-        # purge previous messages
         await self.sguide.purge(limit=300)
         await self.rolesc.purge(limit=300)
-
-        # add intro messages
-
-        embed = discord.Embed(title="Streak Guide", url="https://www.youtube.com/watch?v=dvWxtXgCD0Q", color=0x00dcff,
-            description=f"This channel explains and highlights how to start and maintain your streak. To interact with the bot, both \
-                covertly and overtly type all relevant commands in <#{settings.config['channels']['streaks']}>\n​")
-        embed.set_author(name="NoPorn", url="https://discord.gg/CFR9bt", icon_url="https://cdn.discordapp.com/icons/519330541720436736/a_2bdbaecdd90c85cdc8e9108d8a8c5907.png?size=128")
-        embed.add_field(name="Starting up your streak",
-            value="To start your streak, type !relapse into the appropriate channel. This will start a timer that tracks your NoPMO streak. \
-                This command can also be used to reset your streak if you relapse.  If you already have a NoPMO streak, you can add the \
-                following arguments to the end of the !relapse command. \n\n```!relapse <DAY COUNT>\n!relapse <DAY COUNT> <HOUR COUNT>```\n \
-                To update your streak, type !update in your preferred streak channel.", inline=False)
-        embed.set_footer(text="NoPorn Companion was made by the NoPorn development team, please DM the bot for more information")
-        await self.sguide.send(embed=embed)
-
-        mod_role = ctx.guild.get_role(settings.config["staffRoles"]["moderator"])
-        embed = discord.Embed(title="Roles & Access", url="https://www.youtube.com/watch?v=hv-ODnbbP7U", color=0x00dcff)
-        embed.set_author(name='NoPorn', url="https://discord.gg/CFR9bt", icon_url="https://cdn.discordapp.com/icons/519330541720436736/a_2bdbaecdd90c85cdc8e9108d8a8c5907.png?size=128")
-        embed.add_field(name='Getting your roles',
-            value=f"Welcome to the Roles & Access channel. This is where you grab all relevant roles that caters to your interests. If you have any questions, please ping a {mod_role.mention}.\n \
-        \nTo claim your role, simply react with the corresponding emoji.")
-        embed.set_footer(text="NoPorn Companion was made by the NoPorn development team, please DM the bot for more information")
-        await self.rolesc.send(embed=embed)
-
-        # add roles roles embeds
-
+        await self.intro_message(ctx)
         for key in self.obj:
             if key == "streakGuide":
                 await self.build_streakGuide(ctx, key)
             else:
                 await self.build_embed(ctx, key)
 
-    async def build_streakGuide(self, ctx, key):
+    async def intro_message(self, ctx):
+        embed = discord.Embed(title="Streak Guide", url="https://www.youtube.com/watch?v=dvWxtXgCD0Q", color=0x00dcff,
+            description=f"This channel explains and highlights how to start and maintain your streak. To interact with the bot, both \
+                covertly and overtly type all relevant commands in <#{settings.config['channels']['streaks']}>\n​")
+        embed.set_author(name=ctx.guild.name, url="https://discord.gg/CFR9bt", icon_url=ctx.guild.icon_url)
+        embed.add_field(name="Starting up your streak",
+            value="To start your streak, type !relapse into the appropriate channel. This will start a timer that tracks your NoPMO streak. \
+        This command can also be used to reset your streak if you relapse.  If you already have a NoPMO streak, you can add the \
+        following arguments to the end of the !relapse command. \n\n```!relapse <DAY COUNT>\n!relapse <DAY COUNT> <HOUR COUNT>```\n \
+        To update your streak, type !update in your preferred streak channel.", inline=False)
+        embed.set_footer(text="NoPorn Companion was made by the NoPorn development team, please DM the bot for more information")
+        await self.sguide.send(embed=embed)
 
-        # roles message
+        mod_role = ctx.guild.get_role(settings.config["staffRoles"]["moderator"])
+        embed = discord.Embed(title="Roles & Access", url="https://www.youtube.com/watch?v=hv-ODnbbP7U", color=0x00dcff)
+        embed.set_author(name=ctx.guild.name, url="https://discord.gg/CFR9bt", icon_url=ctx.guild.icon_url)
+        embed.add_field(name='Getting your roles',
+            value=f"Welcome to the Roles & Access channel. This is where you grab all relevant roles that caters to your interests. If you have any questions, please ping a {mod_role.mention}.\n \
+        \nTo claim your role, simply react with the corresponding emoji.")
+        embed.set_footer(text="NoPorn Companion was made by the NoPorn development team, please DM the bot for more information")
+        await self.rolesc.send(embed=embed)
+
+    async def build_streakGuide(self, ctx, key):
         embed = discord.Embed(title="Modes and Roles", color=0x00faa8)
-        embed.set_author(name="NoPorn", url="https://discord.gg/CFR9bt", icon_url="https://cdn.discordapp.com/icons/519330541720436736/a_2bdbaecdd90c85cdc8e9108d8a8c5907.png?size=128")
+        embed.set_author(name=ctx.guild.name, url="https://discord.gg/CFR9bt", icon_url=ctx.guild.icon_url)
         for sub_k in self.obj[key]:
             embed.add_field(name=f'{self.obj[key][sub_k][0]} - {sub_k}', value=self.obj[key][sub_k][2], inline=False)
         embed.set_footer(text="It is against server rules to harass/intimidate other users based on streak length or streak roles. We politely ask you to respect how other users intend to pursue their NoFap journey.")
         message = await self.sguide.send(embed=embed)
-
-        # add reactions
-
-        for sub_k in self.obj[key]:
-            emoji = self.obj[key][sub_k][0]
-            await message.add_reaction(emoji)
+        await self.add_emoji(message, key)
 
     async def build_embed(self, ctx, key):
-
-        # roles message
-
         string = ""
         embed = discord.Embed(title=key, url="https://pngimg.com/uploads/trollface/trollface_PNG31.png", color=0x00faa8)
-        embed.set_author(name="NoPorn", url="https://discord.gg/CFR9bt", icon_url="https://cdn.discordapp.com/icons/519330541720436736/a_2bdbaecdd90c85cdc8e9108d8a8c5907.png?size=128")
+        embed.set_author(name=ctx.guild.name, url="https://discord.gg/CFR9bt", icon_url=ctx.guild.icon_url)
         for sub_k in self.obj[key]:
             entry = f"{self.obj[key][sub_k][0]} - {sub_k}\n"
             string = string + entry
@@ -107,14 +90,13 @@ class reactroles(commands.Cog):
         elif key == "Misc":
             embed.add_field(name="Please Note", value="Be self-aware of what you say and the content you post inside the mems channel, due to Discord TOS", inline=False)
         message = await self.rolesc.send(embed=embed)
+        await self.add_emoji(message, key)
 
-        # add reactions
-
+    async def add_emoji(self, message, key):
         for sub_k in self.obj[key]:
             emoji = self.obj[key][sub_k][0]
             await message.add_reaction(emoji)
 
-    # Emoji toggle detection
 
     @Cog.listener()
     async def on_raw_reaction_add(self, payload):
@@ -130,14 +112,15 @@ class reactroles(commands.Cog):
                 raw_data = self.build_raw()
                 for entry in raw_data:
                     if payload.emoji.name == entry[0]:
-                        print('1')
                         guild = self.client.get_guild(settings.config["serverId"])
                         user = guild.get_member(payload.user_id)
                         role = guild.get_role(entry[1])
                         if r_type == 'remove':
                             await user.remove_roles(role)
+                            print('removed')
                         if r_type == 'add':
                             await user.add_roles(role)
+                            print('added')
 
 
 def setup(client):
