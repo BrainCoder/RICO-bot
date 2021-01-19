@@ -9,6 +9,7 @@ from os.path import isfile, join
 import discord
 from discord.ext import commands
 import re
+import time
 
 
 global engine
@@ -49,7 +50,8 @@ def init():
         Column('member', TINYINT, nullable=0, default=0),
         Column('kicked', TINYINT, nullable=0, default=0),
         Column('banned', TINYINT, nullable=0, default=0),
-        Column('member_activation_date', BIGINT, nullable=False, default=0)
+        Column('member_activation_date', BIGINT, nullable=False, default=0),
+        Column('noperms', TINYINT, nullable=0, default=0)
     )
 
     mod_event_type = Table(
@@ -117,7 +119,7 @@ def readFile(fileName):
     with open(fileName, 'r') as myfile:
         return myfile.read()
 
-async def emoji(ctx, emji):
+async def emoji(ctx, emji='✅'):
     await ctx.message.add_reaction(emji)
 
 async def mod_event_query(recipient_id, event_type, event_time, reason, issuer_id, historical):
@@ -137,21 +139,24 @@ async def doembed(ctx, aname, fname, fval, user, channel=False):
         else:
             await logs_channel.send(embed=embed)
 
-async def in_roles(ctx, searchRole):
-    for role in ctx.author.roles:
-        if role.id == searchRole:
-            return True
-    return False
+async def in_roles(user, searchRole):
+    try:
+        for role in user.roles:
+            if role.id == searchRole:
+                return True
+        return False
+    except:
+        return False
 
-async def is_staff(ctx):
+async def is_staff(user):
     staff_roles = []
-    staff_roles.append(await in_roles(ctx, settings.config["staffRoles"]["admin"]))
-    staff_roles.append(await in_roles(ctx, settings.config["staffRoles"]["head-dev"]))
-    staff_roles.append(await in_roles(ctx, settings.config["staffRoles"]["developer"]))
-    staff_roles.append(await in_roles(ctx, settings.config["staffRoles"]["facilitator"]))
-    staff_roles.append(await in_roles(ctx, settings.config["staffRoles"]["head-moderator"]))
-    staff_roles.append(await in_roles(ctx, settings.config["staffRoles"]["moderator"]))
-    staff_roles.append(await in_roles(ctx, settings.config["staffRoles"]["semi-moderator"]))
+    staff_roles.append(await in_roles(user, settings.config["staffRoles"]["admin"]))
+    staff_roles.append(await in_roles(user, settings.config["staffRoles"]["head-dev"]))
+    staff_roles.append(await in_roles(user, settings.config["staffRoles"]["developer"]))
+    staff_roles.append(await in_roles(user, settings.config["staffRoles"]["facilitator"]))
+    staff_roles.append(await in_roles(user, settings.config["staffRoles"]["head-moderator"]))
+    staff_roles.append(await in_roles(user, settings.config["staffRoles"]["moderator"]))
+    staff_roles.append(await in_roles(user, settings.config["staffRoles"]["semi-moderator"]))
     return True in staff_roles
 
 async def role_pop(ctx, role):
@@ -192,6 +197,12 @@ async def extract_data(file):
     for line in f:
         data.append(line.strip())
     return data
+
+async def convert_from_seconds(input):
+    sec = input
+    ty_res = time.gmtime(sec)
+    res = time.strftime("%H:%M:%S", ty_res)
+    return res
 
 """
 def hasPerms(ctx, requiredLevel):

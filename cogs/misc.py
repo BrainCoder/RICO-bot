@@ -99,7 +99,7 @@ class Extra(commands.Cog):
     @commands.command(name="gfsandwich")
     async def gfsandwich(self, ctx):
         """Evidence that the bot is hounds gf"""
-        hound = await utils.in_roles(ctx, settings.config["staffRoles"]["head-dev"])
+        hound = await utils.in_roles(ctx.author, settings.config["staffRoles"]["head-dev"])
         if not hound:
             await ctx.send('Ur not my dad :c')
         else:
@@ -113,7 +113,7 @@ class Extra(commands.Cog):
         if time is None:
             await ctx.send('Please specify the timer', delete_after=5)
         else:
-            await utils.emoji(ctx, '✅')
+            await utils.emoji(ctx)
             await asyncio.sleep(time)
             await ctx.send(f'{ctx.author.mention}')
 
@@ -140,6 +140,7 @@ class Extra(commands.Cog):
                 # while the incrementer worries about going through the results
                 length_tracker = 0
                 name_list = ""
+                unique_names = []
 
                 # If they have more than 5 name changes, the assumption is that they're a frequent name changer,
                 # and so a larger range of names are looked at.
@@ -148,10 +149,12 @@ class Extra(commands.Cog):
                     incrementing_amount = 5
 
                 for i in range(0, len(result), incrementing_amount):
-                    name_list += result[i][2] + "\n"
-                    length_tracker = length_tracker + 1
-                    if length_tracker > max_length:
-                        break
+                    if result[i][2] not in unique_names:
+                        unique_names.append(result[i][2])
+                        name_list += result[i][2] + "\n"
+                        length_tracker = length_tracker + 1
+                        if length_tracker > max_length:
+                            break
                 return name_list[:-1]
             else:
                 return "No previous usernames have been saved in the database."
