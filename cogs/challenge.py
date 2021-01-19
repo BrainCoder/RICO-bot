@@ -109,12 +109,7 @@ class MonthlyChallenge(commands.Cog):
         signupRole = ctx.guild.get_role(settings.config["challenges"]["deadpool-signup"])
         await ctx.author.add_roles(signupRole)
         await utils.emoji(ctx)
-
-    @commands.command(name="monthlychallenge")
-    async def monthly_signup(self, ctx):
-        signup_role = ctx.guild.get_role(settings.config["challenges"]["monthly-challenge-signup"])
-        await ctx.author.add_roles(signup_role)
-        await utils.emoji(ctx, '✅')
+        
 
 def setup(client):
     client.add_cog(MonthlyChallenge(client))
