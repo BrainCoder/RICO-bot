@@ -42,7 +42,7 @@ class reactroles(commands.Cog):
         embed = discord.Embed(title="Streak Guide", url="https://www.youtube.com/watch?v=dvWxtXgCD0Q", color=0x00dcff,
             description=f"This channel explains and highlights how to start and maintain your streak. To interact with the bot, both \
                 covertly and overtly type all relevant commands in <#{settings.config['channels']['streaks']}>\n​")
-        embed.set_author(name=ctx.guild.name, url= self.invite, icon_url=ctx.guild.icon_url)
+        embed.set_author(name=ctx.guild.name, url=self.invite, icon_url=ctx.guild.icon_url)
         embed.add_field(name="Starting up your streak",
             value="To start your streak, type !relapse into the appropriate channel. This will start a timer that tracks your NoPMO streak. \
         This command can also be used to reset your streak if you relapse.  If you already have a NoPMO streak, you can add the \
@@ -53,7 +53,7 @@ class reactroles(commands.Cog):
 
         mod_role = ctx.guild.get_role(settings.config["staffRoles"]["moderator"])
         embed = discord.Embed(title="Roles & Access", url="https://www.youtube.com/watch?v=hv-ODnbbP7U", color=0x00dcff)
-        embed.set_author(name=ctx.guild.name, url= self.invite, icon_url=ctx.guild.icon_url)
+        embed.set_author(name=ctx.guild.name, url=self.invite, icon_url=ctx.guild.icon_url)
         embed.add_field(name='Getting your roles',
             value=f"Welcome to the Roles & Access channel. This is where you grab all relevant roles that caters to your interests. If you have any questions, please ping a {mod_role.mention}.\n \
         \nTo claim your role, simply react with the corresponding emoji.")
@@ -62,7 +62,7 @@ class reactroles(commands.Cog):
 
     async def build_streakGuide(self, ctx, key):
         embed = discord.Embed(title="Modes and Roles", color=0x00faa8)
-        embed.set_author(name=ctx.guild.name, url= self.invite, icon_url=ctx.guild.icon_url)
+        embed.set_author(name=ctx.guild.name, url=self.invite, icon_url=ctx.guild.icon_url)
         for sub_k in self.obj[key]:
             embed.add_field(name=f'{self.obj[key][sub_k][0]} - {sub_k}', value=self.obj[key][sub_k][2], inline=False)
         embed.set_footer(text="It is against server rules to harass/intimidate other users based on streak length or streak roles. We politely ask you to respect how other users intend to pursue their NoFap journey.")
@@ -72,7 +72,7 @@ class reactroles(commands.Cog):
     async def build_embed(self, ctx, key):
         string = ""
         embed = discord.Embed(title=key, url="https://pngimg.com/uploads/trollface/trollface_PNG31.png", color=0x00faa8)
-        embed.set_author(name=ctx.guild.name, url= self.invite, icon_url=ctx.guild.icon_url)
+        embed.set_author(name=ctx.guild.name, url=self.invite, icon_url=ctx.guild.icon_url)
         for sub_k in self.obj[key]:
             entry = f"{self.obj[key][sub_k][0]} - {sub_k}\n"
             string = string + entry

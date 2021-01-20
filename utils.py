@@ -20,6 +20,7 @@ global mod_event
 global mod_event_type
 global name_change_type
 global name_change_event
+global past_streaks
 
 
 def init():
@@ -31,6 +32,7 @@ def init():
     global mod_event_type
     global name_change_type
     global name_change_event
+    global past_streaks
     engine = create_engine(settings.config["databaseUrl"], echo=True)
     conn = engine.connect()
     meta = MetaData()
@@ -84,6 +86,14 @@ def init():
         Column('previous_name', TEXT, nullable=False),
         Column('change_type', INTEGER, ForeignKey('name_change_type.change_type_id'), nullable=False),
         Column('new_name', TEXT, nullable=False),
+        Column('event_time', DATETIME, nullable=False)
+    )
+
+    past_streaks = Table(
+        'past_streaks', meta,
+        Column('event_id', BIGINT, primary_key=True, nullable=False, autoincrement=True),
+        Column('user_id', BIGINT, ForeignKey("userdata.id"), nullable=False),
+        Column('streak_length', BIGINT, nullable=False),
         Column('event_time', DATETIME, nullable=False)
     )
 
