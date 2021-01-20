@@ -2,7 +2,7 @@ import json
 import settings
 import aiohttp
 from datetime import datetime
-from sqlalchemy import create_engine, MetaData, Table, Column, ForeignKey
+from sqlalchemy import create_engine, MetaData, Table, Column, ForeignKey, update
 from sqlalchemy.dialects.mysql import BIGINT, INTEGER, TEXT, DATETIME, TINYINT
 from os import listdir
 from os.path import isfile, join
@@ -137,6 +137,32 @@ async def mod_event_query(recipient_id, event_type, event_time, reason, issuer_i
         values(recipient_id=recipient_id, event_type=event_type, reason=reason, event_time=event_time,
             issuer_id=issuer_id, historical=historical)
     conn.execute(mod_query)
+
+async def userdata_update_query(id, **kwargs):
+    values = ""
+    columns = [
+        'last_relapse',
+        'usertype',
+        'past_streaks',
+        'points',
+        'lynch_count',
+        'successful_lynch_count',
+        'lynch_expiration_time',
+        'mute',
+        'double_mute',
+        'cooldown',
+        'member',
+        'kicked',
+        'banned',
+        'member_activation_date',
+        'noperms']
+    for ktitle, kdata in kwargs.items():
+        for item in columns:
+            if ktitle == item:
+                values = values + f'{ktitle}={kdata}, '
+    user_data_query = update(userdata).where(userdata.c.id == id) \
+        .values(values)
+    conn.execute(user_data_query)
 
 async def doembed(ctx, aname, fname, fval, user, channel=False):
     if settings.config["prefix"] == '!':
