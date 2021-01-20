@@ -138,30 +138,9 @@ async def mod_event_query(recipient_id, event_type, event_time, reason, issuer_i
             issuer_id=issuer_id, historical=historical)
     conn.execute(mod_query)
 
-async def userdata_update_query(id, **kwargs):
-    values = ""
-    columns = [
-        'last_relapse',
-        'usertype',
-        'past_streaks',
-        'points',
-        'lynch_count',
-        'successful_lynch_count',
-        'lynch_expiration_time',
-        'mute',
-        'double_mute',
-        'cooldown',
-        'member',
-        'kicked',
-        'banned',
-        'member_activation_date',
-        'noperms']
-    for ktitle, kdata in kwargs.items():
-        for item in columns:
-            if ktitle == item:
-                values = values + f'{ktitle}={kdata}, '
+async def userdata_update_query(id, params: dict):
     user_data_query = update(userdata).where(userdata.c.id == id) \
-        .values(values)
+        .values(params)
     conn.execute(user_data_query)
 
 async def doembed(ctx, aname, fname, fval, user, channel=False):

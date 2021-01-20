@@ -156,12 +156,7 @@ class Streak(commands.Cog):
                         past_streaks.append(totalHours)
                     else:
                         past_streaks = [totalHours]
-                    query = (utils.userdata
-                    .update()
-                        .where(utils.userdata.c.id == ctx.author.id)
-                        .values(last_relapse=current_starting_date.timestamp(),
-                                past_streaks=utils.json.dumps(past_streaks)))
-                    utils.conn.execute(query)
+                    await utils.userdata_update_query(ctx.author.id, {'last_relapse': current_starting_date.timestamp(), 'past_streaks': utils.json.dumps(past_streaks)})
                     message = await ctx.channel.send(f'Your streak was {daysStr}{middleStr}{hoursStr} long.')
                     if not Anon:
                         await updateStreakRole(ctx.author, current_starting_date)
@@ -173,11 +168,7 @@ class Streak(commands.Cog):
             if(rows[0]['last_relapse'] is None or total_streak_length <= 60):
                 # If they dont have a previous streak do this
 
-                query = (utils.userdata
-                    .update()
-                .where(utils.userdata.c.id == ctx.author.id)
-                    .values(last_relapse=current_starting_date.timestamp()))
-                utils.conn.execute(query)
+                await utils.userdata_update_query(ctx.author.id, {'last_relapse': current_starting_date.timestamp()})
                 if not Anon:
                     await updateStreakRole(ctx.author, current_starting_date)
                 message = await ctx.channel.send('Streak set successfully.')
@@ -266,11 +257,7 @@ class Streak(commands.Cog):
         elif len(args) >= 2 and int(args[1]) > 24:
             await ctx.channel.send("Please send a value less than or equal to 24 hours")
             return
-        query = (utils.userdata
-                 .update()
-                 .where(utils.userdata.c.id == member.id)
-                 .values(last_relapse=new_starting_date.timestamp()))
-        utils.conn.execute(query)
+        await utils.userdata_update_query(member.id, {'last_relapse': new_starting_date.timestamp()})
         await updateStreakRole(ctx.author, new_starting_date)
         await ctx.channel.send("Streak set successfully.")
 
