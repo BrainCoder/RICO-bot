@@ -98,8 +98,7 @@ class MonthlyChallenge(commands.Cog):
     @commands.command(name='deadpool')
     async def deadpool_signup(self, ctx):
         """Command you use to give yourself the Deadpool Signup role"""
-        user_query = database.userdata.select().where(database.userdata.c.id == ctx.author.id)
-        result = database.conn.execute(user_query).fetchone()
+        result = await database.userdata_select_query(ctx.author.id, False)
         if result[1] is not None and result[1] != 0:
             past_streak_time = datetime.fromtimestamp(result[1])
             if datetime.now() > past_streak_time + timedelta(days=30):

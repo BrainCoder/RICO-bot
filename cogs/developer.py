@@ -155,8 +155,7 @@ class DeveloperTools(commands.Cog):
         new_entries = 0
         current_users = len(database.conn.execute(database.userdata.select()).fetchall())
         for user in ctx.guild.members:
-            query = database.userdata.select().where(database.userdata.c.id == user.id)
-            result = database.conn.execute(query).fetchone()
+            result = await database.userdata_select_query(user.id, False)
             if not result and not user.bot:
                 query = database.userdata.insert(). \
                     values(id=user.id)
@@ -172,8 +171,7 @@ class DeveloperTools(commands.Cog):
         missing_members = []
         for user in ctx.guild.members:
             if not user.bot:
-                query = database.userdata.select().where(database.userdata.c.id == user.id)
-                result = database.conn.execute(query).fetchone()
+                result = await database.userdata_select_query(user.id, False)
                 if result:
                     member_role = ctx.guild.get_role(settings.config["statusRoles"]["member"])
                     if member_role in user.roles and result[11] == 0:

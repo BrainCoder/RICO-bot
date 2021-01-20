@@ -89,14 +89,25 @@ def init():
 
     meta.create_all(engine)
 
+# Userdata
+
+async def userdata_update_query(id, params: dict):
+    user_data_query = update(userdata).where(userdata.c.id == id) \
+        .values(params)
+    conn.execute(user_data_query)
+
+async def userdata_select_query(id, all: bool = True):
+    query = userdata.select().where(userdata.c.id == id)
+    if all:
+        rows = conn.execute(query).fetchall()
+    else:
+        rows = conn.execute(query).fetchone()
+    return rows
+
+# Modevent
 
 async def mod_event_query(recipient_id, event_type, event_time, reason, issuer_id, historical):
     mod_query = mod_event.insert(). \
         values(recipient_id=recipient_id, event_type=event_type, reason=reason, event_time=event_time,
             issuer_id=issuer_id, historical=historical)
     conn.execute(mod_query)
-
-async def userdata_update_query(id, params: dict):
-    user_data_query = update(userdata).where(userdata.c.id == id) \
-        .values(params)
-    conn.execute(user_data_query)

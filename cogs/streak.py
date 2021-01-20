@@ -93,24 +93,16 @@ class Streak(commands.Cog):
     @commands.cooldown(3, 60, commands.BucketType.user)
     async def relapse(self, ctx, *args):
         """resets the users streak to day 0"""
-
-        # Challenges
         Anon = await utils.in_roles(ctx.author, settings.config["modeRoles"]["anon-streak"])
-        mChal = await utils.in_roles(ctx.author, settings.config["challenges"]["monthly-challenge-participant"])
-        yChal = await utils.in_roles(ctx.author, settings.config["challenges"]["yearly-challenge-participant"])
-        dPool = await utils.in_roles(ctx.author, settings.config["challenges"]["deadpool-participant"])
         if Anon:
             await ctx.message.delete()
             await removeStreakRoles(ctx.author)
-        if mChal:
+        if await utils.in_roles(ctx.author, settings.config["challenges"]["monthly-challenge-participant"]):
             await challenge(ctx, settings.config["challenges"]["monthly-challenge-participant"])
-        if yChal:
+        if await utils.in_roles(ctx.author, settings.config["challenges"]["yearly-challenge-participant"]):
             await challenge(ctx, settings.config["challenges"]["yearly-challenge-participant"])
-        if dPool:
+        if await utils.in_roles(ctx.author, settings.config["challenges"]["deadpool-participant"]):
             await challenge(ctx, settings.config["challenges"]["deadpool-participant"])
-
-        # Decodes the args
-
         maxDays = 365 * 10
         n_days = 0
         n_hours = 0
@@ -133,61 +125,34 @@ class Streak(commands.Cog):
             if Anon:
                 await delayed_delete(message)
             return
-
-
-        # Update userdata table
-
         current_starting_date = datetime.today() - timedelta(days=n_days, hours=n_hours)
-        query = database.userdata.select().where(database.userdata.c.id == ctx.author.id)
-        rows = database.conn.execute(query).fetchall()
-
-        if(len(rows)):
-            # If they are in the database do this
-
-            if(rows[0]['last_relapse'] is not None):
-                # If they have a previous streak do this
-
-                last_starting_date = utils.to_dt(rows[0]['last_relapse'])
-                total_streak_length = (current_starting_date - last_starting_date).total_seconds()
-                if total_streak_length > 60:
-                    [daysStr, middleStr, hoursStr] = getStreakString(total_streak_length)
-                    totalHours, _ = divmod(total_streak_length, 60*60)
-                    if(rows[0]['past_streaks'] is not None):
-                        past_streaks = utils.json.loads(rows[0]['past_streaks'])
-                        past_streaks.append(totalHours)
-                    else:
-                        past_streaks = [totalHours]
-                    await database.userdata_update_query(ctx.author.id, {'last_relapse': current_starting_date.timestamp(), 'past_streaks': utils.json.dumps(past_streaks)})
-                    message = await ctx.channel.send(f'Your streak was {daysStr}{middleStr}{hoursStr} long.')
-                    if not Anon:
-                        await updateStreakRole(ctx.author, current_starting_date)
-                        await ctx.send('Don’t be dejected')
-                        await utils.get_emergency_picture(ctx, relapse=True)
-                    if Anon:
-                        await delayed_delete(message)
-
-            if(rows[0]['last_relapse'] is None or total_streak_length <= 60):
-                # If they dont have a previous streak do this
-
-                await database.userdata_update_query(ctx.author.id, {'last_relapse': current_starting_date.timestamp()})
+        rows = await database.userdata_select_query(ctx.author.id)
+        if(rows[0]['last_relapse'] is not None):
+            last_starting_date = utils.to_dt(rows[0]['last_relapse'])
+            total_streak_length = (current_starting_date - last_starting_date).total_seconds()
+            if total_streak_length > 60:
+                [daysStr, middleStr, hoursStr] = getStreakString(total_streak_length)
+                totalHours, _ = divmod(total_streak_length, 60*60)
+                if(rows[0]['past_streaks'] is not None):
+                    past_streaks = utils.json.loads(rows[0]['past_streaks'])
+                    past_streaks.append(totalHours)
+                else:
+                    past_streaks = [totalHours]
+                await database.userdata_update_query(ctx.author.id, {'last_relapse': current_starting_date.timestamp(), 'past_streaks': utils.json.dumps(past_streaks)})
+                message = await ctx.channel.send(f'Your streak was {daysStr}{middleStr}{hoursStr} long.')
                 if not Anon:
                     await updateStreakRole(ctx.author, current_starting_date)
-                message = await ctx.channel.send('Streak set successfully.')
+                    await ctx.send('Don’t be dejected')
+                    await utils.get_emergency_picture(ctx, relapse=True)
                 if Anon:
                     await delayed_delete(message)
-
-        else:
-            # If they are not in the database do this
-
-            query = database.userdata.insert().values(id=ctx.author.id,
-                    last_relapse=current_starting_date.timestamp())
-            database.conn.execute(query)
+        if(rows[0]['last_relapse'] is None or total_streak_length <= 60):
+            await database.userdata_update_query(ctx.author.id, {'last_relapse': current_starting_date.timestamp()})
             if not Anon:
                 await updateStreakRole(ctx.author, current_starting_date)
             message = await ctx.channel.send('Streak set successfully.')
             if Anon:
                 await delayed_delete(message)
-
     @relapse.error
     async def relapse_handler(self, ctx, error):
         if isinstance(error, commands.CheckFailure):
@@ -209,8 +174,7 @@ class Streak(commands.Cog):
         if Anon:
             await ctx.message.delete()
             await removeStreakRoles(ctx.author)
-        query = database.userdata.select().where(database.userdata.c.id == ctx.author.id)
-        rows = database.conn.execute(query).fetchall()
+        rows = await database.userdata_select_query(ctx.author.id)
         if(len(rows) and rows[0]['last_relapse'] is not None):
             last_starting_date = utils.to_dt(rows[0]['last_relapse'])
             total_streak_length = (datetime.today() - last_starting_date).total_seconds()
@@ -244,10 +208,8 @@ class Streak(commands.Cog):
 
         Takes the same arguments as if you were to set your streak for the first time in relapse.
         second argument must be less than 24 hours, and a user that is already in the database must be provided."""
-
         if member is None:
             await ctx.channel.send("You need to specify a user.")
-
         new_starting_date = datetime.today()
         if len(args) >= 1:
             n_days = int(args[0])
@@ -261,6 +223,7 @@ class Streak(commands.Cog):
         await database.userdata_update_query(member.id, {'last_relapse': new_starting_date.timestamp()})
         await updateStreakRole(ctx.author, new_starting_date)
         await ctx.channel.send("Streak set successfully.")
+
 
 def setup(client):
     client.add_cog(Streak(client))

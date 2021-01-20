@@ -89,11 +89,6 @@ async def get_emergency_picture(ctx, relapse=False):
             link_decoded = (await response.read()).decode()
             await ctx.send(link_decoded)
 
-"""async def waitThenRun(seconds, fn):
-    await asyncio.sleep(seconds)
-    await fn()
-"""
-
 # Main Streak
 def is_in_streak_channel(ctx):
     return ctx.channel.id == settings.config["channels"]["streaks"]
@@ -118,14 +113,6 @@ async def convert_from_seconds(input):
     ty_res = time.gmtime(sec)
     res = time.strftime("%H:%M:%S", ty_res)
     return res
-
-"""
-def hasPerms(ctx, requiredLevel):
-    for role in idData['streakRoles']:
-        for memberRole in member.roles:
-            if memberRole.id == idData['streakRoles'][role]:
-                return idData['streakRoles'][role]
-"""
 
 idData = {}
 idpath = "./ids/"

@@ -93,8 +93,7 @@ class ModCommands(commands.Cog):
         settings.config["staffRoles"]["semi-moderator"])
     async def memeber(self, ctx, user: discord.Member):
         await self.client.wait_until_ready()
-        user_query = database.userdata.select().where(database.userdata.c.id == user.id)
-        result = database.conn.execute(user_query).fetchone()
+        result = await database.userdata_select_query(user.id, False)
         if result and result[15] != 0:
             mod = await utils.in_roles(ctx.author, settings.config["staffRoles"]["moderator"])
             if mod:
@@ -118,8 +117,7 @@ class ModCommands(commands.Cog):
     async def member(self, ctx, user: discord.Member):
         await self.client.wait_until_ready()
         member_joined_at = user.joined_at
-        user_query = database.userdata.select().where(database.userdata.c.id == user.id)
-        result = database.conn.execute(user_query).fetchone()
+        result = await database.userdata_update_query(user.id, False)
         if result and result[14] != 0:
             member_joined_at = (datetime.fromtimestamp((result[14])) -
                                 timedelta(hours=settings.config["memberUpdateInterval"]))
@@ -412,8 +410,7 @@ class ModCommands(commands.Cog):
         elif ctx.author == member:
             await ctx.channel.send("You can't lynch yourself!")
             return
-        query = database.userdata.select().where(database.userdata.c.id == member.id)
-        result = database.conn.execute(query).fetchone()
+        result = database.userdata_select_query(member.id, False)
         if result:
             current_lynches = result[5] + 1
             if datetime.now() > (datetime.fromtimestamp(result[7]) + timedelta(hours=8)):

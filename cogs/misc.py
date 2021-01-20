@@ -66,8 +66,7 @@ class Extra(commands.Cog):
         if member is None:
             member = ctx.author
         member_joined_at = member.joined_at.strftime("%A, %B %d %Y at %H:%M:%S %p")
-        user_query = database.userdata.select().where(database.userdata.c.id == member.id)
-        result = database.conn.execute(user_query).fetchone()
+        result = await database.userdata_select_query(member.id, False)
         if result and result[14] != 0:
             member_joined_at = (datetime.fromtimestamp((result[14])) -
                                 timedelta(hours=settings.config["memberUpdateInterval"])) \
