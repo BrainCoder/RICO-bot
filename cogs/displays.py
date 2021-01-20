@@ -1,6 +1,7 @@
+import utils
+
 import discord
 import settings
-import utils
 from discord.ext import commands
 
 

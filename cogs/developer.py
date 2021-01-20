@@ -1,3 +1,6 @@
+import utils
+import database
+
 import os
 import gitlab
 import re
@@ -9,8 +12,6 @@ from discord import File
 from discord.ext import commands
 from sqlalchemy import update
 from re import search
-
-import utils
 
 class DeveloperTools(commands.Cog):
 
@@ -152,16 +153,16 @@ class DeveloperTools(commands.Cog):
 
     async def vi_db(self, ctx):
         new_entries = 0
-        current_users = len(utils.conn.execute(utils.userdata.select()).fetchall())
+        current_users = len(database.conn.execute(database.userdata.select()).fetchall())
         for user in ctx.guild.members:
-            query = utils.userdata.select().where(utils.userdata.c.id == user.id)
-            result = utils.conn.execute(query).fetchone()
+            query = database.userdata.select().where(database.userdata.c.id == user.id)
+            result = database.conn.execute(query).fetchone()
             if not result and not user.bot:
-                query = utils.userdata.insert(). \
+                query = database.userdata.insert(). \
                     values(id=user.id)
-                utils.conn.execute(query)
+                database.conn.execute(query)
                 new_entries += 1
-        new_count = len(utils.conn.execute(utils.userdata.select()).fetchall())
+        new_count = len(database.conn.execute(database.userdata.select()).fetchall())
         await ctx.channel.send("The old amount of users was " + str(current_users) + \
                             "\nThe new amount of users is " + str(new_count))
 
@@ -171,19 +172,19 @@ class DeveloperTools(commands.Cog):
         missing_members = []
         for user in ctx.guild.members:
             if not user.bot:
-                query = utils.userdata.select().where(utils.userdata.c.id == user.id)
-                result = utils.conn.execute(query).fetchone()
+                query = database.userdata.select().where(database.userdata.c.id == user.id)
+                result = database.conn.execute(query).fetchone()
                 if result:
                     member_role = ctx.guild.get_role(settings.config["statusRoles"]["member"])
                     if member_role in user.roles and result[11] == 0:
-                        user_data_query = update(utils.userdata).where(utils.userdata.c.id == user.id) \
+                        user_data_query = update(database.userdata).where(database.userdata.c.id == user.id) \
                             .values(member=1)
-                        utils.conn.execute(user_data_query)
+                        database.conn.execute(user_data_query)
                         members_added.append(user.name)
                     elif member_role not in user.roles and result[11] == 1:
-                        user_data_query = update(utils.userdata).where(utils.userdata.c.id == user.id) \
+                        user_data_query = update(database.userdata).where(database.userdata.c.id == user.id) \
                             .values(member=0)
-                        utils.conn.execute(user_data_query)
+                        database.conn.execute(user_data_query)
                         members_lost.append(user.name)
                 else:
                     missing_members.append(user.name)

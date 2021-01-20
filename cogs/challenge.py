@@ -1,6 +1,8 @@
+import utils
+import database
+
 from discord.ext import commands
 import settings
-import utils
 import sys
 import traceback
 from datetime import datetime, timedelta
@@ -96,8 +98,8 @@ class MonthlyChallenge(commands.Cog):
     @commands.command(name='deadpool')
     async def deadpool_signup(self, ctx):
         """Command you use to give yourself the Deadpool Signup role"""
-        user_query = utils.userdata.select().where(utils.userdata.c.id == ctx.author.id)
-        result = utils.conn.execute(user_query).fetchone()
+        user_query = database.userdata.select().where(database.userdata.c.id == ctx.author.id)
+        result = database.conn.execute(user_query).fetchone()
         if result[1] is not None and result[1] != 0:
             past_streak_time = datetime.fromtimestamp(result[1])
             if datetime.now() > past_streak_time + timedelta(days=30):
@@ -108,8 +110,8 @@ class MonthlyChallenge(commands.Cog):
             return
         signupRole = ctx.guild.get_role(settings.config["challenges"]["deadpool-signup"])
         await ctx.author.add_roles(signupRole)
-        await utils.emoji(ctx)
-        
+        await database.emoji(ctx)
+
 
 def setup(client):
     client.add_cog(MonthlyChallenge(client))
