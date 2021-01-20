@@ -86,11 +86,14 @@ class Streak(commands.Cog):
         self.client = client
         self._last_member = None
 
+
     @commands.command(name="relapse")
     @commands.check(utils.is_in_streak_channel)
     @commands.cooldown(3, 60, commands.BucketType.user)
     async def relapse(self, ctx, *args):
         """resets the users streak to day 0"""
+
+        # Challenges
         Anon = await utils.in_roles(ctx.author, settings.config["modeRoles"]["anon-streak"])
         mChal = await utils.in_roles(ctx.author, settings.config["challenges"]["monthly-challenge-participant"])
         yChal = await utils.in_roles(ctx.author, settings.config["challenges"]["yearly-challenge-participant"])
@@ -104,6 +107,9 @@ class Streak(commands.Cog):
             await challenge(ctx, settings.config["challenges"]["yearly-challenge-participant"])
         if dPool:
             await challenge(ctx, settings.config["challenges"]["deadpool-participant"])
+
+        # Decodes the args
+
         maxDays = 365 * 10
         n_days = 0
         n_hours = 0
@@ -126,11 +132,20 @@ class Streak(commands.Cog):
             if Anon:
                 await delayed_delete(message)
             return
+
+
+        # Update userdata table
+
         current_starting_date = datetime.today() - timedelta(days=n_days, hours=n_hours)
         query = utils.userdata.select().where(utils.userdata.c.id == ctx.author.id)
         rows = utils.conn.execute(query).fetchall()
+
         if(len(rows)):
+            # If they are in the database do this
+
             if(rows[0]['last_relapse'] is not None):
+                # If they have a previous streak do this
+
                 last_starting_date = utils.to_dt(rows[0]['last_relapse'])
                 total_streak_length = (current_starting_date - last_starting_date).total_seconds()
                 if total_streak_length > 60:
@@ -154,7 +169,10 @@ class Streak(commands.Cog):
                         await utils.get_emergency_picture(ctx, relapse=True)
                     if Anon:
                         await delayed_delete(message)
+
             if(rows[0]['last_relapse'] is None or total_streak_length <= 60):
+                # If they dont have a previous streak do this
+
                 query = (utils.userdata
                     .update()
                 .where(utils.userdata.c.id == ctx.author.id)
@@ -165,7 +183,10 @@ class Streak(commands.Cog):
                 message = await ctx.channel.send('Streak set successfully.')
                 if Anon:
                     await delayed_delete(message)
+
         else:
+            # If they are not in the database do this
+
             query = utils.userdata.insert().values(id=ctx.author.id,
                     last_relapse=current_starting_date.timestamp())
             utils.conn.execute(query)
@@ -174,6 +195,7 @@ class Streak(commands.Cog):
             message = await ctx.channel.send('Streak set successfully.')
             if Anon:
                 await delayed_delete(message)
+
     @relapse.error
     async def relapse_handler(self, ctx, error):
         if isinstance(error, commands.CheckFailure):
@@ -184,6 +206,7 @@ class Streak(commands.Cog):
         else:
             print('Ignoring exception in command {}:'.format(ctx.command), file=sys.stderr)
             traceback.print_exception(type(error), error, error.__traceback__, file=sys.stderr)
+
 
     @commands.command(name="update")
     @commands.check(utils.is_in_streak_channel)
