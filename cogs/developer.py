@@ -45,35 +45,30 @@ class DeveloperTools(commands.Cog):
     @commands.command(name="cog", aliases=["cogs"])
     @commands.has_any_role(
         settings.config["staffRoles"]["developer"])
-    async def cog(self, ctx, action, extension):
+    async def cog(self, ctx, action, *args):
         """Command to manually toggle cogs. For action use either\n**load** - load the cog\n**unload** - unload the cog\n**reload** - reload the cog"""
         devlogs = self.client.get_channel(settings.config["channels"]["devlog"])
-        log = f'{utils.timestr}`{extension}` {action}ed manually'
         prefix = settings.config["prefix"]
-        if action == 'load':
-            self.client.load_extension(f'cogs.{extension}')
-            await utils.emoji(ctx, '✅')
-            if prefix == "!":
-                await devlogs.send(log)
-        elif action == 'unload':
-            if extension == 'cogs':
-                await utils.emoji(ctx, '❌')
+        for arg in args:
+            try:
+                ignore = False
+                if action == 'load':
+                    self.client.load_extension(f'cogs.{arg}')
+                elif action == 'unload':
+                    if arg != 'developer':
+                        self.client.load_extension(f'cogs.{arg}')
+                elif action == 'reload':
+                    self.client.reload_extension(f'cogs.{arg}')
+                else:
+                    await ctx.send(f'{action} is not a valid argument')
+                    ignore = True
+            except commands.errors.ExtensionNotLoaded:
+                await ctx.send(f'{arg} is not a cog')
             else:
-                self.client.unload_extension(f'cogs.{extension}')
-                await utils.emoji(ctx, '✅')
-                if prefix == "!":
+                if prefix == "!" and not ignore:
+                    log = f'{utils.timestr}`{arg}` {action}ed manually'
                     await devlogs.send(log)
-        elif action == 'reload':
-            self.client.unload_extension(f'cogs.{extension}')
-            self.client.load_extension(f'cogs.{extension}')
-            await utils.emoji(ctx, '✅')
-            if prefix == "!":
-                await devlogs.send(log)
-    @cog.error
-    async def cog_handler(self, ctx, error):
-        await utils.emoji(ctx, '❌')
-        print('Ignoring exception in command {}:'.format(ctx.command), file=sys.stderr)
-        traceback.print_exception(type(error), error, error.__traceback__, file=sys.stderr)
+        await utils.emoji(ctx)
 
 
     @commands.command(name="checklist", aliases=['cl'])
