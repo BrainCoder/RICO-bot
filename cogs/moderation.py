@@ -538,13 +538,12 @@ class ModCommands(commands.Cog):
                         timedelta(hours=settings.config["memberUpdateInterval"])):
                     member_role = current_guild.get_role(settings.config["statusRoles"]["member"])
                     await user.add_roles(member_role)
-                    await database.mod_event_insert(user.id, 8, datetime.now(), settings.config["botId"], 0)
+                    await database.mod_event_insert(user.id, 8, datetime.now(), None, settings.config["botId"], 0)
                     await database.userdata_update_query(user.id, {'member': 1})
                     # user_data_query = update(utils.userdata).where(utils.userdata.c.id == result[0]) \
                     #     .values(member_activation_date=0)
                     # utils.conn.execute(user_data_query)
                     # Discuss idea of zeroing out instead so that anomalies don't occur but data will be lost.
-
 
     @Cog.listener()
     async def on_member_update(self, before_user, after_user):
