@@ -1,3 +1,6 @@
+import utils
+import database
+
 import discord
 from discord.ext import commands
 from discord.ext.commands import cooldown
@@ -8,7 +11,6 @@ import settings
 import asyncio
 
 from sqlalchemy import text
-import utils
 
 
 class Extra(commands.Cog):
@@ -64,8 +66,7 @@ class Extra(commands.Cog):
         if member is None:
             member = ctx.author
         member_joined_at = member.joined_at.strftime("%A, %B %d %Y at %H:%M:%S %p")
-        user_query = utils.userdata.select().where(utils.userdata.c.id == member.id)
-        result = utils.conn.execute(user_query).fetchone()
+        result = await database.userdata_select_query(member.id, False)
         if result and result[14] != 0:
             member_joined_at = (datetime.fromtimestamp((result[14])) -
                                 timedelta(hours=settings.config["memberUpdateInterval"])) \
@@ -129,7 +130,7 @@ class Extra(commands.Cog):
 
 
     async def build_username_list(self, member):
-        with utils.engine.connect() as connection:
+        with database.engine.connect() as connection:
             username_query = text(f'select * from np_db.name_change_event where user_id = {member.id}')
             result = connection.execute(username_query).fetchall()
             if result:

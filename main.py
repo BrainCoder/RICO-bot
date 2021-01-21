@@ -1,10 +1,12 @@
+import utils
+import database
+
 import discord
 from discord.ext import commands
 
 import os
 import sys
 import settings
-import utils
 
 if len(sys.argv) < 5:
     print("\nArgs entered incorrectly, please refer to the args wikipage:\n"
@@ -15,7 +17,7 @@ with open(sys.argv[1], 'rt') as conf_file:
     settings.init()
     settings.config = utils.json.load(conf_file)
     settings.config["databaseUrl"] = sys.argv[2]
-    utils.init()
+    database.init()
 
 intents = discord.Intents.all()
 intents.members = True

@@ -1,9 +1,9 @@
+import utils
+
 import discord
 from discord.ext import commands
 import traceback
 import sys
-
-import utils
 
 class ErrorHandler(commands.Cog):
 

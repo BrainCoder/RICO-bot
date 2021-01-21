@@ -1,8 +1,9 @@
+import database
+
 import discord
 from discord.ext import commands
 
 from sqlalchemy import text
-import utils
 import settings
 from tabulate import tabulate
 
@@ -55,7 +56,7 @@ class ModeratorTools(commands.Cog):
             f'from mod_event me '
             f'inner join mod_event_type met on me.event_type = met.mod_type_id where historical = {historical}'
             f' {user_clause} {mod_action_clause} order by me.event_time asc limit 20')
-        results = utils.conn.execute(prior_mute_queries)
+        results = database.conn.execute(prior_mute_queries)
         table = []
 
         await self.extract_table_from_results(results, table, user)
@@ -151,7 +152,7 @@ class ModeratorTools(commands.Cog):
             f'inner join mod_event_type met on me.event_type = met.mod_type_id where me.event_time > '
             f'(date_sub(curdate(), interval 7 day))'
             f' {user_clause} {mod_action_clause} order by me.event_time asc limit 20')
-        results = utils.conn.execute(prior_mute_queries)
+        results = database.conn.execute(prior_mute_queries)
         table = []
 
         await self.extract_table_from_results(results, table, user)
