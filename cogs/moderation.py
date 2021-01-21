@@ -48,6 +48,15 @@ class ModCommands(commands.Cog):
         await database.mod_event_insert(user.id, 8, datetime.now(), None, ctx.author.id, 0)
         await database.userdata_update_query(user.id, {'member': 1})
 
+    async def dm_user(self, ctx, user, content):
+        try:
+            await user.send(content)
+        except discord.errors.Forbidden:
+            await ctx.send('Message could not be delivered because this user has their dms closed')
+            return False
+        else:
+            return True
+
 
     @commands.command(name='d')
     @commands.check(utils.NotInBump)
@@ -313,6 +322,7 @@ class ModCommands(commands.Cog):
             return
         if reason is None:
             reason = "For being a jerk!"
+        await self.dm_user(ctx, member, f'You have been kicked from {ctx.guild.name}.\n\nReason: {reason}\nKicked by:{ctx.author.name}')
         await ctx.guild.kick(member, reason=reason)
         await utils.doembed(ctx, "Kick", f"{member} has been Kicked!", f"**for:** {reason} Kicked by: <@{ctx.author.id}>.", member)
         await database.mod_event_insert(member.id, 2, datetime.now(), reason, ctx.author.id, 0)
@@ -348,6 +358,7 @@ class ModCommands(commands.Cog):
             return
         if reason is None:
             reason = "For being a jerk!"
+        await self.dm_user(ctx, member, f'You have been banned from {ctx.guild.name}.\n\nReason: {reason}\nKicked by:{ctx.author.name}')
         if purge:
             await ctx.guild.ban(member, reason=reason, delete_message_days=1)
         else:
@@ -445,13 +456,15 @@ class ModCommands(commands.Cog):
     @commands.check(utils.is_in_complaint_channel)
     async def dm(self, ctx, member: discord.Member, *, content):
         """messages the given user through the bot"""
-        channel = await member.create_dm()
-        await channel.send(content)
-        await utils.emoji(ctx)
+        succsess = await self.dm_user(ctx, member, content)
+        if succsess:
+            utils.emoji(ctx)
     @dm.error
     async def dm_handler(self, ctx, error):
         if isinstance(error, commands.CheckFailure):
             await utils.emoji(ctx, '❌')
+        if isinstance(error, commands.errors.MissingRequiredArgument):
+            await ctx.send('You cant send an empty message')
         else:
             print('Ignoring exception in command {}:'.format(ctx.command), file=sys.stderr)
             traceback.print_exception(type(error), error, error.__traceback__, file=sys.stderr)
