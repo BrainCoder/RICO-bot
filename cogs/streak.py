@@ -239,5 +239,20 @@ class Streak(commands.Cog):
         await ctx.channel.send("Streak set successfully.")
 
 
+    @commands.command(name="stats")
+    @commands.cooldown(3, 900, commands.BucketType.user)
+    async def ps_stats(self, ctx):
+        rows = await database.past_select_query(ctx.author.id)
+        if rows is not None:
+            streaks = []
+            for row in rows:
+                streaks.append(row[2])
+
+        total_relapses = len(streaks)
+        avg = sum(streaks) / total_relapses
+        highest = max(streaks)
+        await utils.doembed(ctx, 'Past Streaks', 'Stats', f'Total Relapses: {total_relapses}\nHighest streak: {highest}\nAverage Streak: {avg}', ctx.author, True)
+
+
 def setup(client):
     client.add_cog(Streak(client))

@@ -123,3 +123,8 @@ async def past_insert_query(user_id, streak_length):
         event_time=datetime.now()
     )
     conn.execute(query)
+
+async def past_select_query(id):
+    query = past_streaks.select().where(past_streaks.c.user_id == id)
+    rows = conn.execute(query).fetchall()
+    return rows
