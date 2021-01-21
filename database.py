@@ -2,6 +2,8 @@ from sqlalchemy import create_engine, MetaData, Table, Column, ForeignKey, updat
 from sqlalchemy.dialects.mysql import BIGINT, INTEGER, TEXT, DATETIME, TINYINT
 import settings
 
+from datetime import datetime
+
 global engine
 global conn
 global meta
@@ -106,8 +108,18 @@ async def userdata_select_query(id, all: bool = True):
 
 # Modevent
 
-async def mod_event_query(recipient_id, event_type, event_time, reason, issuer_id, historical):
+async def mod_event_insert(recipient_id, event_type, event_time, reason, issuer_id, historical):
     mod_query = mod_event.insert(). \
         values(recipient_id=recipient_id, event_type=event_type, reason=reason, event_time=event_time,
             issuer_id=issuer_id, historical=historical)
     conn.execute(mod_query)
+
+# Past streaks
+
+async def past_insert_query(user_id, streak_length):
+    query = past_streaks.insert().values(
+        user_id=user_id,
+        streak_length=streak_length,
+        event_time=datetime.now()
+    )
+    conn.execute(query)
