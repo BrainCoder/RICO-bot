@@ -103,7 +103,7 @@ class ModCommands(commands.Cog):
     async def memeber(self, ctx, user: discord.Member):
         await self.client.wait_until_ready()
         result = await database.userdata_select_query(user.id, False)
-        if result and result[15] != 0:
+        if result and result[12] != 0:
             mod = await utils.in_roles(ctx.author, settings.config["staffRoles"]["moderator"])
             if mod:
                 await database.userdata_update_query(user.id, {'noperms': 0})
@@ -126,9 +126,9 @@ class ModCommands(commands.Cog):
     async def member(self, ctx, user: discord.Member):
         await self.client.wait_until_ready()
         member_joined_at = user.joined_at
-        result = await database.userdata_update_query(user.id, False)
-        if result and result[14] != 0:
-            member_joined_at = (datetime.fromtimestamp((result[14])) -
+        result = await database.userdata_select_query(user.id, False)
+        if result and result[12] != 0:
+            member_joined_at = (datetime.fromtimestamp((result[12])) -
                                 timedelta(hours=settings.config["memberUpdateInterval"]))
         member_role = ctx.guild.get_role(settings.config["statusRoles"]["member"])
         if member_role in user.roles:
@@ -137,12 +137,12 @@ class ModCommands(commands.Cog):
 
         else:
             if datetime.now() >= (member_joined_at + timedelta(hours=settings.config["memberCommandThreshold"])):
-                if result and result[15] != 1:
+                if result and result[11] != 1:
                     await self.add_member_role(ctx, user, member_role)
                     await utils.emoji(ctx)
                 else:
                     await ctx.send('User current has NoPerms role')
-            elif result[15] == 1:
+            elif result[11] == 1:
                 await ctx.send("User current has NoPerms role")
             else:
                 await ctx.send("User has not been around long enough to be automatically given member.")
@@ -183,10 +183,6 @@ class ModCommands(commands.Cog):
                 await database.mod_event_insert(user.id, 3, datetime.now(), reason, ctx.author.id, 0)
                 await database.userdata_update_query(user.id, {'mute': 1})
                 await utils.emoji(ctx)
-    @mute.error
-    async def on_command_error(self, ctx, error):
-        print('Ignoring exception in command {}:'.format(ctx.command), file=sys.stderr)
-        traceback.print_exception(type(error), error, error.__traceback__, file=sys.stderr)
 
 
     @commands.command(name="vmute", aliases=['vs', 'vstrike'])

@@ -36,10 +36,10 @@ class welcome(commands.Cog):
                     f'You can go to <#{settings.config["channels"]["streak-guide"]}> '
                     f'and <#{settings.config["channels"]["roles-and-access"]}>'
                     f' to see the commands that you can use to assign yourself.')
-                if result[8] == 1: # muted
+                if result[5] == 1: # muted
                     mute_role = member.guild.get_role(settings.config["statusRoles"]["muted"])
                     await member.add_roles(mute_role)
-                elif result[9] == 1: # double-muted
+                elif result[6] == 1: # double-muted
                     double_mute_role = member.guild.get_role(settings.config["statusRoles"]["double-muted"])
                     await member.add_roles(double_mute_role)
 
