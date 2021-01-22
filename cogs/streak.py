@@ -80,7 +80,7 @@ class Streak(commands.Cog):
             channel = ctx.guild.get_channel(settings.config["channels"]["deadpool-challenge"])
             await channel.send(f'Deadpool memebers left: {no}')
 
-    async def delayed_delete(message):
+    async def delayed_delete(self, message):
         await asyncio.sleep(5)
         await message.delete()
 
