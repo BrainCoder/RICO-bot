@@ -68,7 +68,7 @@ class Extra(commands.Cog):
         member_joined_at = member.joined_at.strftime("%A, %B %d %Y at %H:%M:%S %p")
         result = await database.userdata_select_query(member.id, False)
         if result and result[12] != 0:
-            member_joined_at = (datetime.fromtimestamp((result[14])) -
+            member_joined_at = (datetime.fromtimestamp((result[12])) -
                                 timedelta(hours=settings.config["memberUpdateInterval"])) \
                 .strftime("%A, %B %d %Y at %H:%M:%S %p")
         usernames = await self.build_username_list(member)
