@@ -44,7 +44,7 @@ class ModCommands(commands.Cog):
 
     async def add_member_role(self, ctx, user, member_role):
         await user.add_roles(member_role)
-        await database.doembed(ctx, "Member", f"{user} has been given member!", f"Member given by: <@{ctx.author.id}>.", user)
+        await utils.doembed(ctx, "Member", f"{user} has been given member!", f"Member given by: <@{ctx.author.id}>.", user)
         await database.mod_event_insert(user.id, 8, datetime.now(), None, ctx.author.id, 0)
         await database.userdata_update_query(user.id, {'member': 1})
 
