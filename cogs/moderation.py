@@ -7,7 +7,7 @@ from discord.ext import commands, tasks
 from discord.ext.commands import Cog
 
 from re import search
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timedelta
 from better_profanity import profanity
 from sqlalchemy import text
 import settings
@@ -458,7 +458,7 @@ class ModCommands(commands.Cog):
         """messages the given user through the bot"""
         succsess = await self.dm_user(ctx, member, content)
         if succsess:
-            utils.emoji(ctx)
+            await utils.emoji(ctx)
     @dm.error
     async def dm_handler(self, ctx, error):
         if isinstance(error, commands.CheckFailure):
