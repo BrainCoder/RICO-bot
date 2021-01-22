@@ -244,12 +244,15 @@ class Streak(commands.Cog):
         if rows is not None:
             streaks = []
             for row in rows:
-                streaks.append(row[2])
-
+                days = row[2]/24
+                streaks.append(days)
         total_relapses = len(streaks)
-        avg = sum(streaks) / total_relapses
-        highest = max(streaks)
-        await utils.doembed(ctx, 'Past Streaks', 'Stats', f'Total Relapses: {total_relapses}\nHighest streak: {highest}\nAverage Streak: {avg}', ctx.author, True)
+        if total_relapses != 0:
+            avg = sum(streaks) / total_relapses
+            highest = max(streaks)
+            await utils.doembed(ctx, 'Past Streaks', 'Stats', f'Total Relapses: {total_relapses}\nHighest streak: {highest}\nAverage Streak: {avg}', ctx.author, True)
+        else:
+            await ctx.send('There current is no data on your past streaks to calculate statistics for.')
 
 
 def setup(client):
