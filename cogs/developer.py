@@ -27,21 +27,6 @@ class DeveloperTools(commands.Cog):
         self._last_result = None
 
 
-    @commands.command(name='ps_transfer')
-    @commands.has_any_role(
-        settings.config["staffRoles"]["developer"])
-    async def test(self, ctx):
-        query = database.userdata.select()
-        rows = database.conn.execute(query).fetchall()
-
-        for row in rows:
-            past_streaks = row[3]
-            if past_streaks is not None:
-                past_streaks = utils.json.loads(past_streaks)
-                for item in past_streaks:
-                    await database.past_insert_query(row[0], item)
-
-
     @commands.command(name="cog", aliases=["cogs"])
     @commands.has_any_role(
         settings.config["staffRoles"]["developer"])
