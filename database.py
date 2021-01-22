@@ -32,9 +32,6 @@ def init():
         'userdata', meta,
         Column('id', BIGINT, primary_key=True, nullable=False),
         Column('last_relapse', BIGINT),
-        Column('usertype', INTEGER),
-        Column('past_streaks', TEXT),
-        Column('points', BIGINT),
         Column('lynch_count', INTEGER, nullable=False, default=0),
         Column('successful_lynch_count', INTEGER, nullable=False, default=0),
         Column('lynch_expiration_time', BIGINT, nullable=False, default=0),
@@ -44,8 +41,8 @@ def init():
         Column('member', TINYINT, nullable=0, default=0),
         Column('kicked', TINYINT, nullable=0, default=0),
         Column('banned', TINYINT, nullable=0, default=0),
+        Column('noperms', TINYINT, nullable=0, default=0),
         Column('member_activation_date', BIGINT, nullable=False, default=0),
-        Column('noperms', TINYINT, nullable=0, default=0)
     )
 
     mod_event_type = Table(
