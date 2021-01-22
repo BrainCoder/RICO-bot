@@ -554,10 +554,7 @@ class ModCommands(commands.Cog):
                 before = before_user.display_name + '#' + before_user.discriminator
             if after_user.nick is None:
                 after = after_user.display_name + '#' + after_user.discriminator
-            nickname_query = database.name_change_event.insert(). \
-                values(user_id=after_user.id, previous_name=before, change_type=2, new_name=after,
-                   event_time=datetime.now(timezone.utc))
-            database.conn.execute(nickname_query)
+            await database.name_change_event_insert(after_user.id, before, 2, after)
 
 
     @Cog.listener()
@@ -565,10 +562,7 @@ class ModCommands(commands.Cog):
         if before_user.display_name != after_user.display_name or before_user.discriminator != after_user.discriminator:
             before = before_user.display_name + '#' + before_user.discriminator
             after = after_user.display_name + '#' + after_user.discriminator
-            username_query = utils.name_change_event.insert(). \
-                values(user_id=after_user.id, previous_name=before, change_type=1, new_name=after,
-                       event_time=datetime.now(timezone.utc))
-            database.conn.execute(username_query)
+            await database.name_change_event_insert(after_user.id, before, 1, after)
 
 
 def setup(client):

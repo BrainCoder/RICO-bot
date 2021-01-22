@@ -2,7 +2,7 @@ from sqlalchemy import create_engine, MetaData, Table, Column, ForeignKey, updat
 from sqlalchemy.dialects.mysql import BIGINT, INTEGER, TEXT, DATETIME, TINYINT
 import settings
 
-from datetime import datetime
+from datetime import datetime, timezone
 
 global engine
 global conn
@@ -125,3 +125,10 @@ async def past_select_query(id):
     query = past_streaks.select().where(past_streaks.c.user_id == id)
     rows = conn.execute(query).fetchall()
     return rows
+
+# Nickname change event
+
+async def name_change_event_insert(user_id, previous_name, change_type, new_name):
+    username_query = name_change_event.insert(). \
+        values(user_id=user_id, previous_name=previous_name, change_type=change_type, new_name=new_name, event_time=datetime.now(timezone.utc))
+    conn.execute(username_query)
