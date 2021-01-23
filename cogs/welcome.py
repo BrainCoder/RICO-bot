@@ -39,7 +39,7 @@ class welcome(commands.Cog):
                 if result[5] == 1: # muted
                     mute_role = member.guild.get_role(settings.config["statusRoles"]["muted"])
                     await member.add_roles(mute_role)
-                elif result[6] == 1: # double-muted
+                if result[6] == 1: # double-muted
                     double_mute_role = member.guild.get_role(settings.config["statusRoles"]["double-muted"])
                     await member.add_roles(double_mute_role)
 
