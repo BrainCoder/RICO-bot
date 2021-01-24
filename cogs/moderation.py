@@ -37,15 +37,15 @@ class ModCommands(commands.Cog):
         await user.remove_roles(member_role)
         await utils.doembed(ctx, "Member", f"{user} no longer has member!", f"Member taken by: <@{ctx.author.id}>.", user)
         if noperms:
-            await database.mod_event_insert(user.id, 11, datetime.now(), None, ctx.author.id, 0)
+            await database.mod_event_insert(user.id, 11, datetime.utcnow(), None, ctx.author.id, 0)
         else:
-            await database.mod_event_insert(user.id, 9, datetime.now(), None, ctx.author.id, 0)
+            await database.mod_event_insert(user.id, 9, datetime.utcnow(), None, ctx.author.id, 0)
             await database.userdata_update_query(user.id, {'member': 0})
 
     async def add_member_role(self, ctx, user, member_role):
         await user.add_roles(member_role)
         await utils.doembed(ctx, "Member", f"{user} has been given member!", f"Member given by: <@{ctx.author.id}>.", user)
-        await database.mod_event_insert(user.id, 8, datetime.now(), None, ctx.author.id, 0)
+        await database.mod_event_insert(user.id, 8, datetime.utcnow(), None, ctx.author.id, 0)
         await database.userdata_update_query(user.id, {'member': 1})
 
     async def dm_user(self, ctx, user, content):
@@ -107,14 +107,14 @@ class ModCommands(commands.Cog):
             mod = await utils.in_roles(ctx.author, settings.config["staffRoles"]["moderator"])
             if mod:
                 await database.userdata_update_query(user.id, {'noperms': 0})
-                await database.mod_event_insert(user.id, 12, datetime.now(), None, ctx.author.id, 0)
+                await database.mod_event_insert(user.id, 12, datetime.utcnow(), None, ctx.author.id, 0)
                 await utils.emoji(ctx)
             else:
                 await ctx.send("Only moderators and above can remove NoPerms")
         else:
             await self.remove_member_role(ctx, user, ctx.guild.get_role(settings.config["statusRoles"]["member"]))
             await database.userdata_update_query(user.id, {'noperms': 1})
-            await database.mod_event_insert(user.id, 11, datetime.now(), None, ctx.author.id, 0)
+            await database.mod_event_insert(user.id, 11, datetime.utcnow(), None, ctx.author.id, 0)
             await utils.emoji(ctx)
 
 
@@ -136,7 +136,7 @@ class ModCommands(commands.Cog):
             await utils.emoji(ctx)
 
         else:
-            if datetime.now() >= (member_joined_at + timedelta(hours=settings.config["memberCommandThreshold"])):
+            if datetime.utcnow() >= (member_joined_at + timedelta(hours=settings.config["memberCommandThreshold"])):
                 if result and result[11] != 1:
                     await self.add_member_role(ctx, user, member_role)
                     await utils.emoji(ctx)
@@ -171,7 +171,7 @@ class ModCommands(commands.Cog):
             double_role = ctx.guild.get_role(settings.config["statusRoles"]["double-muted"])
             await user.add_roles(double_role)
             await utils.doembed(ctx, "DoubleMute", f"{user} has been Double Muted!", f"Muted by: <@{ctx.author.id}>.", user)
-            await database.mod_event_insert(user.id, 10, datetime.now(), reason, ctx.author.id, 0)
+            await database.mod_event_insert(user.id, 10, datetime.utcnow(), reason, ctx.author.id, 0)
             await database.userdata_update_query(user.id, {'double_mute': 1})
             await utils.emoji(ctx)
         else:
@@ -180,7 +180,7 @@ class ModCommands(commands.Cog):
             else:
                 await user.add_roles(ctx.guild.get_role(settings.config["statusRoles"]["muted"]))
                 await utils.doembed(ctx, "Mute", f"{user} has been Muted!", f"**for:** {reason} Muted by: <@{ctx.author.id}>.", user)
-                await database.mod_event_insert(user.id, 3, datetime.now(), reason, ctx.author.id, 0)
+                await database.mod_event_insert(user.id, 3, datetime.utcnow(), reason, ctx.author.id, 0)
                 await database.userdata_update_query(user.id, {'mute': 1})
                 await utils.emoji(ctx)
 
@@ -220,7 +220,7 @@ class ModCommands(commands.Cog):
             else:
                 await user.add_roles(ctx.guild.get_role(settings.config["statusRoles"]["muted"]))
                 await utils.doembed(ctx, "Mute", f"{user} has been Muted!", f"**for:** {reason} Muted by: <@{ctx.author.id}>.", user)
-                await database.mod_event_insert(user.id, 3, datetime.now(), reason, ctx.author.id, 0)
+                await database.mod_event_insert(user.id, 3, datetime.utcnow(), reason, ctx.author.id, 0)
                 await database.userdata_update_query(user.id, {'mute': 1})
                 await utils.emoji(ctx)
 
@@ -237,7 +237,7 @@ class ModCommands(commands.Cog):
             better_time = await utils.convert_from_seconds(time)
             await user.add_roles(cooldown_role)
             await utils.doembed(ctx, "Cooldown", f'{user} cooled-down by {ctx.author}', f'The cooldown will be removed in {better_time}', user)
-            await database.mod_event_insert(user.id, 5, datetime.now(), None, ctx.author.id, 0)
+            await database.mod_event_insert(user.id, 5, datetime.utcnow(), None, ctx.author.id, 0)
             await database.userdata_update_query(user.id, {'cooldown': 1})
             await asyncio.sleep(time)
             await user.remove_roles(cooldown_role)
@@ -294,13 +294,13 @@ class ModCommands(commands.Cog):
                 await utils.doembed(ctx, "Unmute", f"{user} has been Unmuted!", f"Unmuted by: <@{ctx.author.id}>.", user)
                 if not self_muted:
                     if muted and not double:
-                        await database.mod_event_insert(user.id, 4, datetime.now(), None, ctx.author.id, 0)
+                        await database.mod_event_insert(user.id, 4, datetime.utcnow(), None, ctx.author.id, 0)
                         prior_mute_queries = text(f'update mod_event set historical = 1 where recipient_id = {user.id} '
                                                 f'and event_type = 3 and historical = 0')
                         database.conn.execute(prior_mute_queries)
                         await database.userdata_update_query(user.id, {'mute': 0})
                     else:
-                        await database.mod_event_insert(user.id, 4, datetime.now(), None, ctx.author.id, 0)
+                        await database.mod_event_insert(user.id, 4, datetime.utcnow(), None, ctx.author.id, 0)
                         prior_mute_queries = text(f'update mod_event set historical = 1 where recipient_id = {user.id} '
                                                 f'and event_type = 10 and historical = 0')
                         database.conn.execute(prior_mute_queries)
@@ -321,7 +321,7 @@ class ModCommands(commands.Cog):
         await self.dm_user(ctx, member, f'You have been kicked from {ctx.guild.name}.\n\nReason: {reason}\nKicked by:{ctx.author.name}')
         await ctx.guild.kick(member, reason=reason)
         await utils.doembed(ctx, "Kick", f"{member} has been Kicked!", f"**for:** {reason} Kicked by: <@{ctx.author.id}>.", member)
-        await database.mod_event_insert(member.id, 2, datetime.now(), reason, ctx.author.id, 0)
+        await database.mod_event_insert(member.id, 2, datetime.utcnow(), reason, ctx.author.id, 0)
         await database.userdata_update_query(member.id, {'kicked': 1})
         await utils.emoji(ctx)
 
@@ -360,7 +360,7 @@ class ModCommands(commands.Cog):
         else:
             await ctx.guild.ban(member, reason=reason)
         await utils.doembed(ctx, "Ban", f"{member} has been Banned!", f"**for:** {reason} banned by: <@{ctx.author.id}>.", member)
-        await database.mod_event_insert(member.id, 1, datetime.now(), reason, ctx.author.id, 0)
+        await database.mod_event_insert(member.id, 1, datetime.utcnow(), reason, ctx.author.id, 0)
         await database.update(member.id, {'banned': 1})
         await utils.emoji(ctx)
 
@@ -420,7 +420,7 @@ class ModCommands(commands.Cog):
         result = database.userdata_select_query(member.id, False)
         if result:
             current_lynches = result[5] + 1
-            if datetime.now() > (datetime.fromtimestamp(result[7]) + timedelta(hours=8)):
+            if datetime.utcnow() > (datetime.fromtimestamp(result[7]) + timedelta(hours=8)):
                 current_lynches = 1
                 make_historical_query = text(f'update mod_event set historical = 1 '
                                              f'where recipient_id = {member.id} and event_type = 6')
@@ -431,7 +431,7 @@ class ModCommands(commands.Cog):
                 await database.userdata_update_query(member.id, {'lynch_count': 0, 'successful_lynch_count': successful_lynches + 1, 'lynch_expiration_time': 0})
                 lynch_role = ctx.guild.get_role(settings.config["statusRoles"]["muted"])
                 await member.add_roles(lynch_role)
-                await database.mod_event_insert(member.id, 6, datetime.now(), None, ctx.author.id, 0)
+                await database.mod_event_insert(member.id, 6, datetime.utcnow(), None, ctx.author.id, 0)
                 find_lynches_query = text(f'select issuer_id from mod_event where recipient_id = {member.id} '
                                           f'and event_type = 6 and historical = 0')
                 lynchers = database.conn.execute(find_lynches_query)
@@ -442,8 +442,8 @@ class ModCommands(commands.Cog):
                 await utils.doembed(ctx, "Lynch", f"User {member} was lynched! ", f"lynched by: {lyncher_list}", bot)
             else:
                 await utils.emoji(ctx)
-                await database.update(member.id, {'lynch_count': current_lynches, 'lynch_expiration_time': (datetime.now() + timedelta(hours=8)).timestamp()})
-                await database.mod_event_insert(member.id, 6, datetime.now(), None, ctx.author.id, 0)
+                await database.update(member.id, {'lynch_count': current_lynches, 'lynch_expiration_time': (datetime.utcnow() + timedelta(hours=8)).timestamp()})
+                await database.mod_event_insert(member.id, 6, datetime.utcnow(), None, ctx.author.id, 0)
             member_role = ctx.guild.get_role(settings.config["statusRoles"]["member"])
             await ctx.author.remove_roles(member_role)
 
@@ -515,7 +515,7 @@ class ModCommands(commands.Cog):
             embed.add_field(name=f"{message.author} has been Muted! ", value="muted for mention spamming")
             await self.logs_channel.send(embed=embed)
             reason = 'auto muted for spam pinging'
-            await database.mod_event_insert(message.author.id, 3, datetime.now(), reason, settings.config["botId"], 0)
+            await database.mod_event_insert(message.author.id, 3, datetime.utcnow(), reason, settings.config["botId"], 0)
             await database.update(message.author.id, {'mute': 1})
 
     @tasks.loop(hours=settings.config["memberUpdateInterval"])
@@ -529,12 +529,12 @@ class ModCommands(commands.Cog):
                 user = current_guild.get_member(result[0])
                 if user is not None and \
                     result[1] != 0 and \
-                        (datetime.fromtimestamp(result[1])) < datetime.now() < (
+                        (datetime.fromtimestamp(result[1])) < datetime.utcnow() < (
                         datetime.fromtimestamp(result[1]) +
                         timedelta(hours=settings.config["memberUpdateInterval"])):
                     member_role = current_guild.get_role(settings.config["statusRoles"]["member"])
                     await user.add_roles(member_role)
-                    await database.mod_event_insert(user.id, 8, datetime.now(), None, settings.config["botId"], 0)
+                    await database.mod_event_insert(user.id, 8, datetime.utcnow(), None, settings.config["botId"], 0)
                     await database.userdata_update_query(user.id, {'member': 1})
                     # user_data_query = update(utils.userdata).where(utils.userdata.c.id == result[0]) \
                     #     .values(member_activation_date=0)
