@@ -11,7 +11,7 @@ import time
 
 
 # Devlogs timestamp
-today = datetime.now()
+today = datetime.utcnow()
 ctoday = today.strftime("%d/%m/%Y")
 ctime = today.strftime("%H:%M")
 timestr = f'**[{ctoday}] [{ctime}] -**'

@@ -40,7 +40,7 @@ class Streak(commands.Cog):
                 return utils.idData[serverID]['streakRoles'][role]
 
     async def updateStreakRole(self, member, startingDate):
-        days = (datetime.today() - startingDate).days
+        days = (datetime.utcnow().today() - startingDate).days
         owned = self.getOwnedStreakRole(member)
         deserved = self.getDeservedStreakRole(days, member.guild.id)
         if owned == deserved:
@@ -130,7 +130,7 @@ class Streak(commands.Cog):
             return
 
         # Database update
-        current_starting_date = datetime.today() - timedelta(days=n_days, hours=n_hours)
+        current_starting_date = datetime.utcnow().today() - timedelta(days=n_days, hours=n_hours)
         rows = await database.userdata_select_query(ctx.author.id)
 
         # If they have a previous streak
@@ -188,7 +188,7 @@ class Streak(commands.Cog):
         rows = await database.userdata_select_query(ctx.author.id)
         if(len(rows) and rows[0]['last_relapse'] is not None):
             last_starting_date = utils.to_dt(rows[0]['last_relapse'])
-            total_streak_length = (datetime.today() - last_starting_date).total_seconds()
+            total_streak_length = (datetime.utcnow().today() - last_starting_date).total_seconds()
             [daysStr, middleStr, hoursStr] = self.getStreakString(total_streak_length)
             if not Anon:
                 await self.updateStreakRole(ctx.author, last_starting_date)
@@ -222,7 +222,7 @@ class Streak(commands.Cog):
         second argument must be less than 24 hours, and a user that is already in the database must be provided."""
         if member is None:
             await ctx.channel.send("You need to specify a user.")
-        new_starting_date = datetime.today()
+        new_starting_date = datetime.utcnow().today()
         if len(args) >= 1:
             n_days = int(args[0])
             new_starting_date = new_starting_date - timedelta(days=n_days)

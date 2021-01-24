@@ -26,7 +26,7 @@ class welcome(commands.Cog):
                     f' to see the commands that you can use to assign yourself.')
                 query = database.userdata.insert(). \
                     values(id=member.id,
-                           member_activation_date=int((datetime.now() +
+                           member_activation_date=int((datetime.utcnow() +
                                 timedelta(hours=settings.config["memberUpdateInterval"])).timestamp()))
                 database.conn.execute(query)
             else:
