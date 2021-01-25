@@ -2,7 +2,7 @@ from sqlalchemy import create_engine, MetaData, Table, Column, ForeignKey, updat
 from sqlalchemy.dialects.mysql import BIGINT, INTEGER, TEXT, DATETIME, TINYINT
 import settings
 
-from datetime import datetime, timezone
+from datetime import datetime
 
 global engine
 global conn
@@ -13,6 +13,7 @@ global mod_event_type
 global name_change_type
 global name_change_event
 global past_streaks
+global afk_event
 
 
 def init():
@@ -25,6 +26,7 @@ def init():
     global name_change_type
     global name_change_event
     global past_streaks
+    global afk_event
     engine = create_engine(settings.config["databaseUrl"], echo=True)
     conn = engine.connect()
     meta = MetaData()
@@ -42,6 +44,7 @@ def init():
         Column('kicked', TINYINT, nullable=0, default=0),
         Column('banned', TINYINT, nullable=0, default=0),
         Column('noperms', TINYINT, nullable=0, default=0),
+        Column('afk', TINYINT, nullable=0, default=0),
         Column('member_activation_date', BIGINT, nullable=False, default=0),
     )
 
@@ -86,7 +89,17 @@ def init():
         Column('event_time', DATETIME, nullable=False)
     )
 
+    afk_event = Table(
+        'afk_event', meta,
+        Column('event_id', BIGINT, primary_key=True, nullable=False, autoincrement=True),
+        Column('user_id', BIGINT, ForeignKey("userdata.id"), nullable=False),
+        Column('message', TEXT),
+        Column('username', TEXT, nullable=False),
+        Column('event_time', DATETIME, nullable=False),
+        Column('historical', TINYINT, nullable=False, default=0)
+    )
     meta.create_all(engine)
+
 
 # Userdata
 
@@ -103,6 +116,7 @@ async def userdata_select_query(id, all: bool = True):
         rows = conn.execute(query).fetchone()
     return rows
 
+
 # Modevent
 
 async def mod_event_insert(recipient_id, event_type, event_time, reason, issuer_id, historical):
@@ -110,6 +124,7 @@ async def mod_event_insert(recipient_id, event_type, event_time, reason, issuer_
         values(recipient_id=recipient_id, event_type=event_type, reason=reason, event_time=event_time,
             issuer_id=issuer_id, historical=historical)
     conn.execute(mod_query)
+
 
 # Past streaks
 
@@ -126,9 +141,32 @@ async def past_select_query(id):
     rows = conn.execute(query).fetchall()
     return rows
 
+
 # Nickname change event
 
 async def name_change_event_insert(user_id, previous_name, change_type, new_name):
     username_query = name_change_event.insert(). \
         values(user_id=user_id, previous_name=previous_name, change_type=change_type, new_name=new_name, event_time=datetime.utcnow())
     conn.execute(username_query)
+
+
+# AFK table
+
+async def afk_event_insert(user_id: int, username: str, nickname: int, message: str):
+    afk_event_insert_query = afk_event.insert().values(
+        user_id=user_id,
+        message=message,
+        username=username,
+        nickname=nickname,
+        event_time=datetime.utcnow())
+    conn.execute(afk_event_insert_query)
+
+async def afk_event_update(id):
+    afk_event_update_query = update(afk_event).where(afk_event.c.user_id == id) \
+        .values(historical=1)
+    conn.execute(afk_event_update_query)
+
+async def afk_event_select(id):
+    query = afk_event.select().where(afk_event.c.user_id == id and afk_event.c.historical == 0)
+    rows = conn.execute(query).fetchall()
+    return rows

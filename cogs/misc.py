@@ -3,7 +3,7 @@ import database
 
 import discord
 from discord.ext import commands
-from discord.ext.commands import cooldown
+from discord.ext.commands import cooldown, Cog
 
 from datetime import datetime, timedelta
 import random
@@ -18,6 +18,7 @@ class Extra(commands.Cog):
     def __init__(self, client):
         self.client = client
         self._last_member = None
+
 
     @commands.command(name="8ball", aliases=['8b'])
     @cooldown(1, 60)
@@ -42,17 +43,18 @@ class Extra(commands.Cog):
             'My reply is no',
             'My sources say no',
             'Outlook not so good',
-            'Very doubtful'
-        ]
+            'Very doubtful']
         if '@everyone' in question or '@here' in question:
             await utils.emoji(ctx, '❌')
         else:
             await ctx.send(f' **Question:** {question}\n**Answer:** {random.choice(responses)}')
 
+
     @commands.command(name="dosomething")
     async def dosomething(self, ctx):
         """try it and find out ;)"""
         await ctx.channel.send("*Does your mum*")
+
 
     @commands.command(name="userinfo", aliases=["ui"])
     @commands.has_any_role(
@@ -81,6 +83,7 @@ class Extra(commands.Cog):
         embed.add_field(name="Previous Usernames: ", value=usernames)
         await ctx.send(embed=embed)
 
+
     @commands.command(name="avatar", aliases=["av"])
     @commands.has_any_role(
         settings.config["statusRoles"]["vip"],
@@ -97,6 +100,7 @@ class Extra(commands.Cog):
             userAvatarUrl = avamember.avatar_url
             await ctx.send(f"<@{avamember.id}>s avatar is:\n{userAvatarUrl}")
 
+
     @commands.command(name="gfsandwich")
     async def gfsandwich(self, ctx):
         """Evidence that the bot is hounds gf"""
@@ -105,6 +109,7 @@ class Extra(commands.Cog):
             await ctx.send('Ur not my dad :c')
         else:
             await ctx.send('uwu what kinda of sandwich does daddy want =^.^=', delete_after=5)
+
 
     @commands.command(name="remind", aliases=["remindme"])
     @commands.has_any_role(
@@ -118,10 +123,12 @@ class Extra(commands.Cog):
             await asyncio.sleep(time)
             await ctx.send(f'{ctx.author.mention}')
 
+
     @commands.command(name="emergency", aliases=['m'])
     async def emergency(self, ctx):
         """Gets an emergency link from emergency.nofap.com website."""
         await utils.get_emergency_picture(ctx)
+
 
     @commands.command(name="tip", aliases=["t"])
     async def tip(self, ctx):
@@ -159,6 +166,33 @@ class Extra(commands.Cog):
                 return name_list[:-1]
             else:
                 return "No previous usernames have been saved in the database."
+
+
+    @commands.command(name='afk')
+    async def afk(self, ctx, *, message: str = None):
+        nickname = 0
+        if ctx.author.name == ctx.author.display_name:
+            nickname = 1
+        await database.userdata_update_query(ctx.author.id, {'afk': 1})
+        await database.afk_event_insert(ctx.author.id, ctx.author.display_name, nickname, message)
+        await ctx.author.edit(nick=f'[AFK] {ctx.author.display_name}')
+        await utils.emoji(ctx)
+
+
+    @Cog.listener()
+    async def on_message(self, message):
+        if not await utils.in_roles(message.author, settings.config["statusRoles"]["bot-role"]):
+
+            # Check if user is afk
+
+            result = await database.userdata_select_query(message.author.id)
+            if result[12] == 1:
+
+                # If user is afk remove afk
+
+                await database.userdata_update_query(message.author.id, {'afk': 0})
+                await database.afk_event_update(message.author.id)
+                await message.channel.send(f'{message.author.mention} you are no longer afk')
 
 def setup(client):
     client.add_cog(Extra(client))
