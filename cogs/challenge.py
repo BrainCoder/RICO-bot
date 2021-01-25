@@ -101,7 +101,7 @@ class MonthlyChallenge(commands.Cog):
         result = await database.userdata_select_query(ctx.author.id, False)
         if result[1] is not None and result[1] != 0:
             past_streak_time = datetime.fromtimestamp(result[1])
-            if datetime.now() > past_streak_time + timedelta(days=30):
+            if datetime.utcnow() > past_streak_time + timedelta(days=30):
                 await ctx.channel.send("Cannot join because you're too far along in your streak. Congratulations!")
                 return
         else:

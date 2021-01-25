@@ -117,7 +117,7 @@ async def past_insert_query(user_id, streak_length):
     query = past_streaks.insert().values(
         user_id=user_id,
         streak_length=streak_length,
-        event_time=datetime.now()
+        event_time=datetime.utcnow()
     )
     conn.execute(query)
 
@@ -130,5 +130,5 @@ async def past_select_query(id):
 
 async def name_change_event_insert(user_id, previous_name, change_type, new_name):
     username_query = name_change_event.insert(). \
-        values(user_id=user_id, previous_name=previous_name, change_type=change_type, new_name=new_name, event_time=datetime.now(timezone.utc))
+        values(user_id=user_id, previous_name=previous_name, change_type=change_type, new_name=new_name, event_time=datetime.utcnow())
     conn.execute(username_query)

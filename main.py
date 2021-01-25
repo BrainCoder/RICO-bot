@@ -41,7 +41,7 @@ async def cogs_load():
         for filename in os.listdir('./cogs'):
             if filename.endswith('.py'):
                 client.load_extension(f'cogs.{filename[:-3]}')
-                await devlogs.send(f'{utils.timestr}`{filename}` loadeded due to startup')
+                await devlogs.send(f'{utils.timestr}`{filename}` loaded due to startup')
                 print(f'loaded {filename}')
         await devlogs.send(f'{utils.timestr}**all cogs loaded**')
         print('all cogs loaded')

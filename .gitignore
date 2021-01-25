@@ -5,3 +5,4 @@ ecosystem.config.js
 cogs/__pycache__/*
 
 resources/*.txt
+venv/*
