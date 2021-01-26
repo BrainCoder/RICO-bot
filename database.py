@@ -165,9 +165,12 @@ async def afk_event_update(id):
         .values(historical=1)
     conn.execute(afk_event_update_query)
 
-async def afk_event_select(id=False):
+async def afk_event_select(id: int = False, current: bool = False):
     if id:
-        query = afk_event.select().where(afk_event.c.user_id == id and afk_event.c.historical == 0)
+        if current:
+            query = afk_event_select().where(afk_event.c.id == id and afk_event.c.historical == 1)
+        else:
+            query = afk_event.select().where(afk_event.c.user_id == id and afk_event.c.historical == 0)
     else:
         query = afk_event.select()
     return conn.execute(query).fetchall()

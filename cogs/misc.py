@@ -19,6 +19,17 @@ class Extra(commands.Cog):
         self.client = client
         self._last_member = None
 
+        self.afk_users = await self.build_afk_list()
+
+
+    async def build_afk_list():
+        afk_users = []
+        rows = await database.userdata_select_query()
+        for row in rows:
+            if row[12] == 1:
+                afk_users.append(row[0])
+        return afk_users
+
 
     @commands.command(name="8ball", aliases=['8b'])
     @cooldown(1, 60)
@@ -184,20 +195,46 @@ class Extra(commands.Cog):
         if not await utils.in_roles(message.author, settings.config["statusRoles"]["bot-role"]):
 
             # Check if user is afk
-            result = await database.userdata_select_query(message.author.id)
-            if result[12] == 1:
+            if message.author.id in self.afk_users:
 
-                # If user is afk remove afk
+                # Edit the userdata table
                 await database.userdata_update_query(message.author.id, {'afk': 0})
 
+                # Revert nickname change
                 rows = await database.afk_event_select(message.author.id)
                 if rows[4] == 1:
                     await message.author.edit(nick=rows[3])
                 else:
                     await message.autor.edit(nick=None)
 
+                # Rebuild username list
+                self.afk_users = await self.build_afk_list()
+
+                # Notify the user they are no longer AFK
                 await database.afk_event_update(message.author.id)
                 await message.channel.send(f'{message.author.mention} you are no longer afk')
+
+            else:
+
+                # Check if the message has a mention in it
+                if len(message.mentions) > 0:
+
+                    # Parse through the mentions
+                    for mention in message.mentions:
+
+                        # If the user is in the afk_users list
+                        if mention.id in self.afk_users:
+
+                            # Get the message from the databse
+                            row = await database.afk_event_select(mention.id, True)
+                            afk_message = row[2]
+
+                            # If no message
+                            if message is None:
+                                await message.channel.send(f'{mention.id} is currently AFK')
+                            else:
+                                await message.channel.send(f'{mention.id} is currently afk with the message "{afk_message}"')
+
 
 def setup(client):
     client.add_cog(Extra(client))
