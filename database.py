@@ -95,6 +95,7 @@ def init():
         Column('user_id', BIGINT, ForeignKey("userdata.id"), nullable=False),
         Column('message', TEXT),
         Column('username', TEXT, nullable=False),
+        Column('nickanme', TINYINT, nullable=False),
         Column('event_time', DATETIME, nullable=False),
         Column('historical', TINYINT, nullable=False, default=0)
     )
@@ -111,10 +112,9 @@ async def userdata_update_query(id, params: dict):
 async def userdata_select_query(id, all: bool = True):
     query = userdata.select().where(userdata.c.id == id)
     if all:
-        rows = conn.execute(query).fetchall()
+        return conn.execute(query).fetchall()
     else:
-        rows = conn.execute(query).fetchone()
-    return rows
+        return conn.execute(query).fetchone()
 
 
 # Modevent
@@ -138,8 +138,7 @@ async def past_insert_query(user_id, streak_length):
 
 async def past_select_query(id):
     query = past_streaks.select().where(past_streaks.c.user_id == id)
-    rows = conn.execute(query).fetchall()
-    return rows
+    return conn.execute(query).fetchall()
 
 
 # Nickname change event
@@ -166,7 +165,9 @@ async def afk_event_update(id):
         .values(historical=1)
     conn.execute(afk_event_update_query)
 
-async def afk_event_select(id):
-    query = afk_event.select().where(afk_event.c.user_id == id and afk_event.c.historical == 0)
-    rows = conn.execute(query).fetchall()
-    return rows
+async def afk_event_select(id=False):
+    if id:
+        query = afk_event.select().where(afk_event.c.user_id == id and afk_event.c.historical == 0)
+    else:
+        query = afk_event.select()
+    return conn.execute(query).fetchall()

@@ -171,7 +171,7 @@ class Extra(commands.Cog):
     @commands.command(name='afk')
     async def afk(self, ctx, *, message: str = None):
         nickname = 0
-        if ctx.author.name == ctx.author.display_name:
+        if ctx.author.name != ctx.author.display_name:
             nickname = 1
         await database.userdata_update_query(ctx.author.id, {'afk': 1})
         await database.afk_event_insert(ctx.author.id, ctx.author.display_name, nickname, message)
@@ -184,13 +184,18 @@ class Extra(commands.Cog):
         if not await utils.in_roles(message.author, settings.config["statusRoles"]["bot-role"]):
 
             # Check if user is afk
-
             result = await database.userdata_select_query(message.author.id)
             if result[12] == 1:
 
                 # If user is afk remove afk
-
                 await database.userdata_update_query(message.author.id, {'afk': 0})
+
+                rows = await database.afk_event_select(message.author.id)
+                if rows[4] == 1:
+                    await message.author.edit(nick=rows[3])
+                else:
+                    await message.autor.edit(nick=None)
+
                 await database.afk_event_update(message.author.id)
                 await message.channel.send(f'{message.author.mention} you are no longer afk')
 
