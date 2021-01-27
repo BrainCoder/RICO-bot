@@ -197,22 +197,25 @@ class Extra(commands.Cog):
             # Check if user is afk
             if message.author.id in self.afk_users:
 
-                # Edit the userdata table
-                await database.userdata_update_query(message.author.id, {'afk': 0})
+                #If is isnt in a staff channel
+                if not await utils.in_staff_channel(message.channel.id):
 
-                # Revert nickname change
-                rows = await database.afk_event_select(message.author.id)
-                if rows[4] == 1:
-                    await message.author.edit(nick=rows[3])
-                else:
-                    await message.autor.edit(nick=None)
+                    # Edit the userdata table
+                    await database.userdata_update_query(message.author.id, {'afk': 0})
 
-                # Rebuild username list
-                self.afk_users = await self.build_afk_list()
+                    # Revert nickname change
+                    rows = await database.afk_event_select(message.author.id)
+                    if rows[4] == 1:
+                        await message.author.edit(nick=rows[3])
+                    else:
+                        await message.autor.edit(nick=None)
 
-                # Notify the user they are no longer AFK
-                await database.afk_event_update(message.author.id)
-                await message.channel.send(f'{message.author.mention} you are no longer afk')
+                    # Rebuild username list
+                    self.afk_users = await self.build_afk_list()
+
+                    # Notify the user they are no longer AFK
+                    await database.afk_event_update(message.author.id)
+                    await message.channel.send(f'{message.author.mention} you are no longer afk')
 
             else:
 
@@ -232,6 +235,8 @@ class Extra(commands.Cog):
                             # If no message
                             if message is None:
                                 await message.channel.send(f'{mention.id} is currently AFK')
+
+                            # If message
                             else:
                                 await message.channel.send(f'{mention.id} is currently afk with the message "{afk_message}"')
 
