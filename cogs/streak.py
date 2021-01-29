@@ -243,17 +243,32 @@ class Streak(commands.Cog):
     @commands.command(name="stats")
     @commands.cooldown(3, 900, commands.BucketType.user)
     async def ps_stats(self, ctx):
-        rows = await database.past_select_query(ctx.author.id)
-        if rows is not None:
-            streaks = []
-            for row in rows:
+
+        streaks = []
+
+        # Get current streak and place it in the streaks list
+        userdata_rows = await database.userdata_select_query(ctx.author.id)
+        if(userdata_rows[0]['last_relapse'] is not None):
+            total_streak_length = utils.to_dt(userdata_rows[0]['last_relapse']).total_seconds()
+            streaks.append(total_streak_length)
+
+        # Get the past streaks data from the databse
+        past_streaks_rows = await database.past_select_query(ctx.author.id)
+        if past_streaks_rows is not None:
+            for row in past_streaks_rows:
                 days = row[2]/24
                 streaks.append(days)
+            streaks.append(total_streak_length)
+
         total_relapses = len(streaks)
+
+        # If they have a previous streak
         if total_relapses != 0:
             avg = sum(streaks) / total_relapses
             highest = max(streaks)
             await utils.doembed(ctx, 'Past Streaks', 'Stats', f'Total Relapses: {total_relapses}\nHighest streak: {int(round(highest))}\nAverage Streak: {int(round(avg))}', ctx.author, True)
+
+        # If they dont have a previous streak
         else:
             await ctx.send('There current is no data on your past streaks to calculate statistics for.')
 
