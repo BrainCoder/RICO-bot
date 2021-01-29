@@ -341,6 +341,9 @@ class ModCommands(commands.Cog):
         if member is None or member == ctx.message.author:
             await ctx.channel.send("You cannot kick yourself")
             return
+        if await utils.is_staff(member):
+            await ctx.send('you cannot kick a memeber of staff')
+            return
         if reason is None:
             reason = "For being a jerk!"
         await self.dm_user(ctx, member, f'You have been kicked from {ctx.guild.name}.\n\nReason: {reason}\nKicked by:{ctx.author.name}')
@@ -380,6 +383,9 @@ class ModCommands(commands.Cog):
         """
         if member is None or member == ctx.message.author:
             await ctx.channel.send("You cannot Ban yourself")
+            return
+        if await utils.is_staff(member):
+            await ctx.send('you cannot kick a memeber of staff')
             return
         if reason is None:
             reason = "For being a jerk!"
@@ -450,6 +456,9 @@ class ModCommands(commands.Cog):
             await ctx.send('please tag the user you want to lynch', delete_after=5)
         elif ctx.author == member:
             await ctx.channel.send("You can't lynch yourself!")
+            return
+        if await utils.is_staff(member):
+            await ctx.send('you cannot kick a memeber of staff')
             return
         result = database.userdata_select_query(member.id, False)
         if result:
