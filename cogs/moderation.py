@@ -73,6 +73,7 @@ class ModCommands(commands.Cog):
 
 
     @commands.command(name='selfmute')
+    @commands.cooldown(2, 21600, commands.BucketType.user)
     @commands.has_any_role(
         settings.config["statusRoles"]["member"])
     async def selfmute(self, ctx):
