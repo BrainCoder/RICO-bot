@@ -148,7 +148,10 @@ class Streak(commands.Cog):
                 await database.past_insert_query(ctx.author.id, totalHours)
 
                 await database.userdata_update_query(ctx.author.id, {'last_relapse': current_starting_date.timestamp()})
-                message = await ctx.channel.send(f'Your streak was {daysStr}{middleStr}{hoursStr} long.')
+                if hoursStr is not None:
+                    message = await ctx.channel.send(f'Your streak was {daysStr}{middleStr}{hoursStr} long.')
+                else:
+                    message = await ctx.channel.send('Your streak was less than an hour long')
                 if not Anon:
                     await self.updateStreakRole(ctx.author, current_starting_date)
                     await ctx.send('Don’t be dejected')
