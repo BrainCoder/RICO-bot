@@ -103,6 +103,9 @@ class Streak(commands.Cog):
             await self.challenge(ctx, settings.config["challenges"]["yearly-challenge-participant"])
         if await utils.in_roles(ctx.author, settings.config["challenges"]["deadpool-participant"]):
             await self.challenge(ctx, settings.config["challenges"]["deadpool-participant"])
+        if await utils.in_roles(ctx.author, settings.config["modeRoles"]["highest-streak"]):
+            role = await ctx.server.get_role(settings.config["modeRoles"]["highest-streak"])
+            await ctx.author.remove(role)
 
         # Decode the args
 
@@ -184,6 +187,7 @@ class Streak(commands.Cog):
     @commands.cooldown(3, 900, commands.BucketType.user)
     async def update(self, ctx):
         """updates the users streak"""
+        highest_role = ctx.guild.get_role(settings.config["modeRoles"]["highest-streak"])
         Anon = await utils.in_roles(ctx.author, settings.config["modeRoles"]["anon-streak"])
         if Anon:
             await ctx.message.delete()
@@ -193,8 +197,21 @@ class Streak(commands.Cog):
             last_starting_date = utils.to_dt(rows[0]['last_relapse'])
             total_streak_length = (datetime.utcnow().today() - last_starting_date).total_seconds()
             [daysStr, middleStr, hoursStr] = self.getStreakString(total_streak_length)
+            past_streaks_rows = await database.past_select_query(ctx.author.id)
+            if past_streaks_rows is not None:
+                streaks = []
+                for row in past_streaks_rows:
+                    days = row[2]
+                    streaks.append(days)
+                if max(streaks) < total_streak_length:
+                    highest = True
+            else:
+                if not Anon:
+                    await ctx.author.add_role(highest_role)
             if not Anon:
                 await self.updateStreakRole(ctx.author, last_starting_date)
+                if highest:
+                    await ctx.author.add_role(highest_role)
             message = await ctx.channel.send(f'Your streak is {daysStr}{middleStr}{hoursStr} long.')
             if Anon:
                 await self.delayed_delete(message)
@@ -243,14 +260,13 @@ class Streak(commands.Cog):
     @commands.command(name="stats")
     @commands.cooldown(3, 900, commands.BucketType.user)
     async def ps_stats(self, ctx):
-
         streaks = []
 
         # Get current streak and place it in the streaks list
         userdata_rows = await database.userdata_select_query(ctx.author.id)
         if(userdata_rows[0]['last_relapse'] is not None):
-            total_streak_length = utils.to_dt(userdata_rows[0]['last_relapse']).total_seconds()
-            streaks.append(total_streak_length)
+            last_starting_date = utils.to_dt(userdata_rows[0]['last_relapse'])
+            total_streak_length = (datetime.utcnow().today() - last_starting_date).total_seconds()
 
         # Get the past streaks data from the databse
         past_streaks_rows = await database.past_select_query(ctx.author.id)
@@ -259,7 +275,6 @@ class Streak(commands.Cog):
                 days = row[2]/24
                 streaks.append(days)
             streaks.append(total_streak_length)
-
         total_relapses = len(streaks)
 
         # If they have a previous streak
