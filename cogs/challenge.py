@@ -34,6 +34,7 @@ class MonthlyChallenge(commands.Cog):
 
     @commands.command(name='challenge', aliases=['chal'])
     @commands.has_any_role(
+        settings.config["staffRoles"]["head-dev"],
         settings.config["staffRoles"]["developer"])
     async def challenge(self, ctx, challenge, action):
         """This is the command to manage the starting and stopping of all challenges running on the servers, as it

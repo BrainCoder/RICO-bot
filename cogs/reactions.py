@@ -27,6 +27,7 @@ class reactroles(commands.Cog):
 
     @commands.command(name="rr_autocreate")
     @commands.has_any_role(
+        settings.config["staffRoles"]["head-dev"],
         settings.config["staffRoles"]["developer"])
     async def rr_autocreate(self, ctx):
         await self.sguide.purge(limit=300)

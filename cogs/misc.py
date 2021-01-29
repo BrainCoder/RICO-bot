@@ -27,7 +27,7 @@ class Extra(commands.Cog):
 
 
     @commands.command(name="8ball", aliases=['8b'])
-    @cooldown(1, 60)
+    @cooldown(1, 60, commands.BucketType.user)
     async def _8ball(self, ctx, *, question):
         """standard 8ball command"""
         responses = [
@@ -64,11 +64,13 @@ class Extra(commands.Cog):
 
     @commands.command(name="userinfo", aliases=["ui"])
     @commands.has_any_role(
-        settings.config["statusRoles"]["vip"],
-        settings.config["statusRoles"]["boost-vip"],
+        settings.condig["staffRoles"]["admin"],
+        settings.condig["staffRoles"]["head-moderator"],
         settings.config["staffRoles"]["moderator"],
         settings.config["staffRoles"]["semi-moderator"],
-        settings.config["staffRoles"]["trial-mod"])
+        settings.config["staffRoles"]["trial-mod"],
+        settings.config["statusRoles"]["vip"],
+        settings.config["statusRoles"]["boost-vip"])
     async def ui(self, ctx, *, member: discord.Member = None):
         """gives basic info on the user tagged in the arg"""
         if member is None:
@@ -92,11 +94,13 @@ class Extra(commands.Cog):
 
     @commands.command(name="avatar", aliases=["av"])
     @commands.has_any_role(
-        settings.config["statusRoles"]["vip"],
-        settings.config["statusRoles"]["boost-vip"],
+        settings.condig["staffRoles"]["admin"],
+        settings.condig["staffRoles"]["head-moderator"],
         settings.config["staffRoles"]["moderator"],
         settings.config["staffRoles"]["semi-moderator"],
-        settings.config["staffRoles"]["trial-mod"])
+        settings.config["staffRoles"]["trial-mod"],
+        settings.config["statusRoles"]["vip"],
+        settings.config["statusRoles"]["boost-vip"])
     async def avatar(self, ctx, *, avamember: discord.Member = None):
         """sends a link of the users avatar"""
         if avamember is None:
@@ -119,6 +123,13 @@ class Extra(commands.Cog):
 
     @commands.command(name="remind", aliases=["remindme"])
     @commands.has_any_role(
+        settings.condig["staffRoles"]["admin"],
+        settings.condig["staffRoles"]["head-moderator"],
+        settings.config["staffRoles"]["moderator"],
+        settings.config["staffRoles"]["semi-moderator"],
+        settings.config["staffRoles"]["trial-mod"],
+        settings.config["statusRoles"]["vip"],
+        settings.config["statusRoles"]["boost-vip"],
         settings.config["statusRoles"]["member"])
     async def remind(self, ctx, *, time: utils.TimeConverter = None):
         """unmute the user"""
@@ -175,6 +186,15 @@ class Extra(commands.Cog):
 
 
     @commands.command(name='afk')
+    @commands.has_any_role(
+        settings.condig["staffRoles"]["admin"],
+        settings.condig["staffRoles"]["head-moderator"],
+        settings.config["staffRoles"]["moderator"],
+        settings.config["staffRoles"]["semi-moderator"],
+        settings.config["staffRoles"]["trial-mod"],
+        settings.config["statusRoles"]["vip"],
+        settings.config["statusRoles"]["boost-vip"],
+        settings.config["statusRoles"]["member"])
     async def afk(self, ctx, *, message: str = None):
         nickname = 0
         if ctx.author.name != ctx.author.display_name:

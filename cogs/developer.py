@@ -29,6 +29,7 @@ class DeveloperTools(commands.Cog):
 
     @commands.command(name="cog", aliases=["cogs"])
     @commands.has_any_role(
+        settings.config["staffRoles"]["head-dev"],
         settings.config["staffRoles"]["developer"])
     async def cog(self, ctx, action, *args):
         """Command to manually toggle cogs. For action use either\n**load** - load the cog\n**unload** - unload the cog\n**reload** - reload the cog"""
@@ -58,8 +59,11 @@ class DeveloperTools(commands.Cog):
 
     @commands.command(name="checklist", aliases=['cl'])
     @commands.has_any_role(
-        settings.config["staffRoles"]["moderator"],
-        settings.config["staffRoles"]["semi-moderator"],
+        settings.condig["staffRoles"]["admin"],
+        settings.condig["staffRoles"]["head-moderator"],
+        settings.condig["staffRoles"]["moderator"],
+        settings.condig["staffRoles"]["semi-moderator"],
+        settings.config["staffRoles"]["head-dev"],
         settings.config["staffRoles"]["developer"])
     async def cl(self, ctx, *, raw):
         """Add the message to the dev team job-board"""
@@ -84,6 +88,7 @@ class DeveloperTools(commands.Cog):
 
     @commands.command(name='get')
     @commands.has_any_role(
+        settings.config["staffRoles"]["head-dev"],
         settings.config["staffRoles"]["developer"])
     async def get(self, ctx, _type, id):
         """Developer tool used to get roles or channels based on ids"""
@@ -109,6 +114,7 @@ class DeveloperTools(commands.Cog):
 
     @commands.command(name='repeat', aliases=['mimic', 'copy'])
     @commands.has_any_role(
+        settings.config["staffRoles"]["head-dev"],
         settings.config["staffRoles"]["developer"])
     async def do_repeat(self, ctx, *, inp: str):
         """repeats the input you give it"""
@@ -125,6 +131,7 @@ class DeveloperTools(commands.Cog):
 
     @commands.command(name='verifyintegrity', aliases=['vi', 'verify'])
     @commands.has_any_role(
+        settings.config["staffRoles"]["head-dev"],
         settings.config["staffRoles"]["developer"])
     async def verifyintegrity(self, ctx, action):
         """command does one of two things based on the arguments given\n**database** - Ensures that all users currently in the server are inside the database, and adds them if not.\n**memeber** - Verifies the member status using the guild as the source of truth
@@ -186,6 +193,7 @@ class DeveloperTools(commands.Cog):
 
     @commands.command(name='error')
     @commands.has_any_role(
+        settings.config["staffRoles"]["head-dev"],
         settings.config["staffRoles"]["developer"])
     async def errorlog(self, ctx, action=None):
         devLogs = ctx.guild.get_channel(settings.config["channels"]["devlog"])

@@ -60,6 +60,7 @@ async def logout(ctx):
 
 @client.command(name="creset")
 @commands.has_any_role(
+    settings.config["staffRoles"]["head-dev"],
     settings.config["staffRoles"]["developer"])
 async def creset(ctx):
     devlogs = client.get_channel(settings.config["channels"]["devlog"])
