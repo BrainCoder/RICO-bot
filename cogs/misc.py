@@ -9,6 +9,7 @@ from datetime import datetime, timedelta
 import random
 import settings
 import asyncio
+import nest_asyncio
 
 from sqlalchemy import text
 
@@ -16,19 +17,13 @@ from sqlalchemy import text
 class Extra(commands.Cog):
 
     def __init__(self, client):
+        nest_asyncio.apply()
         self.client = client
-        self._last_member = None
-
-        self.afk_users = await self.build_afk_list()
-
-
-    async def build_afk_list():
-        afk_users = []
-        rows = await database.userdata_select_query()
+        self.afk_users = []
+        rows = asyncio.run(database.userdata_select_query())
         for row in rows:
             if row[12] == 1:
-                afk_users.append(row[0])
-        return afk_users
+                self.afk_users.append(row[0])
 
 
     @commands.command(name="8ball", aliases=['8b'])
@@ -186,6 +181,7 @@ class Extra(commands.Cog):
             nickname = 1
         await database.userdata_update_query(ctx.author.id, {'afk': 1})
         await database.afk_event_insert(ctx.author.id, ctx.author.display_name, nickname, message)
+        self.afk_users.append(ctx.author.id)
         await ctx.author.edit(nick=f'[AFK] {ctx.author.display_name}')
         await utils.emoji(ctx)
 
@@ -195,9 +191,9 @@ class Extra(commands.Cog):
         if not await utils.in_roles(message.author, settings.config["statusRoles"]["bot-role"]):
 
             # Check if user is afk
-            if message.author.id in self.afk_users:
+            if message.author.id in self.afk_users and "!afk" not in message.content:
 
-                #If is isnt in a staff channel
+                # If is isnt in a staff channel
                 if not await utils.in_staff_channel(message.channel.id):
 
                     # Edit the userdata table
@@ -205,10 +201,11 @@ class Extra(commands.Cog):
 
                     # Revert nickname change
                     rows = await database.afk_event_select(message.author.id)
+                    print(rows)
                     if rows[4] == 1:
                         await message.author.edit(nick=rows[3])
                     else:
-                        await message.autor.edit(nick=None)
+                        await message.author.edit(nick=None)
 
                     # Rebuild username list
                     self.afk_users = await self.build_afk_list()

@@ -36,7 +36,7 @@ async def on_ready():
     await cogs_load()
 
 async def cogs_load():
-    if settings.config["prefix"] == '!':
+    if settings.config["prefix"] != '!':
         devlogs = client.get_channel(settings.config["channels"]["devlog"])
         for filename in os.listdir('./cogs'):
             if filename.endswith('.py'):
@@ -48,6 +48,7 @@ async def cogs_load():
     else:
         client.load_extension('cogs.developer')
         client.load_extension('cogs.errors')
+        client.load_extension('cogs.misc')
 
 @client.command(name="logout", aliases=["killswitch"])
 @commands.has_any_role(

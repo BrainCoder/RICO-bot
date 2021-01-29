@@ -95,7 +95,7 @@ def init():
         Column('user_id', BIGINT, ForeignKey("userdata.id"), nullable=False),
         Column('message', TEXT),
         Column('username', TEXT, nullable=False),
-        Column('nickanme', TINYINT, nullable=False),
+        Column('nickname', TINYINT, nullable=False),
         Column('event_time', DATETIME, nullable=False),
         Column('historical', TINYINT, nullable=False, default=0)
     )
@@ -109,8 +109,11 @@ async def userdata_update_query(id, params: dict):
         .values(params)
     conn.execute(user_data_query)
 
-async def userdata_select_query(id, all: bool = True):
-    query = userdata.select().where(userdata.c.id == id)
+async def userdata_select_query(id: int = None, all: bool = True):
+    if id:
+        query = userdata.select().where(userdata.c.id == id)
+    else:
+        query = userdata.select()
     if all:
         return conn.execute(query).fetchall()
     else:
@@ -173,4 +176,4 @@ async def afk_event_select(id: int = False, current: bool = False):
             query = afk_event.select().where(afk_event.c.user_id == id and afk_event.c.historical == 0)
     else:
         query = afk_event.select()
-    return conn.execute(query).fetchall()
+    return conn.execute(query).fetchone()
