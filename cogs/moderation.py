@@ -64,7 +64,7 @@ class ModCommands(commands.Cog):
         await ctx.message.delete()
         await ctx.send(f'Wrong channel! Please bump the server in <#{settings.config["channels"]["bump"]}>', delete_after=5)
     @dBumpChannel.error
-    async def relapse_handler(self, ctx, error):
+    async def dBumpChannel_handler(self, ctx, error):
         if isinstance(error, commands.CheckFailure):
             pass
         else:
@@ -75,8 +75,8 @@ class ModCommands(commands.Cog):
     @commands.command(name='selfmute')
     @commands.cooldown(2, 21600, commands.BucketType.user)
     @commands.has_any_role(
-        settings.condig["staffRoles"]["admin"],
-        settings.condig["staffRoles"]["head-moderator"],
+        settings.config["staffRoles"]["admin"],
+        settings.config["staffRoles"]["head-moderator"],
         settings.config["staffRoles"]["moderator"],
         settings.config["staffRoles"]["semi-moderator"],
         settings.config["staffRoles"]["trial-mod"],
@@ -94,8 +94,8 @@ class ModCommands(commands.Cog):
 
     @commands.command(name="purge", aliases=["clear"])
     @commands.has_any_role(
-        settings.condig["staffRoles"]["admin"],
-        settings.condig["staffRoles"]["head-moderator"],
+        settings.config["staffRoles"]["admin"],
+        settings.config["staffRoles"]["head-moderator"],
         settings.config["staffRoles"]["moderator"])
     async def purge(self, ctx, amount=5):
         """clears messages in the given channel"""
@@ -108,8 +108,8 @@ class ModCommands(commands.Cog):
 
     @commands.command(name='noperms')
     @commands.has_any_role(
-        settings.condig["staffRoles"]["admin"],
-        settings.condig["staffRoles"]["head-moderator"],
+        settings.config["staffRoles"]["admin"],
+        settings.config["staffRoles"]["head-moderator"],
         settings.config["staffRoles"]["moderator"],
         settings.config["staffRoles"]["semi-moderator"])
     async def memeber(self, ctx, user: discord.Member):
@@ -132,8 +132,8 @@ class ModCommands(commands.Cog):
 
     @commands.command(name="member")
     @commands.has_any_role(
-        settings.condig["staffRoles"]["admin"],
-        settings.condig["staffRoles"]["head-moderator"],
+        settings.config["staffRoles"]["admin"],
+        settings.config["staffRoles"]["head-moderator"],
         settings.config["staffRoles"]["moderator"],
         settings.config["staffRoles"]["semi-moderator"],
         settings.config["staffRoles"]["trial-mod"])
@@ -164,8 +164,8 @@ class ModCommands(commands.Cog):
 
     @commands.command(name="mute", aliases=['s', 'strike'])
     @commands.has_any_role(
-        settings.condig["staffRoles"]["admin"],
-        settings.condig["staffRoles"]["head-moderator"],
+        settings.config["staffRoles"]["admin"],
+        settings.config["staffRoles"]["head-moderator"],
         settings.config["staffRoles"]["moderator"],
         settings.config["staffRoles"]["semi-moderator"],
         settings.config["staffRoles"]["trial-mod"])
@@ -204,8 +204,8 @@ class ModCommands(commands.Cog):
     @commands.command(name="vmute", aliases=['vs', 'vstrike'])
     @commands.cooldown(1, 86400, commands.BucketType.user)
     @commands.has_any_role(
-        settings.condig["staffRoles"]["admin"],
-        settings.condig["staffRoles"]["head-moderator"],
+        settings.config["staffRoles"]["admin"],
+        settings.config["staffRoles"]["head-moderator"],
         settings.config["staffRoles"]["moderator"],
         settings.config["staffRoles"]["semi-moderator"],
         settings.config["staffRoles"]["trial-mod"],
@@ -246,8 +246,8 @@ class ModCommands(commands.Cog):
 
     @commands.command(name="cooldown", aliases=['c'])
     @commands.has_any_role(
-        settings.condig["staffRoles"]["admin"],
-        settings.condig["staffRoles"]["head-moderator"],
+        settings.config["staffRoles"]["admin"],
+        settings.config["staffRoles"]["head-moderator"],
         settings.config["staffRoles"]["moderator"],
         settings.config["staffRoles"]["semi-moderator"],
         settings.config["staffRoles"]["trial-mod"])
@@ -273,8 +273,8 @@ class ModCommands(commands.Cog):
 
     @commands.command(name="unmute")
     @commands.has_any_role(
-        settings.condig["staffRoles"]["admin"],
-        settings.condig["staffRoles"]["head-moderator"],
+        settings.config["staffRoles"]["admin"],
+        settings.config["staffRoles"]["head-moderator"],
         settings.config["staffRoles"]["moderator"],
         settings.config["staffRoles"]["semi-moderator"],
         settings.config["staffRoles"]["trial-mod"])
@@ -333,8 +333,8 @@ class ModCommands(commands.Cog):
     @commands.command(name="kick")
     @commands.cooldown(15, 600, commands.BucketType.user)
     @commands.has_any_role(
-        settings.condig["staffRoles"]["admin"],
-        settings.condig["staffRoles"]["head-moderator"],
+        settings.config["staffRoles"]["admin"],
+        settings.config["staffRoles"]["head-moderator"],
         settings.config["staffRoles"]["moderator"])
     async def kick(self, ctx, member: discord.User = None, *, reason=None):
         """kicks the user from the server"""
@@ -356,8 +356,8 @@ class ModCommands(commands.Cog):
 
     @commands.command(name='underage')
     @commands.has_any_role(
-        settings.condig["staffRoles"]["admin"],
-        settings.condig["staffRoles"]["head-moderator"],
+        settings.config["staffRoles"]["admin"],
+        settings.config["staffRoles"]["head-moderator"],
         settings.config["staffRoles"]["moderator"],
         settings.config["staffRoles"]["semi-moderator"],
         settings.config["staffRoles"]["trial-mod"])
@@ -370,8 +370,8 @@ class ModCommands(commands.Cog):
     @commands.command(name="ban")
     @commands.cooldown(15, 600, commands.BucketType.user)
     @commands.has_any_role(
-        settings.condig["staffRoles"]["admin"],
-        settings.condig["staffRoles"]["head-moderator"],
+        settings.config["staffRoles"]["admin"],
+        settings.config["staffRoles"]["head-moderator"],
         settings.config["staffRoles"]["moderator"])
     async def ban(self, ctx, member: discord.User = None, *, reason=None, purge=False):
         """Generic command to ban a user to the server.  this command can only be exectued three times in a row by the same moderator
@@ -402,8 +402,8 @@ class ModCommands(commands.Cog):
 
     @commands.command(name="automod")
     @commands.has_any_role(
-        settings.condig["staffRoles"]["admin"],
-        settings.condig["staffRoles"]["head-moderator"],
+        settings.config["staffRoles"]["admin"],
+        settings.config["staffRoles"]["head-moderator"],
         settings.config["staffRoles"]["moderator"])
     async def automod_edit(self, ctx, arg=None, *words):
         invarg = 'Please use the corect arguments\n```!automod add - add word to blacklist\n!automod remove - remove word from blacklist\n!automod blacklist - to see the blacklist```'
@@ -444,11 +444,11 @@ class ModCommands(commands.Cog):
 
     @commands.command(name="lynch")
     @commands.has_any_role(
-        settings.condig["staffRoles"]["admin"],
-        settings.condig["staffRoles"]["head-moderator"],
-        settings.condig["staffRoles"]["moderator"],
-        settings.condig["staffRoles"]["semi-moderator"],
-        settings.condig["staffRoles"]["trial-mod"],
+        settings.config["staffRoles"]["admin"],
+        settings.config["staffRoles"]["head-moderator"],
+        settings.config["staffRoles"]["moderator"],
+        settings.config["staffRoles"]["semi-moderator"],
+        settings.config["staffRoles"]["trial-mod"],
         settings.config["statusRoles"]["member"])
     async def nlynch(self, ctx, member: discord.Member = None):
         """A command to be used if there is no staff present, where three members can type in `!lynch` in order to mute a user"""

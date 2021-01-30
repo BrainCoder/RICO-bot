@@ -64,8 +64,8 @@ class Extra(commands.Cog):
 
     @commands.command(name="userinfo", aliases=["ui"])
     @commands.has_any_role(
-        settings.condig["staffRoles"]["admin"],
-        settings.condig["staffRoles"]["head-moderator"],
+        settings.config["staffRoles"]["admin"],
+        settings.config["staffRoles"]["head-moderator"],
         settings.config["staffRoles"]["moderator"],
         settings.config["staffRoles"]["semi-moderator"],
         settings.config["staffRoles"]["trial-mod"],
@@ -94,8 +94,8 @@ class Extra(commands.Cog):
 
     @commands.command(name="avatar", aliases=["av"])
     @commands.has_any_role(
-        settings.condig["staffRoles"]["admin"],
-        settings.condig["staffRoles"]["head-moderator"],
+        settings.config["staffRoles"]["admin"],
+        settings.config["staffRoles"]["head-moderator"],
         settings.config["staffRoles"]["moderator"],
         settings.config["staffRoles"]["semi-moderator"],
         settings.config["staffRoles"]["trial-mod"],
@@ -123,8 +123,8 @@ class Extra(commands.Cog):
 
     @commands.command(name="remind", aliases=["remindme"])
     @commands.has_any_role(
-        settings.condig["staffRoles"]["admin"],
-        settings.condig["staffRoles"]["head-moderator"],
+        settings.config["staffRoles"]["admin"],
+        settings.config["staffRoles"]["head-moderator"],
         settings.config["staffRoles"]["moderator"],
         settings.config["staffRoles"]["semi-moderator"],
         settings.config["staffRoles"]["trial-mod"],
@@ -187,8 +187,8 @@ class Extra(commands.Cog):
 
     @commands.command(name='afk')
     @commands.has_any_role(
-        settings.condig["staffRoles"]["admin"],
-        settings.condig["staffRoles"]["head-moderator"],
+        settings.config["staffRoles"]["admin"],
+        settings.config["staffRoles"]["head-moderator"],
         settings.config["staffRoles"]["moderator"],
         settings.config["staffRoles"]["semi-moderator"],
         settings.config["staffRoles"]["trial-mod"],
@@ -202,7 +202,11 @@ class Extra(commands.Cog):
         await database.userdata_update_query(ctx.author.id, {'afk': 1})
         await database.afk_event_insert(ctx.author.id, ctx.author.display_name, nickname, message)
         self.afk_users.append(ctx.author.id)
-        await ctx.author.edit(nick=f'[AFK] {ctx.author.display_name}')
+        print(self.afk_users)
+        try:
+            await ctx.author.edit(nick=f'[AFK] {ctx.author.display_name}')
+        except:
+            await ctx.send('failed to change nickname')
         await utils.emoji(ctx)
 
 
@@ -250,12 +254,12 @@ class Extra(commands.Cog):
                             afk_message = row[2]
 
                             # If no message
-                            if message is None:
-                                await message.channel.send(f'{mention.id} is currently AFK')
+                            if message == "None":
+                                await message.channel.send(f'{mention} is currently AFK')
 
                             # If message
                             else:
-                                await message.channel.send(f'{mention.id} is currently afk with the message "{afk_message}"')
+                                await message.channel.send(f'{mention} is currently afk with the message "{afk_message}"')
 
 
 def setup(client):

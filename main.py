@@ -36,7 +36,7 @@ async def on_ready():
     await cogs_load()
 
 async def cogs_load():
-    if settings.config["prefix"] != '!':
+    if settings.config["prefix"] == '!':
         devlogs = client.get_channel(settings.config["channels"]["devlog"])
         for filename in os.listdir('./cogs'):
             if filename.endswith('.py'):

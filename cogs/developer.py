@@ -59,10 +59,10 @@ class DeveloperTools(commands.Cog):
 
     @commands.command(name="checklist", aliases=['cl'])
     @commands.has_any_role(
-        settings.condig["staffRoles"]["admin"],
-        settings.condig["staffRoles"]["head-moderator"],
-        settings.condig["staffRoles"]["moderator"],
-        settings.condig["staffRoles"]["semi-moderator"],
+        settings.config["staffRoles"]["admin"],
+        settings.config["staffRoles"]["head-moderator"],
+        settings.config["staffRoles"]["moderator"],
+        settings.config["staffRoles"]["semi-moderator"],
         settings.config["staffRoles"]["head-dev"],
         settings.config["staffRoles"]["developer"])
     async def cl(self, ctx, *, raw):
