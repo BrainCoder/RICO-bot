@@ -200,71 +200,49 @@ class Extra(commands.Cog):
         settings.config["statusRoles"]["boost-vip"],
         settings.config["statusRoles"]["member"])
     async def afk(self, ctx, *, message: str = None):
-        nickname = 0
-        if ctx.author.name != ctx.author.display_name:
-            nickname = 1
-        await database.userdata_update_query(ctx.author.id, {'afk': 1})
-        await database.afk_event_insert(ctx.author.id, ctx.author.display_name, nickname, message)
-        self.afk_users.append(ctx.author.id)
-        print(self.afk_users)
-        try:
-            await ctx.author.edit(nick=f'[AFK] {ctx.author.display_name}')
-        except:
-            await ctx.send('failed to change nickname')
-        await utils.emoji(ctx)
+        if ctx.author.id not in self.afk_users:
+            nickname = 0
+            if ctx.author.name != ctx.author.display_name:
+                nickname = 1
+            await database.userdata_update_query(ctx.author.id, {'afk': 1})
+            await database.afk_event_insert(ctx.author.id, ctx.author.display_name, nickname, message)
+            self.afk_users.append(ctx.author.id)
+            try:
+                await ctx.author.edit(nick=f'[AFK] {ctx.author.display_name}')
+            except:
+                await ctx.send('failed to change nickname')
+            await utils.emoji(ctx)
 
 
     @Cog.listener()
     async def on_message(self, message):
         if not await utils.in_roles(message.author, settings.config["statusRoles"]["bot-role"]):
-
-            # Check if user is afk
             if self.afk_users is not None:
                 if message.author.id in self.afk_users and "!afk" not in message.content:
-
-                    # If is isnt in a staff channel
                     if not await utils.in_staff_channel(message.channel.id):
-
-                        # Edit the userdata table
                         await database.userdata_update_query(message.author.id, {'afk': 0})
-
-                        # Revert nickname change
-                        rows = await database.afk_event_select(message.author.id)
-                        print(rows)
-                        if rows[4] == 1:
-                            await message.author.edit(nick=rows[3])
-                        else:
-                            await message.author.edit(nick=None)
-
-                        # Rebuild username list
-                        self.afk_users = await self.build_afk_list()
-
-                        # Notify the user they are no longer AFK
-                        await database.afk_event_update(message.author.id)
-                        await message.channel.send(f'{message.author.mention} you are no longer afk')
-
-            else:
-
-                # Check if the message has a mention in it
-                if len(message.mentions) > 0:
-
-                    # Parse through the mentions
-                    for mention in message.mentions:
-
-                        # If the user is in the afk_users list
-                        if mention.id in self.afk_users:
-
-                            # Get the message from the databse
-                            row = await database.afk_event_select(mention.id, True)
-                            afk_message = row[2]
-
-                            # If no message
-                            if message is None:
-                                await message.channel.send(f'{mention} is currently AFK')
-
-                            # If message
+                        try:
+                            rows = await database.afk_event_select(message.author.id, True)
+                            print(rows)
+                            if rows[4] == 1:
+                                await message.author.edit(nick=rows[3])
                             else:
-                                await message.channel.send(f'{mention} is currently afk with the message "{afk_message}"')
+                                await message.author.edit(nick=None)
+                        except:
+                            await message.channel.send('failed to change nickname')
+                        await database.afk_event_update(message.author.id)
+                        self.afk_users = await self.build_afk_list()
+                        await message.channel.send(f'{message.author.mention} you are no longer afk')
+                else:
+                    if len(message.mentions) > 0:
+                        for mention in message.mentions:
+                            if mention.id in self.afk_users:
+                                row = await database.afk_event_select(mention.id, True)
+                                afk_message = row[2]
+                                if afk_message is None:
+                                    await message.channel.send(f'{mention} is currently AFK')
+                                else:
+                                    await message.channel.send(f'{mention} is currently afk with the message "{afk_message}"')
 
 
 def setup(client):
