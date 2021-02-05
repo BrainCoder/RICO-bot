@@ -419,13 +419,13 @@ class ModCommands(commands.Cog):
             return
         result = database.userdata_select_query(member.id, False)
         if result:
-            current_lynches = result[5] + 1
-            if datetime.utcnow() > (datetime.fromtimestamp(result[7]) + timedelta(hours=8)):
+            current_lynches = result[2] + 1
+            if datetime.utcnow() > (datetime.fromtimestamp(result[4]) + timedelta(hours=8)):
                 current_lynches = 1
                 make_historical_query = text(f'update mod_event set historical = 1 '
                                              f'where recipient_id = {member.id} and event_type = 6')
                 database.conn.execute(make_historical_query)
-            successful_lynches = result[6]
+            successful_lynches = result[3]
             if current_lynches >= 3:
                 await ctx.channel.send(f'{member.mention} has been lynched')
                 await database.userdata_update_query(member.id, {'lynch_count': 0, 'successful_lynch_count': successful_lynches + 1, 'lynch_expiration_time': 0})
