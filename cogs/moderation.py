@@ -417,7 +417,7 @@ class ModCommands(commands.Cog):
         elif ctx.author == member:
             await ctx.channel.send("You can't lynch yourself!")
             return
-        result = database.userdata_select_query(member.id, False)
+        result = await database.userdata_select_query(member.id, False)
         if result:
             current_lynches = result[2] + 1
             if datetime.utcnow() > (datetime.fromtimestamp(result[4]) + timedelta(hours=8)):
