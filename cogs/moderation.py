@@ -444,7 +444,7 @@ class ModCommands(commands.Cog):
                 await utils.emoji(ctx)
                 query = database.update(database.userdata).where(database.userdata.c.id == member.id) \
                     .values(lynch_count=current_lynches,
-                            lynch_expiration_time=(datetime.now() + timedelta(hours=8)).timestamp())
+                            lynch_expiration_time=(datetime.utcnow() + timedelta(hours=8)).timestamp())
                 database.conn.execute(query)
                 await database.mod_event_insert(member.id, 6, datetime.utcnow(), None, ctx.author.id, 0)
             member_role = ctx.guild.get_role(settings.config["statusRoles"]["member"])
