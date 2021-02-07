@@ -361,7 +361,7 @@ class ModCommands(commands.Cog):
             await ctx.guild.ban(member, reason=reason)
         await utils.doembed(ctx, "Ban", f"{member} has been Banned!", f"**for:** {reason} banned by: <@{ctx.author.id}>.", member)
         await database.mod_event_insert(member.id, 1, datetime.utcnow(), reason, ctx.author.id, 0)
-        await database.update(member.id, {'banned': 1})
+        await database.userdata_update_query(member.id, {'banned': 1})
         await utils.emoji(ctx)
 
 
@@ -519,7 +519,7 @@ class ModCommands(commands.Cog):
             await self.logs_channel.send(embed=embed)
             reason = 'auto muted for spam pinging'
             await database.mod_event_insert(message.author.id, 3, datetime.utcnow(), reason, settings.config["botId"], 0)
-            await database.update(message.author.id, {'mute': 1})
+            await database.userdata_update_query(message.author.id, {'mute': 1})
 
     @tasks.loop(hours=settings.config["memberUpdateInterval"])
     async def check_member_status(self):
