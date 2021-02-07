@@ -410,7 +410,7 @@ class ModCommands(commands.Cog):
         settings.config["statusRoles"]["member"],
         settings.config["staffRoles"]["moderator"],
         settings.config["staffRoles"]["semi-moderator"])
-    async def nlynch(self, ctx, member: discord.Member = None):
+    async def lynch(self, ctx, member: discord.Member = None):
         """A command to be used if there is no staff present, where three members can type in `!lynch` in order to mute a user"""
         if member is None:
             await ctx.send('please tag the user you want to lynch', delete_after=5)
@@ -442,7 +442,10 @@ class ModCommands(commands.Cog):
                 await utils.doembed(ctx, "Lynch", f"User {member} was lynched! ", f"lynched by: {lyncher_list}", bot)
             else:
                 await utils.emoji(ctx)
-                await database.update(member.id, {'lynch_count': current_lynches, 'lynch_expiration_time': (datetime.utcnow() + timedelta(hours=8)).timestamp()})
+                query = database.update(database.userdata).where(database.userdata.c.id == member.id) \
+                    .values(lynch_count=current_lynches,
+                            lynch_expiration_time=(datetime.utcnow() + timedelta(hours=8)).timestamp())
+                database.conn.execute(query)
                 await database.mod_event_insert(member.id, 6, datetime.utcnow(), None, ctx.author.id, 0)
             member_role = ctx.guild.get_role(settings.config["statusRoles"]["member"])
             await ctx.author.remove_roles(member_role)
