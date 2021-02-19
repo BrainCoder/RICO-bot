@@ -59,8 +59,7 @@ class Streak(commands.Cog):
                 return
 
     async def check_permitted_streak_set_amount(self, ctx, number):
-        if (number > 30 and not await utils.in_roles(ctx.author, settings.config["statusRoles"]["vip"]) and
-                number > 30 and not await utils.in_roles(ctx.author, settings.config["statusRoles"]["boost-vip"])):
+        if (number > 30 and not await utils.in_roles(ctx.author, settings.config["statusRoles"]["vip"])):
             return -1
         elif number > 90 and not await utils.is_staff(ctx):
             return -1

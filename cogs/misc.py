@@ -57,7 +57,6 @@ class Extra(commands.Cog):
     @commands.command(name="userinfo", aliases=["ui"])
     @commands.has_any_role(
         settings.config["statusRoles"]["vip"],
-        settings.config["statusRoles"]["boost-vip"],
         settings.config["staffRoles"]["moderator"],
         settings.config["staffRoles"]["semi-moderator"],
         settings.config["staffRoles"]["trial-mod"])
@@ -84,7 +83,6 @@ class Extra(commands.Cog):
     @commands.command(name="avatar", aliases=["av"])
     @commands.has_any_role(
         settings.config["statusRoles"]["vip"],
-        settings.config["statusRoles"]["boost-vip"],
         settings.config["staffRoles"]["moderator"],
         settings.config["staffRoles"]["semi-moderator"],
         settings.config["staffRoles"]["trial-mod"])
