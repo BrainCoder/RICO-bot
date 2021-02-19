@@ -136,16 +136,16 @@ class ModCommands(commands.Cog):
             await utils.emoji(ctx)
 
         else:
-            if datetime.utcnow() >= (member_joined_at + timedelta(hours=settings.config["memberCommandThreshold"])):
-                if result and result[11] != 1:
-                    await self.add_member_role(ctx, user, member_role)
-                    await utils.emoji(ctx)
-                else:
-                    await ctx.send('User current has NoPerms role')
-            elif result[11] == 1:
-                await ctx.send("User current has NoPerms role")
+            #if datetime.utcnow() >= (member_joined_at + timedelta(hours=settings.config["memberCommandThreshold"])):
+            if result and result[11] != 1:
+                await self.add_member_role(ctx, user, member_role)
+                await utils.emoji(ctx)
             else:
-                await ctx.send("User has not been around long enough to be automatically given member.")
+                await ctx.send('User current has NoPerms role')
+            #elif result[11] == 1:
+                #await ctx.send("User current has NoPerms role")
+            #else:
+                #await ctx.send("User has not been around long enough to be automatically given member.")
 
 
     @commands.command(name="mute", aliases=['s', 'strike'])
