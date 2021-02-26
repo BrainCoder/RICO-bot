@@ -19,7 +19,6 @@ class welcome(commands.Cog):
         settings.config["staffRoles"]["semi-moderator"],
         settings.config["staffRoles"]["trial-mod"],
         settings.config["statusRoles"]["vip"],
-        settings.config["statusRoles"]["boost-vip"],
         settings.config["statusRoles"]["member"])
     async def suggestion(self, ctx, *, suggestion):
         suggestions = self.client.get_channel(settings.config["channels"]["suggestions"])
