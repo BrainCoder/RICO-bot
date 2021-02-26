@@ -10,8 +10,8 @@ class welcome(commands.Cog):
         self.client = client
         self._last_member = None
 
-    @commands.command(name="suggest")
-    @commands.cooldown(2, 21600, commands.BucketType.user)
+    @commands.command(name="suggest", aliases=['suggestion'])
+    @commands.cooldown(1, 21600, commands.BucketType.user)
     @commands.has_any_role(
         settings.config["staffRoles"]["admin"],
         settings.config["staffRoles"]["head-moderator"],
