@@ -1,5 +1,4 @@
-import database
-
+import discord
 from discord.ext import commands
 import settings
 import utils
@@ -22,11 +21,21 @@ class welcome(commands.Cog):
         settings.config["statusRoles"]["member"])
     async def suggestion(self, ctx, *, suggestion):
         suggestions = self.client.get_channel(settings.config["channels"]["suggestions"])
-        staff = self.client.get_channel(settings.config["channels"]["staff-lounge"])
-        message = await suggestions.send(suggestion)
-        await message.add_reaction("✅")
-        await message.add_reaction("❌")
-        await staff.send(f'{ctx.author.name} suggested "{suggestion}"')
+        suggestion_logs = self.client.get_channel(settings.config["channels"]["suggestion-logs"])
+        if '@everyone' in suggestion or '@here' in suggestion:
+            return
+        else:
+            message = await suggestions.send(suggestion)
+            await message.add_reaction("✅")
+            await message.add_reaction("❌")
+
+            embed = discord.Embed(color=ctx.author.color, timestamp=ctx.message.created_at)
+            embed.set_author(name="Suggestion", icon_url=ctx.author.avatar_url)
+            embed.add_field(name="Author", value=ctx.author.mention, inline=False)
+            embed.add_field(name="Suggestion", value=suggestion, inline=False)
+            await suggestion_logs.send(embed=embed)
+
+            await ctx.message.delete()
 
 
 def setup(client):
