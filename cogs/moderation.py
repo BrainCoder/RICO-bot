@@ -123,7 +123,9 @@ class ModCommands(commands.Cog):
         settings.config["staffRoles"]["moderator"],
         settings.config["staffRoles"]["semi-moderator"],
         settings.config["staffRoles"]["trial-mod"])
-    async def member(self, ctx, user: discord.Member):
+    async def member(self, ctx, user: discord.Member = None):
+        if user is None:
+            return
         await self.client.wait_until_ready()
         member_joined_at = user.joined_at
         result = await database.userdata_select_query(user.id, False)
@@ -136,16 +138,16 @@ class ModCommands(commands.Cog):
             await utils.emoji(ctx)
 
         else:
-            #if datetime.utcnow() >= (member_joined_at + timedelta(hours=settings.config["memberCommandThreshold"])):
-            if result and result[11] != 1:
-                await self.add_member_role(ctx, user, member_role)
-                await utils.emoji(ctx)
+            if datetime.utcnow() >= (member_joined_at + timedelta(hours=settings.config["memberCommandThreshold"])):
+                if result and result[11] != 1:
+                    await self.add_member_role(ctx, user, member_role)
+                    await utils.emoji(ctx)
+                else:
+                    await ctx.send('User current has NoPerms role')
+            elif result[11] == 1:
+                await ctx.send("User current has NoPerms role")
             else:
-                await ctx.send('User current has NoPerms role')
-            #elif result[11] == 1:
-                #await ctx.send("User current has NoPerms role")
-            #else:
-                #await ctx.send("User has not been around long enough to be automatically given member.")
+                await ctx.send("User has not been around long enough to be automatically given member.")
 
 
     @commands.command(name="mute", aliases=['s', 'strike'])
@@ -396,13 +398,17 @@ class ModCommands(commands.Cog):
     @commands.command(name='rule', aliases=['rules'])
     @commands.cooldown(1, 5)
     async def rules(self, ctx, rule: int = None):
-        if rule is not None:
+        if rule is None:
+            return
+        try:
             rules = await utils.extract_data('resources/rules.txt')
             embed = discord.Embed(color=ctx.author.color, timestamp=ctx.message.created_at)
             embed.set_author(name="Rules", icon_url=ctx.author.avatar_url)
             embed.add_field(name=f"Rule {rule}", value=rules[rule - 1])
             await ctx.send(embed=embed)
-            # Couldnt get this working w/ utils.doembed for some reason, this is something thall have to be addressed in the future
+        except IndexError:
+            await ctx.send(f'{rule} is not a valid rule')
+        # Couldnt get this working w/ utils.doembed for some reason, this is something thall have to be addressed in the future
 
 
     @commands.command(name="lynch")
@@ -510,7 +516,7 @@ class ModCommands(commands.Cog):
 
     async def spamFilter(self, message):
         def _check(m):
-            return (m.author == message.author and len(m.mentions) and (datetime.utcnow()-m.created_at).seconds < 15)
+            return (m.author == message.author and len(m.mentions) and (datetime.utcnow() - m.created_at).seconds < 15)
         if len((list(filter(lambda m: _check(m), self.client.cached_messages)))) >= 5:
             await message.author.add_roles(message.guild.get_role(settings.config["statusRoles"]["muted"]))
             embed = discord.Embed(color=message.author.color, timestamp=message.created_at)

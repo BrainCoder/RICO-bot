@@ -2,7 +2,7 @@ from sqlalchemy import create_engine, MetaData, Table, Column, ForeignKey, updat
 from sqlalchemy.dialects.mysql import BIGINT, INTEGER, TEXT, DATETIME, TINYINT
 import settings
 
-from datetime import datetime, timezone
+from datetime import datetime
 
 global engine
 global conn

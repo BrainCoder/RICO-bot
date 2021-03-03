@@ -6,6 +6,7 @@ from discord.ext.commands import Cog
 from datetime import datetime, timedelta
 import settings
 
+
 class welcome(commands.Cog):
 
     def __init__(self, client):
@@ -36,10 +37,10 @@ class welcome(commands.Cog):
                     f'You can go to <#{settings.config["channels"]["streak-guide"]}> '
                     f'and <#{settings.config["channels"]["roles-and-access"]}>'
                     f' to see the commands that you can use to assign yourself.')
-                if result[5] == 1: # muted
+                if result[5] == 1:
                     mute_role = member.guild.get_role(settings.config["statusRoles"]["muted"])
                     await member.add_roles(mute_role)
-                if result[6] == 1: # double-muted
+                if result[6] == 1:
                     double_mute_role = member.guild.get_role(settings.config["statusRoles"]["double-muted"])
                     await member.add_roles(double_mute_role)
 

@@ -17,8 +17,8 @@ class Streak(commands.Cog):
         self._last_member = None
 
     def getStreakString(self, total_streak_length):
-        days, remainder = divmod(total_streak_length, 60*60*24)
-        hours, remainder = divmod(remainder, 60*60)
+        days, remainder = divmod(total_streak_length, 60 * 60 * 24)
+        hours, remainder = divmod(remainder, 60 * 60)
         days = int(days)
         hours = int(hours)
         print(days, hours)
@@ -140,7 +140,7 @@ class Streak(commands.Cog):
             # If total streak is longer than 1min
             if total_streak_length > 60:
                 [daysStr, middleStr, hoursStr] = self.getStreakString(total_streak_length)
-                totalHours, _ = divmod(total_streak_length, 60*60)
+                totalHours, _ = divmod(total_streak_length, 60 * 60)
 
                 # Insert data into the past_streaks table
 
@@ -243,7 +243,7 @@ class Streak(commands.Cog):
         if rows is not None:
             streaks = []
             for row in rows:
-                days = row[2]/24
+                days = row[2] / 24
                 streaks.append(days)
         total_relapses = len(streaks)
         if total_relapses != 0:

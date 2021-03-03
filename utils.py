@@ -118,5 +118,5 @@ idData = {}
 idpath = "./ids/"
 fileNames = [f for f in listdir(idpath) if isfile(join(idpath, f))]
 for name in fileNames:
-    data = json.loads(readFile(idpath+name))
+    data = json.loads(readFile(idpath + name))
     idData[data['serverId']] = data

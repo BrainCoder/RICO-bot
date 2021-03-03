@@ -158,5 +158,6 @@ class Extra(commands.Cog):
             else:
                 return "No previous usernames have been saved in the database."
 
+
 def setup(client):
     client.add_cog(Extra(client))

@@ -13,6 +13,7 @@ from discord.ext import commands
 from sqlalchemy import update
 from re import search
 
+
 class DeveloperTools(commands.Cog):
 
     def __init__(self, client):
