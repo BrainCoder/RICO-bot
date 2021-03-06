@@ -13,6 +13,7 @@ r_dict = {
     },
     "Utility": {
         "Helper": ["🆘", settings.config["otherRoles"]["helper"]],
+        "Chat Revive": ["❗", settings.confifg["otherRoles"]["chat-revive"]],
         "Support Group": ["⚕", settings.config["otherRoles"]["support-group"]],
         "Urge Killer": ["🪳", settings.config["otherRoles"]["urge-killer"]],
         "Virgin": ["👑", settings.config["otherRoles"]["virgin"]],
