@@ -232,7 +232,7 @@ class Streak(commands.Cog):
             await ctx.channel.send("Please send a value less than or equal to 24 hours")
             return
         await database.userdata_update_query(member.id, {'last_relapse': new_starting_date.timestamp()})
-        await self.updateStreakRole(ctx.author, new_starting_date)
+        await self.updateStreakRole(member, new_starting_date)
         await ctx.channel.send("Streak set successfully.")
 
 
