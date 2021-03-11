@@ -82,6 +82,7 @@ class ModCommands(commands.Cog):
             await ctx.author.remove_roles(Selfmute_Role)
         else:
             await ctx.author.add_roles(Selfmute_Role)
+        await ctx.message.delete()
 
 
     @commands.command(name="purge", aliases=["clear"])
@@ -101,6 +102,9 @@ class ModCommands(commands.Cog):
         settings.config["staffRoles"]["moderator"],
         settings.config["staffRoles"]["semi-moderator"])
     async def memeber(self, ctx, user: discord.Member):
+        """Adds a noperms flag to the user inside the bots database. This does not add the role
+        If a user has a noperms flag this means that a memeber of staff cannot give the the memeber role without removing the flag.
+        While Semi's can add the flag, same as full moderators; only full moderators can remove the flag"""
         await self.client.wait_until_ready()
         result = await database.userdata_select_query(user.id, False)
         if result and result[12] != 0:
