@@ -27,7 +27,8 @@
         "head-moderator":812406698894688320,
         "moderator":812406698894688319,
         "semi-moderator":812406698894688318,
-        "trial-mod":812406698894688316
+        "trial-mod":812406698894688316,
+        "mod-ping":819570374807257108
     },
     "challenges":{
         "monthly-challenge-signup":812406698781966363,
@@ -105,6 +106,7 @@
         "asylum":812406698719182856
     },
     "channels":{
+        "poll-board":812406702355644483,
         "suggestions":812406702749646855,
         "suggestion-logs":816197013976776744,
         "development":812406701583761472,

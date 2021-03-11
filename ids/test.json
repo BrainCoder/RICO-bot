@@ -28,7 +28,8 @@
         "head-moderator":798698943620972577,
         "moderator":798698943620972576,
         "semi-moderator":798698943620972575,
-        "trial-mod":798698943616647176
+        "trial-mod":798698943616647176,
+        "mod-ping":819570374807257108
     },
     "challenges":{
         "monthly-challenge-signup":798698943596462085,
@@ -49,6 +50,7 @@
     },
     "otherRoles":{
         "helper":798698943588204606,
+        "chat-revive":819554906020511744,
         "cavemanmode":798698943575883831,
         "book-club":798698943583748135,
         "retention":798698943583748132,
@@ -105,6 +107,7 @@
         "asylum":798698943575883832
     },
     "channels":{
+        "poll-board":798698945366327342,
         "suggestions":798698945614053432,
         "suggestion-logs":816198673368088606,
         "development":798698943620972583,
