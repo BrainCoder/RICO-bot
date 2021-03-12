@@ -71,12 +71,12 @@ class MonthlyChallenge(commands.Cog):
         elif isinstance(error, commands.MissingRequiredArgument):
             await ctx.send('Please selected the challenge and/or action you would like to commit')
         else:
-            print('\n--------')
-            print(f'Time      : {utils.timestr}')
+            print('\n--------', file=sys.stderr)
+            print(f'Time      : {utils.timestr}', file=sys.stderr)
             print(f'Command   : {ctx.command}', file=sys.stderr)
-            print(f'Message   : {ctx.message.content}')
-            print(f'Author    : {ctx.author}')
-            print(" ")
+            print(f'Message   : {ctx.message.content}', file=sys.stderr)
+            print(f'Author    : {ctx.author}', file=sys.stderr)
+            print(" ", file=sys.stderr)
             traceback.print_exception(type(error), error, error.__traceback__, file=sys.stderr)
 
     @commands.command(name="participation", pass_context=True)

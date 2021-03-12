@@ -177,12 +177,12 @@ class Streak(commands.Cog):
             better_time = await utils.convert_from_seconds(error.retry_after)
             await ctx.send(content=f'This command is on cooldown. Please wait {better_time}', delete_after=5)
         else:
-            print('\n--------')
-            print(f'Time      : {utils.timestr}')
+            print('\n--------', file=sys.stderr)
+            print(f'Time      : {utils.timestr}', file=sys.stderr)
             print(f'Command   : {ctx.command}', file=sys.stderr)
-            print(f'Message   : {ctx.message.content}')
-            print(f'Author    : {ctx.author}')
-            print(" ")
+            print(f'Message   : {ctx.message.content}', file=sys.stderr)
+            print(f'Author    : {ctx.author}', file=sys.stderr)
+            print(" ", file=sys.stderr)
             traceback.print_exception(type(error), error, error.__traceback__, file=sys.stderr)
 
 
@@ -233,12 +233,12 @@ class Streak(commands.Cog):
             better_time = await utils.convert_from_seconds(error.retry_after)
             await ctx.send(content=f'This command is on cooldown. Please wait {better_time}', delete_after=5)
         else:
-            print('\n--------')
-            print(f'Time      : {utils.timestr}')
+            print('\n--------', file=sys.stderr)
+            print(f'Time      : {utils.timestr}', file=sys.stderr)
             print(f'Command   : {ctx.command}', file=sys.stderr)
-            print(f'Message   : {ctx.message.content}')
-            print(f'Author    : {ctx.author}')
-            print(" ")
+            print(f'Message   : {ctx.message.content}', file=sys.stderr)
+            print(f'Author    : {ctx.author}', file=sys.stderr)
+            print(" ", file=sys.stderr)
             traceback.print_exception(type(error), error, error.__traceback__, file=sys.stderr)
 
 
