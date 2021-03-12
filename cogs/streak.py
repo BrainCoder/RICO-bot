@@ -17,8 +17,8 @@ class Streak(commands.Cog):
         self._last_member = None
 
     def getStreakString(self, total_streak_length):
-        days, remainder = divmod(total_streak_length, 60*60*24)
-        hours, remainder = divmod(remainder, 60*60)
+        days, remainder = divmod(total_streak_length, 60 * 60 * 24)
+        hours, remainder = divmod(remainder, 60 * 60)
         days = int(days)
         hours = int(hours)
         print(days, hours)
@@ -144,7 +144,7 @@ class Streak(commands.Cog):
             # If total streak is longer than 1min
             if total_streak_length > 60:
                 [daysStr, middleStr, hoursStr] = self.getStreakString(total_streak_length)
-                totalHours, _ = divmod(total_streak_length, 60*60)
+                totalHours, _ = divmod(total_streak_length, 60 * 60)
 
                 # Insert data into the past_streaks table
 
@@ -178,7 +178,12 @@ class Streak(commands.Cog):
             better_time = await utils.convert_from_seconds(error.retry_after)
             await ctx.send(content=f'This command is on cooldown. Please wait {better_time}', delete_after=5)
         else:
-            print('Ignoring exception in command {}:'.format(ctx.command), file=sys.stderr)
+            print('\n--------')
+            print(f'Time      : {utils.timestr}')
+            print(f'Command   : {ctx.command}', file=sys.stderr)
+            print(f'Message   : {ctx.message.content}')
+            print(f'Author    : {ctx.author}')
+            print(" ")
             traceback.print_exception(type(error), error, error.__traceback__, file=sys.stderr)
 
 
@@ -227,7 +232,12 @@ class Streak(commands.Cog):
             better_time = await utils.convert_from_seconds(error.retry_after)
             await ctx.send(content=f'This command is on cooldown. Please wait {better_time}', delete_after=5)
         else:
-            print('Ignoring exception in command {}:'.format(ctx.command), file=sys.stderr)
+            print('\n--------')
+            print(f'Time      : {utils.timestr}')
+            print(f'Command   : {ctx.command}', file=sys.stderr)
+            print(f'Message   : {ctx.message.content}')
+            print(f'Author    : {ctx.author}')
+            print(" ")
             traceback.print_exception(type(error), error, error.__traceback__, file=sys.stderr)
 
 
@@ -272,7 +282,7 @@ class Streak(commands.Cog):
         past_streaks_rows = await database.past_select_query(ctx.author.id)
         if past_streaks_rows is not None:
             for row in past_streaks_rows:
-                days = row[2]/24
+                days = row[2] / 24
                 streaks.append(days)
             streaks.append(total_streak_length)
         total_relapses = len(streaks)

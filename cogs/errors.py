@@ -47,6 +47,7 @@ class ErrorHandler(commands.Cog):
             print(f'Time      : {utils.timestr}')
             print(f'Command   : {ctx.command}', file=sys.stderr)
             print(f'Message   : {ctx.message.content}')
+            print(f'Author    : {ctx.author}')
             print(" ")
             traceback.print_exception(type(error), error, error.__traceback__, file=sys.stderr)
 

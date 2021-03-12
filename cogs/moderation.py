@@ -68,7 +68,12 @@ class ModCommands(commands.Cog):
         if isinstance(error, commands.CheckFailure):
             pass
         else:
-            print('Ignoring exception in command {}:'.format(ctx.command), file=sys.stderr)
+            print('\n--------')
+            print(f'Time      : {utils.timestr}')
+            print(f'Command   : {ctx.command}', file=sys.stderr)
+            print(f'Message   : {ctx.message.content}')
+            print(f'Author    : {ctx.author}')
+            print(" ")
             traceback.print_exception(type(error), error, error.__traceback__, file=sys.stderr)
 
 
@@ -505,7 +510,12 @@ class ModCommands(commands.Cog):
         if isinstance(error, commands.errors.MissingRequiredArgument):
             await ctx.send('You cant send an empty message')
         else:
-            print('Ignoring exception in command {}:'.format(ctx.command), file=sys.stderr)
+            print('\n--------')
+            print(f'Time      : {utils.timestr}')
+            print(f'Command   : {ctx.command}', file=sys.stderr)
+            print(f'Message   : {ctx.message.content}')
+            print(f'Author    : {ctx.author}')
+            print(" ")
             traceback.print_exception(type(error), error, error.__traceback__, file=sys.stderr)
 
 
@@ -550,7 +560,7 @@ class ModCommands(commands.Cog):
 
     async def spamFilter(self, message):
         def _check(m):
-            return (m.author == message.author and len(m.mentions) and (datetime.utcnow()-m.created_at).seconds < 15)
+            return (m.author == message.author and len(m.mentions) and (datetime.utcnow() - m.created_at).seconds < 15)
         if len((list(filter(lambda m: _check(m), self.client.cached_messages)))) >= 5:
             await message.author.add_roles(message.guild.get_role(settings.config["statusRoles"]["muted"]))
             embed = discord.Embed(color=message.author.color, timestamp=message.created_at)
