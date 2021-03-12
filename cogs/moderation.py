@@ -341,7 +341,7 @@ class ModCommands(commands.Cog):
         settings.config["staffRoles"]["admin"],
         settings.config["staffRoles"]["head-moderator"],
         settings.config["staffRoles"]["moderator"])
-    async def kick(self, ctx, member: discord.User = None, *, reason=None):
+    async def kick(self, ctx, member: discord.Member = None, *, reason=None):
         """kicks the user from the server"""
         if member is None or member == ctx.message.author:
             await ctx.channel.send("You cannot kick yourself")
@@ -378,7 +378,7 @@ class ModCommands(commands.Cog):
         settings.config["staffRoles"]["admin"],
         settings.config["staffRoles"]["head-moderator"],
         settings.config["staffRoles"]["moderator"])
-    async def ban(self, ctx, member: discord.User = None, *, reason=None, purge=False):
+    async def ban(self, ctx, member: discord.Member = None, *, reason=None, purge=False):
         """Generic command to ban a user to the server.  this command can only be exectued three times in a row by the same moderator
 
         Args
@@ -390,7 +390,7 @@ class ModCommands(commands.Cog):
             await ctx.channel.send("You cannot Ban yourself")
             return
         if await utils.is_staff(member):
-            await ctx.send('you cannot kick a memeber of staff')
+            await ctx.send('you cannot ban a memeber of staff')
             return
         if reason is None:
             reason = "For being a jerk!"
@@ -463,7 +463,7 @@ class ModCommands(commands.Cog):
             await ctx.channel.send("You can't lynch yourself!")
             return
         if await utils.is_staff(member):
-            await ctx.send('you cannot kick a memeber of staff')
+            await ctx.send('you cannot lynch a memeber of staff')
             return
         result = database.userdata_select_query(member.id, False)
         if result:
@@ -521,21 +521,21 @@ class ModCommands(commands.Cog):
 
     @Cog.listener()
     async def on_message(self, message):
-        if settings.config["prefix"] == "!":
-            if message.guild is None:
-                await self.modMail(message)
-            elif not await utils.is_staff(message.author) \
-                    and not await utils.in_roles(message.author, settings.config["statusRoles"]["bot-role"]):
-                await self.websiteBlacklist(message)
-                member = await utils.in_roles(message.author, settings.config["statusRoles"]["member"])
-                await self.spamFilter(message)
-                if profanity.contains_profanity(message.content):
-                    await message.delete()
-                elif not member and search(self.url_regex, message.content):
-                    await message.delete()
-                elif search(self.invite_regex, message.content):
-                    await message.delete()
-                    await self.logs_channel.send(f'<@{message.author.id}> tried to post:\n{message.content}')
+        if await utils.in_roles(message.author, settings.config["statusRoles"]["bot-role"]):
+            return
+        if message.guild is None:
+            await self.modMail(message)
+        elif not await utils.is_staff(message.author):
+            await self.websiteBlacklist(message)
+            member = await utils.in_roles(message.author, settings.config["statusRoles"]["member"])
+            await self.spamFilter(message)
+            if profanity.contains_profanity(message.content):
+                await message.delete()
+            elif not member and search(self.url_regex, message.content):
+                await message.delete()
+            elif search(self.invite_regex, message.content):
+                await message.delete()
+                await self.logs_channel.send(f'<@{message.author.id}> tried to post:\n{message.content}')
 
     async def modMail(self, message):
         complaints_channel = self.client.get_channel(settings.config["channels"]["complaints"])

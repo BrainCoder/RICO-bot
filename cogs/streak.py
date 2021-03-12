@@ -192,6 +192,8 @@ class Streak(commands.Cog):
     @commands.cooldown(3, 900, commands.BucketType.user)
     async def update(self, ctx):
         """updates the users streak"""
+
+        highest = False
         highest_role = ctx.guild.get_role(settings.config["modeRoles"]["highest-streak"])
         Anon = await utils.in_roles(ctx.author, settings.config["modeRoles"]["anon-streak"])
         if Anon:
@@ -203,7 +205,7 @@ class Streak(commands.Cog):
             total_streak_length = (datetime.utcnow().today() - last_starting_date).total_seconds()
             [daysStr, middleStr, hoursStr] = self.getStreakString(total_streak_length)
             past_streaks_rows = await database.past_select_query(ctx.author.id)
-            if past_streaks_rows is not None:
+            if past_streaks_rows is None:
                 streaks = []
                 for row in past_streaks_rows:
                     days = row[2]
@@ -212,7 +214,7 @@ class Streak(commands.Cog):
                     highest = True
             else:
                 if not Anon:
-                    await ctx.author.add_role(highest_role)
+                    await ctx.author.add_roles(highest_role)
             if not Anon:
                 await self.updateStreakRole(ctx.author, last_starting_date)
                 if highest:
@@ -277,6 +279,7 @@ class Streak(commands.Cog):
         if(userdata_rows[0]['last_relapse'] is not None):
             last_starting_date = utils.to_dt(userdata_rows[0]['last_relapse'])
             total_streak_length = (datetime.utcnow().today() - last_starting_date).total_seconds()
+            totalHours, _ = divmod(total_streak_length, 60 * 60)
 
         # Get the past streaks data from the databse
         past_streaks_rows = await database.past_select_query(ctx.author.id)
@@ -284,14 +287,14 @@ class Streak(commands.Cog):
             for row in past_streaks_rows:
                 days = row[2] / 24
                 streaks.append(days)
-            streaks.append(total_streak_length)
+            streaks.append(totalHours / 24)
         total_relapses = len(streaks)
 
         # If they have a previous streak
         if total_relapses != 0:
             avg = sum(streaks) / total_relapses
             highest = max(streaks)
-            await utils.doembed(ctx, 'Past Streaks', 'Stats', f'Total Relapses: {total_relapses}\nHighest streak: {int(round(highest))}\nAverage Streak: {int(round(avg))}', ctx.author, True)
+            await utils.doembed(ctx, 'Past Streaks', 'Stats', f'Total Relapses: {total_relapses - 1}\nHighest streak: {int(round(highest))}\nAverage Streak: {int(round(avg))}', ctx.author, True)
 
         # If they dont have a previous streak
         else:
