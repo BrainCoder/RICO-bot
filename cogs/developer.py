@@ -177,12 +177,12 @@ class DeveloperTools(commands.Cog):
                 result = await database.userdata_select_query(user.id, False)
                 if result:
                     member_role = ctx.guild.get_role(settings.config["statusRoles"]["member"])
-                    if member_role in user.roles and result[11] == 0:
+                    if member_role in user.roles and result[8] == 0:
                         user_data_query = update(database.userdata).where(database.userdata.c.id == user.id) \
                             .values(member=1)
                         database.conn.execute(user_data_query)
                         members_added.append(user.name)
-                    elif member_role not in user.roles and result[11] == 1:
+                    elif member_role not in user.roles and result[8] == 1:
                         user_data_query = update(database.userdata).where(database.userdata.c.id == user.id) \
                             .values(member=0)
                         database.conn.execute(user_data_query)
