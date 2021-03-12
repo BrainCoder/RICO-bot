@@ -16,6 +16,8 @@ class ModeratorTools(commands.Cog):
 
     @commands.command(name="getstrikes", aliases=['sr', 'gs', 'report'])
     @commands.has_any_role(
+        settings.config["staffRoles"]["admin"],
+        settings.config["staffRoles"]["head-moderator"],
         settings.config["staffRoles"]["moderator"],
         settings.config["staffRoles"]["semi-moderator"],
         settings.config["staffRoles"]["trial-mod"])
@@ -167,6 +169,8 @@ class ModeratorTools(commands.Cog):
 
     @commands.command(name="offline")
     @commands.has_any_role(
+        settings.config["staffRoles"]["admin"],
+        settings.config["staffRoles"]["head-moderator"],
         settings.config["staffRoles"]["moderator"],
         settings.config["staffRoles"]["semi-moderator"],
         settings.config["staffRoles"]["trial-mod"])

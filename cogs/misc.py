@@ -17,10 +17,10 @@ class Extra(commands.Cog):
 
     def __init__(self, client):
         self.client = client
-        self._last_member = None
+
 
     @commands.command(name="8ball", aliases=['8b'])
-    @cooldown(1, 60)
+    @cooldown(1, 60, commands.BucketType.user)
     async def _8ball(self, ctx, *, question):
         """standard 8ball command"""
         responses = [
@@ -42,24 +42,28 @@ class Extra(commands.Cog):
             'My reply is no',
             'My sources say no',
             'Outlook not so good',
-            'Very doubtful'
-        ]
+            'Very doubtful']
         if '@everyone' in question or '@here' in question:
             await utils.emoji(ctx, '❌')
         else:
             await ctx.send(f' **Question:** {question}\n**Answer:** {random.choice(responses)}')
+
 
     @commands.command(name="dosomething")
     async def dosomething(self, ctx):
         """try it and find out ;)"""
         await ctx.channel.send("*Does your mum*")
 
+
     @commands.command(name="userinfo", aliases=["ui"])
     @commands.has_any_role(
-        settings.config["statusRoles"]["vip"],
+        settings.config["staffRoles"]["admin"],
+        settings.config["staffRoles"]["head-moderator"],
         settings.config["staffRoles"]["moderator"],
         settings.config["staffRoles"]["semi-moderator"],
-        settings.config["staffRoles"]["trial-mod"])
+        settings.config["staffRoles"]["trial-mod"],
+        settings.config["statusRoles"]["vip"],
+        settings.config["statusRoles"]["boost-vip"])
     async def ui(self, ctx, *, member: discord.Member = None):
         """gives basic info on the user tagged in the arg"""
         if member is None:
@@ -80,12 +84,16 @@ class Extra(commands.Cog):
         embed.add_field(name="Previous Usernames: ", value=usernames)
         await ctx.send(embed=embed)
 
+
     @commands.command(name="avatar", aliases=["av"])
     @commands.has_any_role(
-        settings.config["statusRoles"]["vip"],
+        settings.config["staffRoles"]["admin"],
+        settings.config["staffRoles"]["head-moderator"],
         settings.config["staffRoles"]["moderator"],
         settings.config["staffRoles"]["semi-moderator"],
-        settings.config["staffRoles"]["trial-mod"])
+        settings.config["staffRoles"]["trial-mod"],
+        settings.config["statusRoles"]["vip"],
+        settings.config["statusRoles"]["boost-vip"])
     async def avatar(self, ctx, *, avamember: discord.Member = None):
         """sends a link of the users avatar"""
         if avamember is None:
@@ -94,6 +102,7 @@ class Extra(commands.Cog):
         else:
             userAvatarUrl = avamember.avatar_url
             await ctx.send(f"<@{avamember.id}>s avatar is:\n{userAvatarUrl}")
+
 
     @commands.command(name="gfsandwich")
     async def gfsandwich(self, ctx):
@@ -104,8 +113,16 @@ class Extra(commands.Cog):
         else:
             await ctx.send('uwu what kinda of sandwich does daddy want =^.^=', delete_after=5)
 
+
     @commands.command(name="remind", aliases=["remindme"])
     @commands.has_any_role(
+        settings.config["staffRoles"]["admin"],
+        settings.config["staffRoles"]["head-moderator"],
+        settings.config["staffRoles"]["moderator"],
+        settings.config["staffRoles"]["semi-moderator"],
+        settings.config["staffRoles"]["trial-mod"],
+        settings.config["statusRoles"]["vip"],
+        settings.config["statusRoles"]["boost-vip"],
         settings.config["statusRoles"]["member"])
     async def remind(self, ctx, *, time: utils.TimeConverter = None):
         """unmute the user"""
@@ -116,10 +133,12 @@ class Extra(commands.Cog):
             await asyncio.sleep(time)
             await ctx.send(f'{ctx.author.mention}')
 
+
     @commands.command(name="emergency", aliases=['m'])
     async def emergency(self, ctx):
         """Gets an emergency link from emergency.nofap.com website."""
         await utils.get_emergency_picture(ctx)
+
 
     @commands.command(name="tip", aliases=["t"])
     async def tip(self, ctx):

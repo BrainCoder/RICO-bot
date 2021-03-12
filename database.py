@@ -13,6 +13,7 @@ global mod_event_type
 global name_change_type
 global name_change_event
 global past_streaks
+global afk_event
 
 
 def init():
@@ -25,6 +26,7 @@ def init():
     global name_change_type
     global name_change_event
     global past_streaks
+    global afk_event
     engine = create_engine(settings.config["databaseUrl"], echo=True)
     conn = engine.connect()
     meta = MetaData()
@@ -42,6 +44,7 @@ def init():
         Column('kicked', TINYINT, nullable=0, default=0),
         Column('banned', TINYINT, nullable=0, default=0),
         Column('noperms', TINYINT, nullable=0, default=0),
+        Column('afk', TINYINT, nullable=0, default=0),
         Column('member_activation_date', BIGINT, nullable=False, default=0),
     )
 
@@ -86,7 +89,18 @@ def init():
         Column('event_time', DATETIME, nullable=False)
     )
 
+    afk_event = Table(
+        'afk_event', meta,
+        Column('event_id', BIGINT, primary_key=True, nullable=False, autoincrement=True),
+        Column('user_id', BIGINT, ForeignKey("userdata.id"), nullable=False),
+        Column('message', TEXT),
+        Column('username', TEXT, nullable=False),
+        Column('nickname', TINYINT, nullable=False),
+        Column('event_time', DATETIME, nullable=False),
+        Column('historical', TINYINT, nullable=False, default=0)
+    )
     meta.create_all(engine)
+
 
 # Userdata
 
@@ -95,13 +109,16 @@ async def userdata_update_query(id, params: dict):
         .values(params)
     conn.execute(user_data_query)
 
-async def userdata_select_query(id, all: bool = True):
-    query = userdata.select().where(userdata.c.id == id)
-    if all:
-        rows = conn.execute(query).fetchall()
+async def userdata_select_query(id: int = None, all: bool = True):
+    if id:
+        query = userdata.select().where(userdata.c.id == id)
     else:
-        rows = conn.execute(query).fetchone()
-    return rows
+        query = userdata.select()
+    if all:
+        return conn.execute(query).fetchall()
+    else:
+        return conn.execute(query).fetchone()
+
 
 # Modevent
 
@@ -110,6 +127,7 @@ async def mod_event_insert(recipient_id, event_type, event_time, reason, issuer_
         values(recipient_id=recipient_id, event_type=event_type, reason=reason, event_time=event_time,
             issuer_id=issuer_id, historical=historical)
     conn.execute(mod_query)
+
 
 # Past streaks
 
@@ -123,8 +141,8 @@ async def past_insert_query(user_id, streak_length):
 
 async def past_select_query(id):
     query = past_streaks.select().where(past_streaks.c.user_id == id)
-    rows = conn.execute(query).fetchall()
-    return rows
+    return conn.execute(query).fetchall()
+
 
 # Nickname change event
 
@@ -132,3 +150,34 @@ async def name_change_event_insert(user_id, previous_name, change_type, new_name
     username_query = name_change_event.insert(). \
         values(user_id=user_id, previous_name=previous_name, change_type=change_type, new_name=new_name, event_time=datetime.utcnow())
     conn.execute(username_query)
+
+
+# AFK table
+
+async def afk_event_insert(user_id: int, username: str, nickname: int, message: str):
+    afk_event_insert_query = afk_event.insert().values(
+        user_id=user_id,
+        message=message,
+        username=username,
+        nickname=nickname,
+        event_time=datetime.utcnow())
+    conn.execute(afk_event_insert_query)
+
+async def afk_event_update(id):
+    afk_event_update_query = update(afk_event).where(afk_event.c.user_id == id) \
+        .values(historical=1)
+    conn.execute(afk_event_update_query)
+
+async def afk_event_select(id: int = False, current: bool = False):
+    if id:
+        if current:
+            query = afk_event.select().where(afk_event.c.user_id == id)
+            rows = conn.execute(query).fetchall()
+            for row in rows:
+                if row[6] == 0:
+                    return row
+        else:
+            query = afk_event.select().where(afk_event.c.user_id == id and afk_event.c.historical == 1)
+    else:
+        query = afk_event.select()
+    return conn.execute(query).fetchone()

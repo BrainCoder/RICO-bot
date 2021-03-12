@@ -64,16 +64,29 @@ class ModCommands(commands.Cog):
         await ctx.message.delete()
         await ctx.send(f'Wrong channel! Please bump the server in <#{settings.config["channels"]["bump"]}>', delete_after=5)
     @dBumpChannel.error
-    async def relapse_handler(self, ctx, error):
+    async def dBumpChannel_handler(self, ctx, error):
         if isinstance(error, commands.CheckFailure):
             pass
         else:
-            print('Ignoring exception in command {}:'.format(ctx.command), file=sys.stderr)
+            print('\n--------')
+            print(f'Time      : {utils.timestr}')
+            print(f'Command   : {ctx.command}', file=sys.stderr)
+            print(f'Message   : {ctx.message.content}')
+            print(f'Author    : {ctx.author}')
+            print(" ")
             traceback.print_exception(type(error), error, error.__traceback__, file=sys.stderr)
 
 
     @commands.command(name='selfmute')
+    @commands.cooldown(2, 21600, commands.BucketType.user)
     @commands.has_any_role(
+        settings.config["staffRoles"]["admin"],
+        settings.config["staffRoles"]["head-moderator"],
+        settings.config["staffRoles"]["moderator"],
+        settings.config["staffRoles"]["semi-moderator"],
+        settings.config["staffRoles"]["trial-mod"],
+        settings.config["statusRoles"]["vip"],
+        settings.config["statusRoles"]["boost-vip"],
         settings.config["statusRoles"]["member"])
     async def selfmute(self, ctx):
         """Lets the user selfmute taking them out of the server"""
@@ -87,6 +100,8 @@ class ModCommands(commands.Cog):
 
     @commands.command(name="purge", aliases=["clear"])
     @commands.has_any_role(
+        settings.config["staffRoles"]["admin"],
+        settings.config["staffRoles"]["head-moderator"],
         settings.config["staffRoles"]["moderator"])
     async def purge(self, ctx, amount=5):
         """clears messages in the given channel"""
@@ -99,6 +114,8 @@ class ModCommands(commands.Cog):
 
     @commands.command(name='noperms')
     @commands.has_any_role(
+        settings.config["staffRoles"]["admin"],
+        settings.config["staffRoles"]["head-moderator"],
         settings.config["staffRoles"]["moderator"],
         settings.config["staffRoles"]["semi-moderator"])
     async def memeber(self, ctx, user: discord.Member):
@@ -124,6 +141,8 @@ class ModCommands(commands.Cog):
 
     @commands.command(name="member")
     @commands.has_any_role(
+        settings.config["staffRoles"]["admin"],
+        settings.config["staffRoles"]["head-moderator"],
         settings.config["staffRoles"]["moderator"],
         settings.config["staffRoles"]["semi-moderator"],
         settings.config["staffRoles"]["trial-mod"])
@@ -156,6 +175,8 @@ class ModCommands(commands.Cog):
 
     @commands.command(name="mute", aliases=['s', 'strike'])
     @commands.has_any_role(
+        settings.config["staffRoles"]["admin"],
+        settings.config["staffRoles"]["head-moderator"],
         settings.config["staffRoles"]["moderator"],
         settings.config["staffRoles"]["semi-moderator"],
         settings.config["staffRoles"]["trial-mod"])
@@ -194,10 +215,13 @@ class ModCommands(commands.Cog):
     @commands.command(name="vmute", aliases=['vs', 'vstrike'])
     @commands.cooldown(1, 86400, commands.BucketType.user)
     @commands.has_any_role(
+        settings.config["staffRoles"]["admin"],
+        settings.config["staffRoles"]["head-moderator"],
         settings.config["staffRoles"]["moderator"],
         settings.config["staffRoles"]["semi-moderator"],
         settings.config["staffRoles"]["trial-mod"],
-        settings.config["statusRoles"]["vip"])
+        settings.config["statusRoles"]["vip"],
+        settings.config["statusRoles"]["boost-vip"])
     async def vmute(self, ctx, user: discord.Member, *, reason=None):
         """A version of the mute command but for VIPs, has the same functionality of giving the user the mute role, and adding the event to the mod event table, but has a cooldown.
         Please be aware, abuse of this command will result in the VIP role being removed
@@ -233,6 +257,8 @@ class ModCommands(commands.Cog):
 
     @commands.command(name="cooldown", aliases=['c'])
     @commands.has_any_role(
+        settings.config["staffRoles"]["admin"],
+        settings.config["staffRoles"]["head-moderator"],
         settings.config["staffRoles"]["moderator"],
         settings.config["staffRoles"]["semi-moderator"],
         settings.config["staffRoles"]["trial-mod"])
@@ -258,6 +284,8 @@ class ModCommands(commands.Cog):
 
     @commands.command(name="unmute")
     @commands.has_any_role(
+        settings.config["staffRoles"]["admin"],
+        settings.config["staffRoles"]["head-moderator"],
         settings.config["staffRoles"]["moderator"],
         settings.config["staffRoles"]["semi-moderator"],
         settings.config["staffRoles"]["trial-mod"])
@@ -316,11 +344,16 @@ class ModCommands(commands.Cog):
     @commands.command(name="kick")
     @commands.cooldown(15, 600, commands.BucketType.user)
     @commands.has_any_role(
+        settings.config["staffRoles"]["admin"],
+        settings.config["staffRoles"]["head-moderator"],
         settings.config["staffRoles"]["moderator"])
-    async def kick(self, ctx, member: discord.User = None, *, reason=None):
+    async def kick(self, ctx, member: discord.Member = None, *, reason=None):
         """kicks the user from the server"""
         if member is None or member == ctx.message.author:
             await ctx.channel.send("You cannot kick yourself")
+            return
+        if await utils.is_staff(member):
+            await ctx.send('you cannot kick a memeber of staff')
             return
         if reason is None:
             reason = "For being a jerk!"
@@ -334,6 +367,8 @@ class ModCommands(commands.Cog):
 
     @commands.command(name='underage')
     @commands.has_any_role(
+        settings.config["staffRoles"]["admin"],
+        settings.config["staffRoles"]["head-moderator"],
         settings.config["staffRoles"]["moderator"],
         settings.config["staffRoles"]["semi-moderator"],
         settings.config["staffRoles"]["trial-mod"])
@@ -346,8 +381,10 @@ class ModCommands(commands.Cog):
     @commands.command(name="ban")
     @commands.cooldown(15, 600, commands.BucketType.user)
     @commands.has_any_role(
+        settings.config["staffRoles"]["admin"],
+        settings.config["staffRoles"]["head-moderator"],
         settings.config["staffRoles"]["moderator"])
-    async def ban(self, ctx, member: discord.User = None, *, reason=None, purge=False):
+    async def ban(self, ctx, member: discord.Member = None, *, reason=None, purge=False):
         """Generic command to ban a user to the server.  this command can only be exectued three times in a row by the same moderator
 
         Args
@@ -357,6 +394,9 @@ class ModCommands(commands.Cog):
         """
         if member is None or member == ctx.message.author:
             await ctx.channel.send("You cannot Ban yourself")
+            return
+        if await utils.is_staff(member):
+            await ctx.send('you cannot ban a memeber of staff')
             return
         if reason is None:
             reason = "For being a jerk!"
@@ -373,6 +413,8 @@ class ModCommands(commands.Cog):
 
     @commands.command(name="automod")
     @commands.has_any_role(
+        settings.config["staffRoles"]["admin"],
+        settings.config["staffRoles"]["head-moderator"],
         settings.config["staffRoles"]["moderator"])
     async def automod_edit(self, ctx, arg=None, *words):
         invarg = 'Please use the corect arguments\n```!automod add - add word to blacklist\n!automod remove - remove word from blacklist\n!automod blacklist - to see the blacklist```'
@@ -417,17 +459,23 @@ class ModCommands(commands.Cog):
 
     @commands.command(name="lynch")
     @commands.has_any_role(
-        settings.config["statusRoles"]["member"],
+        settings.config["staffRoles"]["admin"],
+        settings.config["staffRoles"]["head-moderator"],
         settings.config["staffRoles"]["moderator"],
-        settings.config["staffRoles"]["semi-moderator"])
-    async def lynch(self, ctx, member: discord.Member = None):
+        settings.config["staffRoles"]["semi-moderator"],
+        settings.config["staffRoles"]["trial-mod"],
+        settings.config["statusRoles"]["member"])
+    async def nlynch(self, ctx, member: discord.Member = None):
         """A command to be used if there is no staff present, where three members can type in `!lynch` in order to mute a user"""
         if member is None:
             await ctx.send('please tag the user you want to lynch', delete_after=5)
         elif ctx.author == member:
             await ctx.channel.send("You can't lynch yourself!")
             return
-        result = await database.userdata_select_query(member.id, False)
+        if await utils.is_staff(member):
+            await ctx.send('you cannot lynch a memeber of staff')
+            return
+        result = database.userdata_select_query(member.id, False)
         if result:
             current_lynches = result[2] + 1
             if datetime.utcnow() > (datetime.fromtimestamp(result[4]) + timedelta(hours=8)):
@@ -475,27 +523,32 @@ class ModCommands(commands.Cog):
         if isinstance(error, commands.errors.MissingRequiredArgument):
             await ctx.send('You cant send an empty message')
         else:
-            print('Ignoring exception in command {}:'.format(ctx.command), file=sys.stderr)
+            print('\n--------')
+            print(f'Time      : {utils.timestr}')
+            print(f'Command   : {ctx.command}', file=sys.stderr)
+            print(f'Message   : {ctx.message.content}')
+            print(f'Author    : {ctx.author}')
+            print(" ")
             traceback.print_exception(type(error), error, error.__traceback__, file=sys.stderr)
 
 
     @Cog.listener()
     async def on_message(self, message):
-        if settings.config["prefix"] == "!":
-            if message.guild is None:
-                await self.modMail(message)
-            elif not await utils.is_staff(message.author) \
-                    and not await utils.in_roles(message.author, settings.config["statusRoles"]["bot-role"]):
-                await self.websiteBlacklist(message)
-                member = await utils.in_roles(message.author, settings.config["statusRoles"]["member"])
-                await self.spamFilter(message)
-                if profanity.contains_profanity(message.content):
-                    await message.delete()
-                elif not member and search(self.url_regex, message.content):
-                    await message.delete()
-                elif search(self.invite_regex, message.content):
-                    await message.delete()
-                    await self.logs_channel.send(f'<@{message.author.id}> tried to post:\n{message.content}')
+        if await utils.in_roles(message.author, settings.config["statusRoles"]["bot-role"]):
+            return
+        if message.guild is None:
+            await self.modMail(message)
+        elif not await utils.is_staff(message.author):
+            await self.websiteBlacklist(message)
+            member = await utils.in_roles(message.author, settings.config["statusRoles"]["member"])
+            await self.spamFilter(message)
+            if profanity.contains_profanity(message.content):
+                await message.delete()
+            elif not member and search(self.url_regex, message.content):
+                await message.delete()
+            elif search(self.invite_regex, message.content):
+                await message.delete()
+                await self.logs_channel.send(f'<@{message.author.id}> tried to post:\n{message.content}')
 
     async def modMail(self, message):
         complaints_channel = self.client.get_channel(settings.config["channels"]["complaints"])

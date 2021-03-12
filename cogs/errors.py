@@ -44,7 +44,12 @@ class ErrorHandler(commands.Cog):
         elif isinstance(error, discord.NotFound):
             pass
         else:
-            print('Ignoring exception in command {}:'.format(ctx.command), file=sys.stderr)
+            print('\n--------')
+            print(f'Time      : {utils.timestr}')
+            print(f'Command   : {ctx.command}', file=sys.stderr)
+            print(f'Message   : {ctx.message.content}')
+            print(f'Author    : {ctx.author}')
+            print(" ")
             traceback.print_exception(type(error), error, error.__traceback__, file=sys.stderr)
 
 

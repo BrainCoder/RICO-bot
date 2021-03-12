@@ -63,6 +63,15 @@ async def in_roles(user, searchRole):
     except:
         return False
 
+async def in_channel(channel, searchChannel):
+    try:
+        if channel == searchChannel:
+            return True
+        else:
+            return False
+    except:
+        return False
+
 async def is_staff(user):
     staff_roles = []
     staff_roles.append(await in_roles(user, settings.config["staffRoles"]["admin"]))
@@ -73,6 +82,17 @@ async def is_staff(user):
     staff_roles.append(await in_roles(user, settings.config["staffRoles"]["moderator"]))
     staff_roles.append(await in_roles(user, settings.config["staffRoles"]["semi-moderator"]))
     return True in staff_roles
+
+async def in_staff_channel(channel):
+    channels = []
+    channels.append(await in_channel(channel, settings.config["channels"]["development"]))
+    channels.append(await in_channel(channel, settings.config["channels"]["testing"]))
+    channels.append(await in_channel(channel, settings.config["channels"]["administration"]))
+    channels.append(await in_channel(channel, settings.config["channels"]["moderators"]))
+    channels.append(await in_channel(channel, settings.config["channels"]["semi-mods"]))
+    channels.append(await in_channel(channel, settings.config["channels"]["staff-lounge"]))
+    channels.append(await in_channel(channel, settings.config["channels"]["complaints"]))
+    return True in channels
 
 async def role_pop(ctx, role):
     role_to_search = ctx.guild.get_role(role)

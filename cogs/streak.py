@@ -102,6 +102,9 @@ class Streak(commands.Cog):
             await self.challenge(ctx, settings.config["challenges"]["yearly-challenge-participant"])
         if await utils.in_roles(ctx.author, settings.config["challenges"]["deadpool-participant"]):
             await self.challenge(ctx, settings.config["challenges"]["deadpool-participant"])
+        if await utils.in_roles(ctx.author, settings.config["modeRoles"]["highest-streak"]):
+            role = await ctx.server.get_role(settings.config["modeRoles"]["highest-streak"])
+            await ctx.author.remove(role)
 
         # Decode the args
 
@@ -147,7 +150,10 @@ class Streak(commands.Cog):
                 await database.past_insert_query(ctx.author.id, totalHours)
 
                 await database.userdata_update_query(ctx.author.id, {'last_relapse': current_starting_date.timestamp()})
-                message = await ctx.channel.send(f'Your streak was {daysStr}{middleStr}{hoursStr} long.')
+                if hoursStr is not None:
+                    message = await ctx.channel.send(f'Your streak was {daysStr}{middleStr}{hoursStr} long.')
+                else:
+                    message = await ctx.channel.send('Your streak was less than an hour long')
                 if not Anon:
                     await self.updateStreakRole(ctx.author, current_starting_date)
                     await ctx.send('Don’t be dejected')
@@ -171,7 +177,12 @@ class Streak(commands.Cog):
             better_time = await utils.convert_from_seconds(error.retry_after)
             await ctx.send(content=f'This command is on cooldown. Please wait {better_time}', delete_after=5)
         else:
-            print('Ignoring exception in command {}:'.format(ctx.command), file=sys.stderr)
+            print('\n--------')
+            print(f'Time      : {utils.timestr}')
+            print(f'Command   : {ctx.command}', file=sys.stderr)
+            print(f'Message   : {ctx.message.content}')
+            print(f'Author    : {ctx.author}')
+            print(" ")
             traceback.print_exception(type(error), error, error.__traceback__, file=sys.stderr)
 
 
@@ -180,6 +191,9 @@ class Streak(commands.Cog):
     @commands.cooldown(3, 900, commands.BucketType.user)
     async def update(self, ctx):
         """updates the users streak"""
+
+        highest = False
+        highest_role = ctx.guild.get_role(settings.config["modeRoles"]["highest-streak"])
         Anon = await utils.in_roles(ctx.author, settings.config["modeRoles"]["anon-streak"])
         if Anon:
             await ctx.message.delete()
@@ -189,8 +203,21 @@ class Streak(commands.Cog):
             last_starting_date = utils.to_dt(rows[0]['last_relapse'])
             total_streak_length = (datetime.utcnow().today() - last_starting_date).total_seconds()
             [daysStr, middleStr, hoursStr] = self.getStreakString(total_streak_length)
+            past_streaks_rows = await database.past_select_query(ctx.author.id)
+            if past_streaks_rows is None:
+                streaks = []
+                for row in past_streaks_rows:
+                    days = row[2]
+                    streaks.append(days)
+                if max(streaks) < total_streak_length:
+                    highest = True
+            else:
+                if not Anon:
+                    await ctx.author.add_roles(highest_role)
             if not Anon:
                 await self.updateStreakRole(ctx.author, last_starting_date)
+                if highest:
+                    await ctx.author.add_role(highest_role)
             message = await ctx.channel.send(f'Your streak is {daysStr}{middleStr}{hoursStr} long.')
             if Anon:
                 await self.delayed_delete(message)
@@ -206,7 +233,12 @@ class Streak(commands.Cog):
             better_time = await utils.convert_from_seconds(error.retry_after)
             await ctx.send(content=f'This command is on cooldown. Please wait {better_time}', delete_after=5)
         else:
-            print('Ignoring exception in command {}:'.format(ctx.command), file=sys.stderr)
+            print('\n--------')
+            print(f'Time      : {utils.timestr}')
+            print(f'Command   : {ctx.command}', file=sys.stderr)
+            print(f'Message   : {ctx.message.content}')
+            print(f'Author    : {ctx.author}')
+            print(" ")
             traceback.print_exception(type(error), error, error.__traceback__, file=sys.stderr)
 
 
@@ -239,17 +271,31 @@ class Streak(commands.Cog):
     @commands.command(name="stats")
     @commands.cooldown(3, 900, commands.BucketType.user)
     async def ps_stats(self, ctx):
-        rows = await database.past_select_query(ctx.author.id)
-        if rows is not None:
-            streaks = []
-            for row in rows:
+        streaks = []
+
+        # Get current streak and place it in the streaks list
+        userdata_rows = await database.userdata_select_query(ctx.author.id)
+        if(userdata_rows[0]['last_relapse'] is not None):
+            last_starting_date = utils.to_dt(userdata_rows[0]['last_relapse'])
+            total_streak_length = (datetime.utcnow().today() - last_starting_date).total_seconds()
+            totalHours, _ = divmod(total_streak_length, 60 * 60)
+
+        # Get the past streaks data from the databse
+        past_streaks_rows = await database.past_select_query(ctx.author.id)
+        if past_streaks_rows is not None:
+            for row in past_streaks_rows:
                 days = row[2] / 24
                 streaks.append(days)
+            streaks.append(totalHours / 24)
         total_relapses = len(streaks)
+
+        # If they have a previous streak
         if total_relapses != 0:
             avg = sum(streaks) / total_relapses
             highest = max(streaks)
-            await utils.doembed(ctx, 'Past Streaks', 'Stats', f'Total Relapses: {total_relapses}\nHighest streak: {highest}\nAverage Streak: {avg}', ctx.author, True)
+            await utils.doembed(ctx, 'Past Streaks', 'Stats', f'Total Relapses: {total_relapses - 1}\nHighest streak: {int(round(highest))}\nAverage Streak: {int(round(avg))}', ctx.author, True)
+
+        # If they dont have a previous streak
         else:
             await ctx.send('There current is no data on your past streaks to calculate statistics for.')
 

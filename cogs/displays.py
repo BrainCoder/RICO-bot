@@ -14,6 +14,7 @@ class SetReaction(commands.Cog):
 
     @commands.command(name='displays')
     @commands.has_any_role(
+        settings.config["staffRoles"]["head-dev"],
         settings.config["staffRoles"]["developer"])
     async def displays(self, ctx, display):
         await ctx.message.delete()
