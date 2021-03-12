@@ -108,21 +108,24 @@ class Extra(commands.Cog):
                 # If the author wasnt afk do this
                 else:
 
-                    # If the there are mentions in the message
-                    if len(message.mentions) > 0:
+                    # Checks if message wes sent in staff channel
+                    if not await utils.in_staff_channel(message.channel.id):
 
-                        # Loop through the mentions
-                        for mention in message.mentions:
+                        # If the there are mentions in the message
+                        if len(message.mentions) > 0:
 
-                            # If the mention user is afk do this:
-                            if mention.id in self.afk_users:
+                            # Loop through the mentions
+                            for mention in message.mentions:
 
-                                row = await database.afk_event_select(mention.id, True)
-                                afk_message = row[2]
-                                if afk_message is None:
-                                    await message.channel.send(f'{mention} is currently AFK')
-                                else:
-                                    await message.channel.send(f'{mention} is currently afk with the message "{afk_message}"')
+                                # If the mention user is afk do this:
+                                if mention.id in self.afk_users:
+
+                                    row = await database.afk_event_select(mention.id, True)
+                                    afk_message = row[2]
+                                    if afk_message is None:
+                                        await message.channel.send(f'{mention} is currently AFK')
+                                    else:
+                                        await message.channel.send(f'{mention} is currently afk with the message "{afk_message}"')
 
 def setup(client):
     client.add_cog(Extra(client))
