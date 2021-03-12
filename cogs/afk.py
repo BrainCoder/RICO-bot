@@ -35,17 +35,33 @@ class Extra(commands.Cog):
         settings.config["statusRoles"]["boost-vip"],
         settings.config["statusRoles"]["member"])
     async def afk(self, ctx, *, message: str = None):
+
+        # If the author isnt already in afk_users list
         if ctx.author.id not in self.afk_users:
+
             nickname = 0
+
+            # If their nickanme is the same as their display name
             if ctx.author.name != ctx.author.display_name:
                 nickname = 1
+
+            # Update userdata table
             await database.userdata_update_query(ctx.author.id, {'afk': 1})
+
+            # Insert AFK event into afk_event table
             await database.afk_event_insert(ctx.author.id, ctx.author.display_name, nickname, message)
+
+            # Add the user id to the afk_users list
             self.afk_users.append(ctx.author.id)
-            try:
-                await ctx.author.edit(nick=f'[AFK] {ctx.author.display_name}')
-            except:
-                await ctx.send('failed to change nickname')
+
+            if "[AFK]" not in ctx.author.display_name:
+
+                # Attempt to change the username
+                try:
+                    await ctx.author.edit(nick=f'[AFK] {ctx.author.display_name}')
+                except:
+                    await ctx.send('failed to change nickname')
+
             await utils.emoji(ctx)
 
 
