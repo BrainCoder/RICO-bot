@@ -95,7 +95,7 @@ class Extra(commands.Cog):
                                 await message.author.edit(nick=None)
                         except:
                             await message.channel.send('failed to change nickname')
-                        
+
                         # Update the most recent afk event to be historical
                         await database.afk_event_update(message.author.id)
 
@@ -116,7 +116,7 @@ class Extra(commands.Cog):
 
                             # If the mention user is afk do this:
                             if mention.id in self.afk_users:
-                                
+
                                 row = await database.afk_event_select(mention.id, True)
                                 afk_message = row[2]
                                 if afk_message is None:
