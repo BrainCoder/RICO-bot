@@ -103,7 +103,7 @@ class Streak(commands.Cog):
         if await utils.in_roles(ctx.author, settings.config["challenges"]["deadpool-participant"]):
             await self.challenge(ctx, settings.config["challenges"]["deadpool-participant"])
         if await utils.in_roles(ctx.author, settings.config["modeRoles"]["highest-streak"]):
-            role = await ctx.server.get_role(settings.config["modeRoles"]["highest-streak"])
+            role = await ctx.guild.get_role(settings.config["modeRoles"]["highest-streak"])
             await ctx.author.remove(role)
 
         # Decode the args
