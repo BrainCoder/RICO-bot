@@ -59,8 +59,7 @@ class Streak(commands.Cog):
                 return
 
     async def check_permitted_streak_set_amount(self, ctx, number):
-        if (number > 30 and not await utils.in_roles(ctx.author, settings.config["statusRoles"]["vip"]) and
-                number > 30 and not await utils.in_roles(ctx.author, settings.config["statusRoles"]["boost-vip"])):
+        if (number > 30 and not await utils.in_roles(ctx.author, settings.config["statusRoles"]["vip"])):
             return -1
         elif number > 90 and not await utils.is_staff(ctx):
             return -1
@@ -265,7 +264,7 @@ class Streak(commands.Cog):
             await ctx.channel.send("Please send a value less than or equal to 24 hours")
             return
         await database.userdata_update_query(member.id, {'last_relapse': new_starting_date.timestamp()})
-        await self.updateStreakRole(ctx.author, new_starting_date)
+        await self.updateStreakRole(member, new_starting_date)
         await ctx.channel.send("Streak set successfully.")
 
 

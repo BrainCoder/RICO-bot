@@ -95,6 +95,7 @@ class ModCommands(commands.Cog):
             await ctx.author.remove_roles(Selfmute_Role)
         else:
             await ctx.author.add_roles(Selfmute_Role)
+        await ctx.message.delete()
 
 
     @commands.command(name="purge", aliases=["clear"])
@@ -118,6 +119,9 @@ class ModCommands(commands.Cog):
         settings.config["staffRoles"]["moderator"],
         settings.config["staffRoles"]["semi-moderator"])
     async def memeber(self, ctx, user: discord.Member):
+        """Adds a noperms flag to the user inside the bots database. This does not add the role
+        If a user has a noperms flag this means that a memeber of staff cannot give the the memeber role without removing the flag.
+        While Semi's can add the flag, same as full moderators; only full moderators can remove the flag"""
         await self.client.wait_until_ready()
         result = await database.userdata_select_query(user.id, False)
         if result and result[12] != 0:
@@ -142,7 +146,9 @@ class ModCommands(commands.Cog):
         settings.config["staffRoles"]["moderator"],
         settings.config["staffRoles"]["semi-moderator"],
         settings.config["staffRoles"]["trial-mod"])
-    async def member(self, ctx, user: discord.Member):
+    async def member(self, ctx, user: discord.Member = None):
+        if user is None:
+            return
         await self.client.wait_until_ready()
         member_joined_at = user.joined_at
         result = await database.userdata_select_query(user.id, False)
@@ -401,7 +407,7 @@ class ModCommands(commands.Cog):
             await ctx.guild.ban(member, reason=reason)
         await utils.doembed(ctx, "Ban", f"{member} has been Banned!", f"**for:** {reason} banned by: <@{ctx.author.id}>.", member)
         await database.mod_event_insert(member.id, 1, datetime.utcnow(), reason, ctx.author.id, 0)
-        await database.update(member.id, {'banned': 1})
+        await database.userdata_update_query(member.id, {'banned': 1})
         await utils.emoji(ctx)
 
 
@@ -438,13 +444,17 @@ class ModCommands(commands.Cog):
     @commands.command(name='rule', aliases=['rules'])
     @commands.cooldown(1, 5)
     async def rules(self, ctx, rule: int = None):
-        if rule is not None:
+        if rule is None:
+            return
+        try:
             rules = await utils.extract_data('resources/rules.txt')
             embed = discord.Embed(color=ctx.author.color, timestamp=ctx.message.created_at)
             embed.set_author(name="Rules", icon_url=ctx.author.avatar_url)
             embed.add_field(name=f"Rule {rule}", value=rules[rule - 1])
             await ctx.send(embed=embed)
-            # Couldnt get this working w/ utils.doembed for some reason, this is something thall have to be addressed in the future
+        except IndexError:
+            await ctx.send(f'{rule} is not a valid rule')
+        # Couldnt get this working w/ utils.doembed for some reason, this is something thall have to be addressed in the future
 
 
     @commands.command(name="lynch")
@@ -467,13 +477,13 @@ class ModCommands(commands.Cog):
             return
         result = database.userdata_select_query(member.id, False)
         if result:
-            current_lynches = result[5] + 1
-            if datetime.utcnow() > (datetime.fromtimestamp(result[7]) + timedelta(hours=8)):
+            current_lynches = result[2] + 1
+            if datetime.utcnow() > (datetime.fromtimestamp(result[4]) + timedelta(hours=8)):
                 current_lynches = 1
                 make_historical_query = text(f'update mod_event set historical = 1 '
                                              f'where recipient_id = {member.id} and event_type = 6')
                 database.conn.execute(make_historical_query)
-            successful_lynches = result[6]
+            successful_lynches = result[3]
             if current_lynches >= 3:
                 await ctx.channel.send(f'{member.mention} has been lynched')
                 await database.userdata_update_query(member.id, {'lynch_count': 0, 'successful_lynch_count': successful_lynches + 1, 'lynch_expiration_time': 0})
@@ -490,7 +500,10 @@ class ModCommands(commands.Cog):
                 await utils.doembed(ctx, "Lynch", f"User {member} was lynched! ", f"lynched by: {lyncher_list}", bot)
             else:
                 await utils.emoji(ctx)
-                await database.update(member.id, {'lynch_count': current_lynches, 'lynch_expiration_time': (datetime.utcnow() + timedelta(hours=8)).timestamp()})
+                query = database.update(database.userdata).where(database.userdata.c.id == member.id) \
+                    .values(lynch_count=current_lynches,
+                            lynch_expiration_time=(datetime.utcnow() + timedelta(hours=8)).timestamp())
+                database.conn.execute(query)
                 await database.mod_event_insert(member.id, 6, datetime.utcnow(), None, ctx.author.id, 0)
             member_role = ctx.guild.get_role(settings.config["statusRoles"]["member"])
             await ctx.author.remove_roles(member_role)
@@ -569,7 +582,7 @@ class ModCommands(commands.Cog):
             await self.logs_channel.send(embed=embed)
             reason = 'auto muted for spam pinging'
             await database.mod_event_insert(message.author.id, 3, datetime.utcnow(), reason, settings.config["botId"], 0)
-            await database.update(message.author.id, {'mute': 1})
+            await database.userdata_update_query(message.author.id, {'mute': 1})
 
     @tasks.loop(hours=settings.config["memberUpdateInterval"])
     async def check_member_status(self):

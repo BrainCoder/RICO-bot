@@ -45,7 +45,7 @@ class SetReaction(commands.Cog):
         embed.add_field(name="Backround info", value=f"\
             This server was created with the purpose of helping people overcome their drive to watch porn. We have a bot to keep track of the number of days you've\
             been clean, learn more about this in <#{settings.config['channels']['streak-guide']}> where you can also assign yourself the mode that you're attempting, and to see the commands that you can apply there.", inline=False)
-        embed.add_field(name="Server Creation Date", value="9/12/2018")
+        embed.add_field(name="Server Creation Date", value="19th Febuary 2021")
         embed.set_footer(text="NoPorn Companion was made by the NoPorn development team, please DM the bot for more information")
         await ctx.send(embed=embed)
 

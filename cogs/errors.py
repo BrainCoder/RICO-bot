@@ -5,6 +5,7 @@ from discord.ext import commands
 import traceback
 import sys
 
+
 class ErrorHandler(commands.Cog):
 
     def __init__(self, client):
@@ -50,6 +51,7 @@ class ErrorHandler(commands.Cog):
             print(f'Author    : {ctx.author}')
             print(" ")
             traceback.print_exception(type(error), error, error.__traceback__, file=sys.stderr)
+
 
 def setup(client):
     client.add_cog(ErrorHandler(client))

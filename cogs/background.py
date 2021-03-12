@@ -4,7 +4,8 @@ from discord.ext import commands, tasks
 import settings
 from itertools import cycle
 
-status = cycle(['Version 2.0.11', 'DM me with complaints!'])
+status = cycle(['Version 2.1.18', 'DM me with complaints!'])
+
 
 class background(commands.Cog):
 
@@ -26,6 +27,7 @@ class background(commands.Cog):
     @tasks.loop(minutes=1)
     async def activity_cycle(self):
         await self.client.change_presence(status=discord.Status.online, activity=discord.Game(next(status)))
+
 
 def setup(client):
     client.add_cog(background(client))
