@@ -104,6 +104,10 @@ def init():
 
 # Userdata
 
+async def userdata_insert_query(id: int):
+    query = userdata.insert().values(id=id)
+    conn.execute(query)
+
 async def userdata_update_query(id, params: dict):
     user_data_query = update(userdata).where(userdata.c.id == id) \
         .values(params)
