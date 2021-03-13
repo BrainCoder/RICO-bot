@@ -29,26 +29,20 @@ async def on_ready():
     print('Bot is active')
     await client.wait_until_ready()
     devlogs = client.get_channel(settings.config["channels"]["devlog"])
-    if settings.config["prefix"] == '!':
-        await devlogs.send('---')
-        await devlogs.send(f'{utils.timestr}Bot is online')
-        await devlogs.send(f'{utils.timestr}Loaded `blacklist.txt` & `whitelist.txt` due to startup')
+    await devlogs.send('---')
+    await devlogs.send(f'{utils.timestr}Bot is online')
+    await devlogs.send(f'{utils.timestr}Loaded `blacklist.txt` & `whitelist.txt` due to startup')
     await cogs_load()
 
 async def cogs_load():
-    if settings.config["prefix"] == '!':
-        devlogs = client.get_channel(settings.config["channels"]["devlog"])
-        for filename in os.listdir('./cogs'):
-            if filename.endswith('.py'):
-                client.load_extension(f'cogs.{filename[:-3]}')
-                await devlogs.send(f'{utils.timestr}`{filename}` loaded due to startup')
-                print(f'loaded {filename}')
-        await devlogs.send(f'{utils.timestr}**all cogs loaded**')
-        print('all cogs loaded')
-    else:
-        client.load_extension('cogs.developer')
-        client.load_extension('cogs.errors')
-        client.load_extension('cogs.misc')
+    devlogs = client.get_channel(settings.config["channels"]["devlog"])
+    for filename in os.listdir('./cogs'):
+        if filename.endswith('.py'):
+            client.load_extension(f'cogs.{filename[:-3]}')
+            await devlogs.send(f'{utils.timestr}`{filename}` loaded due to startup')
+            print(f'loaded {filename}')
+    await devlogs.send(f'{utils.timestr}**all cogs loaded**')
+    print('all cogs loaded')
 
 @client.command(name="logout", aliases=["killswitch"])
 @commands.has_any_role(
@@ -67,7 +61,6 @@ async def creset(ctx):
     log = f'{utils.timestr}`cogs` loaded manually using !creset command'
     client.load_extension('cogs.developer')
     await utils.emoji(ctx)
-    if settings.config["prefix"] == '!':
-        await devlogs.send(log)
+    await devlogs.send(log)
 
 client.run(sys.argv[4])

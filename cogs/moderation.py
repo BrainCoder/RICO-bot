@@ -586,26 +586,25 @@ class ModCommands(commands.Cog):
 
     @tasks.loop(hours=settings.config["memberUpdateInterval"])
     async def check_member_status(self):
-        prefix = settings.config["prefix"]
-        if prefix == "!":
-            make_historical_query = text('select id, member_activation_date from userdata')
-            results = database.conn.execute(make_historical_query)
-            current_guild = self.client.get_guild(settings.config["serverId"])
-            for result in results:
-                user = current_guild.get_member(result[0])
-                if user is not None and \
-                    result[1] != 0 and \
-                        (datetime.fromtimestamp(result[1])) < datetime.utcnow() < (
-                        datetime.fromtimestamp(result[1]) +
-                        timedelta(hours=settings.config["memberUpdateInterval"])):
-                    member_role = current_guild.get_role(settings.config["statusRoles"]["member"])
-                    await user.add_roles(member_role)
-                    await database.mod_event_insert(user.id, 8, datetime.utcnow(), None, settings.config["botId"], 0)
-                    await database.userdata_update_query(user.id, {'member': 1})
-                    # user_data_query = update(utils.userdata).where(utils.userdata.c.id == result[0]) \
-                    #     .values(member_activation_date=0)
-                    # utils.conn.execute(user_data_query)
-                    # Discuss idea of zeroing out instead so that anomalies don't occur but data will be lost.
+
+        make_historical_query = text('select id, member_activation_date from userdata')
+        results = database.conn.execute(make_historical_query)
+        current_guild = self.client.get_guild(settings.config["serverId"])
+        for result in results:
+            user = current_guild.get_member(result[0])
+            if user is not None and \
+                result[1] != 0 and \
+                    (datetime.fromtimestamp(result[1])) < datetime.utcnow() < (
+                    datetime.fromtimestamp(result[1]) +
+                    timedelta(hours=settings.config["memberUpdateInterval"])):
+                member_role = current_guild.get_role(settings.config["statusRoles"]["member"])
+                await user.add_roles(member_role)
+                await database.mod_event_insert(user.id, 8, datetime.utcnow(), None, settings.config["botId"], 0)
+                await database.userdata_update_query(user.id, {'member': 1})
+                # user_data_query = update(utils.userdata).where(utils.userdata.c.id == result[0]) \
+                #     .values(member_activation_date=0)
+                # utils.conn.execute(user_data_query)
+                # Discuss idea of zeroing out instead so that anomalies don't occur but data will be lost.
 
     @Cog.listener()
     async def on_member_update(self, before_user, after_user):
