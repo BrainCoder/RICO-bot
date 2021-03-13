@@ -40,7 +40,7 @@ class DeveloperTools(commands.Cog):
                     self.client.load_extension(f'cogs.{arg}')
                 elif action == 'unload':
                     if arg != 'developer':
-                        self.client.load_extension(f'cogs.{arg}')
+                        self.client.unload_extension(f'cogs.{arg}')
                 elif action == 'reload':
                     self.client.reload_extension(f'cogs.{arg}')
                 else:
