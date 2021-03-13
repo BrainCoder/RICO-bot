@@ -36,7 +36,8 @@ class Extra(commands.Cog):
         settings.config["statusRoles"]["boost-vip"],
         settings.config["statusRoles"]["member"])
     async def afk(self, ctx, *, message: str = None):
-
+        if '@everyone' in message or '@here' in message:
+            return
         if ctx.author.id in self.afk_users:
             return
         nickname = 0
@@ -83,6 +84,8 @@ class Extra(commands.Cog):
                     if mention.id in self.afk_users:
                         row = await database.afk_event_select(mention.id, True)
                         afk_message = row[2]
+                        if '@everyone' in afk_message or '@here' in afk_message:
+                            return
                         if afk_message is None:
                             await message.channel.send(f'{mention} is currently AFK')
                         else:
