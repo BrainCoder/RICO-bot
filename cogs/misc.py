@@ -18,6 +18,39 @@ class Extra(commands.Cog):
     def __init__(self, client):
         self.client = client
 
+    @commands.command(name='selfmute')
+    @commands.cooldown(2, 21600, commands.BucketType.user)
+    @commands.has_any_role(
+        settings.config["staffRoles"]["admin"],
+        settings.config["staffRoles"]["head-moderator"],
+        settings.config["staffRoles"]["moderator"],
+        settings.config["staffRoles"]["semi-moderator"],
+        settings.config["staffRoles"]["trial-mod"],
+        settings.config["statusRoles"]["vip"],
+        settings.config["statusRoles"]["boost-vip"],
+        settings.config["statusRoles"]["member"])
+    async def selfmute(self, ctx):
+        """Lets the user selfmute taking them out of the server"""
+        Selfmute_Role = ctx.guild.get_role(settings.config["statusRoles"]["self-mute"])
+        if Selfmute_Role in ctx.author.roles:
+            await ctx.author.remove_roles(Selfmute_Role)
+        else:
+            await ctx.author.add_roles(Selfmute_Role)
+        await ctx.message.delete()
+
+    @commands.command(name='rule', aliases=['rules'])
+    @commands.cooldown(1, 5)
+    async def rules(self, ctx, rule: int = None):
+        if rule is None:
+            return
+        try:
+            rules = await utils.extract_data('resources/rules.txt')
+            embed = discord.Embed(color=ctx.author.color, timestamp=ctx.message.created_at)
+            embed.set_author(name="Rules", icon_url=ctx.author.avatar_url)
+            embed.add_field(name=f"Rule {rule}", value=rules[rule - 1])
+            await ctx.send(embed=embed)
+        except IndexError:
+            await ctx.send(f'{rule} is not a valid rule')
 
     @commands.command(name="8ball", aliases=['8b'])
     @cooldown(1, 60, commands.BucketType.user)
