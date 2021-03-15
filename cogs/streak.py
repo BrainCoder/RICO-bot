@@ -244,8 +244,9 @@ class Streak(commands.Cog):
 
     @commands.command(name="fstreak")
     @commands.has_any_role(
-        settings.config["staffRoles"]["moderator"],
-        settings.config["staffRoles"]["head-moderator"])
+        settings.config["staffRoles"]["admin"],
+        settings.config["staffRoles"]["head-moderator"],
+        settings.config["staffRoles"]["moderator"])
     async def set_streak(self, ctx, member: discord.Member, *args):
         """forces someone's streak to a certain time.
 
