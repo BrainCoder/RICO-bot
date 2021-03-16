@@ -36,8 +36,9 @@ class Extra(commands.Cog):
         settings.config["statusRoles"]["boost-vip"],
         settings.config["statusRoles"]["member"])
     async def afk(self, ctx, *, message: str = None):
-        if '@everyone' in message or '@here' in message:
-            return
+        if message is not None:
+            if '@everyone' in message or '@here' in message:
+                return
         if ctx.author.id in self.afk_users:
             return
         nickname = 0
