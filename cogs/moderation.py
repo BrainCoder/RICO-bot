@@ -187,6 +187,8 @@ class ModCommands(commands.Cog):
             user : This is the user you want to mute
             reason: This the the reason for the mute, please keep it consise and relevant for future refrence
         """
+        if user is None:
+            return
         await self.client.wait_until_ready()
         muted = await utils.in_roles(user, settings.config["statusRoles"]["muted"])
         member_role = ctx.guild.get_role(settings.config["statusRoles"]["member"])
@@ -230,6 +232,8 @@ class ModCommands(commands.Cog):
             user : This is the user you want to mute
             reason: This the the reason for the mute, please keep it consise and relevant for future refrence
         """
+        if user is None:
+            return
         await self.client.wait_until_ready()
         muted = False
         Mute_role = ctx.guild.get_role(settings.config["statusRoles"]["muted"])
