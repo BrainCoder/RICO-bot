@@ -38,8 +38,9 @@ class Extra(commands.Cog):
         if message is not None:
             if "@everyone" in message or "@here" in message:
                 return
-            if len(message.mentions) > 0:
-                return
+            for word in message:
+                if "@" in word:
+                    return
         if ctx.author.id in self.afk_users:
             return
         nickname = 0
