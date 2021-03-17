@@ -4,11 +4,10 @@ from discord.ext import commands, tasks
 import settings
 from itertools import cycle
 
-status = cycle(['Version 2.2.18', 'DM me with complaints!'])
+status = cycle(["Version 2.2.19", "DM me with complaints!"])
 
 
 class background(commands.Cog):
-
     def __init__(self, client):
         self.client = client
         self._last_member = None
@@ -21,12 +20,14 @@ class background(commands.Cog):
         guild = self.client.get_guild(settings.config["serverId"])
         mCount = guild.member_count
         channel = self.client.get_channel(settings.config["channels"]["memberscount"])
-        print(f'There are now {mCount} members of this server')
-        await channel.edit(name=(f'[{mCount} members]'))
+        print(f"There are now {mCount} members of this server")
+        await channel.edit(name=(f"[{mCount} members]"))
 
     @tasks.loop(minutes=1)
     async def activity_cycle(self):
-        await self.client.change_presence(status=discord.Status.online, activity=discord.Game(next(status)))
+        await self.client.change_presence(
+            status=discord.Status.online, activity=discord.Game(next(status))
+        )
 
 
 def setup(client):
