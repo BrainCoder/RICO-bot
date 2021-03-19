@@ -1,5 +1,6 @@
 import utils
 import database
+from resources.langauges import lang_dict
 
 import discord
 from discord.ext import commands
@@ -21,15 +22,18 @@ class Extra(commands.Cog):
         self.client = client
         self.authkey = sys.argv[4]
 
+    async def prepare_string(self, query):
+        if len(query) > 1:
+            return query.replace(" ", "%20")
+        else:
+            return query
+
     @commands.command(name="urban", aliases=["urb", "define", "def"])
-    # @cooldown(1, 60, commands.BucketType.user)
+    @cooldown(1, 60, commands.BucketType.user)
     async def urban(self, ctx, *, query):
         """standard urban dictionary command"""
 
-        if len(query) > 1:
-            nquery = query.replace(" ", "%20")
-        else:
-            nquery = query
+        nquery = await self.prepare_string(query)
         conn = http.client.HTTPSConnection(
             "mashape-community-urban-dictionary.p.rapidapi.com"
         )
@@ -37,14 +41,49 @@ class Extra(commands.Cog):
             "x-rapidapi-key": self.authkey,
             "x-rapidapi-host": "mashape-community-urban-dictionary.p.rapidapi.com",
         }
-
         conn.request("GET", f"/define?term={nquery}", headers=headers)
         res = conn.getresponse()
         data = json.loads(res.read().decode("utf-8"))
         first_def = data["list"][0]
-
         message = f"**{query}:**\n{first_def['definition']}\n({first_def['permalink']})"
         await ctx.send(message)
+
+    @commands.command(name="translate", aliases=["tran"])
+    @cooldown(1, 60)
+    @commands.has_any_role(
+        settings.config["staffRoles"]["admin"],
+        settings.config["staffRoles"]["head-moderator"],
+        settings.config["staffRoles"]["moderator"],
+        settings.config["staffRoles"]["semi-moderator"],
+        settings.config["staffRoles"]["trial-mod"],
+        settings.config["statusRoles"]["vip"],
+        settings.config["statusRoles"]["boost-vip"],
+        settings.config["statusRoles"]["member"],
+    )
+    async def translate(self, ctx, langauge, *, query):
+        """standard translation command"""
+        endpoint = None
+        for entry in lang_dict:
+            if langauge.lower() == entry:
+                endpoint = lang_dict[entry]
+                break
+        if endpoint is None:
+            await ctx.send("That is not a valid language")
+            return
+        nquery = await self.prepare_string(query)
+        conn = http.client.HTTPSConnection("google-translate1.p.rapidapi.com")
+        payload = f"q={nquery}&source=en&target={endpoint}"
+        headers = {
+            "content-type": "application/x-www-form-urlencoded",
+            "accept-encoding": "application/gzip",
+            "x-rapidapi-key": self.authkey,
+            "x-rapidapi-host": "google-translate1.p.rapidapi.com",
+        }
+        conn.request("POST", "/language/translate/v2", payload, headers)
+        res = conn.getresponse()
+        data = json.loads(res.read().decode("utf-8"))
+        translation = data["data"]["translations"][0]["translatedText"]
+        await ctx.send(translation)
 
     @commands.command(name="8ball", aliases=["8b"])
     @cooldown(1, 60, commands.BucketType.user)
