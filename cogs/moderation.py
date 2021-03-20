@@ -281,13 +281,17 @@ class ModCommands(commands.Cog):
     async def mute(self, ctx, user: discord.Member, reason, vip=False):
         if user is None:
             return
-        if utils.is_staff(user):
+        if await utils.is_staff(user):
             return
         if await utils.in_roles(user, self.member_role.id):
             await self.remove_member_role(ctx, user)
         if await utils.in_roles(user, settings.config["statusRoles"]["muted"]):
             if not vip:
+<<<<<<< HEAD
                 await user.add_roles(self.double_role)
+=======
+                await user.add_roles(self.double_mute_role)
+>>>>>>> 2bdea9d (began bug fixing code pending realise)
                 await utils.doembed(
                     ctx,
                     "DoubleMute",
@@ -337,11 +341,16 @@ class ModCommands(commands.Cog):
         """
         if user is None:
             return
+<<<<<<< HEAD
         if not await utils.in_roles(user, self.mute_role) or not await utils.in_roles(
             user, self.double_mute_role
         ):
+=======
+        if not await utils.in_roles(
+            user, self.mute_role.id
+        ) or not await utils.in_roles(user, self.double_mute_role.id):
+>>>>>>> 2bdea9d (began bug fixing code pending realise)
             return
-
         if time:
             better_time = await utils.convert_from_seconds(time)
             await utils.doembed(
@@ -353,11 +362,12 @@ class ModCommands(commands.Cog):
             )
             await asyncio.sleep(time)
 
-        if await utils.in_roles(user, self.double_mute_role):
+        if await utils.in_roles(user, self.double_mute_role.id):
             await self.undouble(ctx, user)
         else:
             await self.unmmute(ctx, user)
 
+<<<<<<< HEAD
         await utils.doembed(
             ctx,
             "Unmute",
@@ -366,6 +376,8 @@ class ModCommands(commands.Cog):
             user,
         )
 
+=======
+>>>>>>> 2bdea9d (began bug fixing code pending realise)
     async def unmmute(self, ctx, user):
         await user.remove_roles(self.mute_role)
         await utils.doembed(
