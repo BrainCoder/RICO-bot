@@ -45,7 +45,7 @@ class Extra(commands.Cog):
         res = conn.getresponse()
         data = json.loads(res.read().decode("utf-8"))
         first_def = data["list"][0]
-        message = f"**{query}:**\n{first_def['definition']}\n({first_def['permalink']})"
+        message = f"**{first_def['word']}:**\n{first_def['definition']}\n\n*example:\n{first_def['example']}*\n(<{first_def['permalink']}>)"
         await ctx.send(message)
 
     @commands.command(name="translate", aliases=["tran"])
