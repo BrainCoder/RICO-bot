@@ -30,6 +30,16 @@ class Extra(commands.Cog):
 
     @commands.command(name="urban", aliases=["urb", "define", "def"])
     @cooldown(1, 60, commands.BucketType.user)
+    @commands.has_any_role(
+        settings.config["staffRoles"]["admin"],
+        settings.config["staffRoles"]["head-moderator"],
+        settings.config["staffRoles"]["moderator"],
+        settings.config["staffRoles"]["semi-moderator"],
+        settings.config["staffRoles"]["trial-mod"],
+        settings.config["statusRoles"]["vip"],
+        settings.config["statusRoles"]["boost-vip"],
+        settings.config["statusRoles"]["member"],
+    )
     async def urban(self, ctx, *, query):
         """standard urban dictionary command"""
 
@@ -131,6 +141,7 @@ class Extra(commands.Cog):
         settings.config["staffRoles"]["trial-mod"],
         settings.config["statusRoles"]["vip"],
         settings.config["statusRoles"]["boost-vip"],
+        settings.config["statusRoles"]["member"],
     )
     async def ui(self, ctx, *, member: discord.Member = None):
         """gives basic info on the user tagged in the arg"""
@@ -162,6 +173,7 @@ class Extra(commands.Cog):
         settings.config["staffRoles"]["trial-mod"],
         settings.config["statusRoles"]["vip"],
         settings.config["statusRoles"]["boost-vip"],
+        settings.config["statusRoles"]["member"],
     )
     async def avatar(self, ctx, *, avamember: discord.Member = None):
         """sends a link of the users avatar"""
