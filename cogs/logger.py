@@ -14,9 +14,6 @@ class welcome(commands.Cog):
         self.del_logs = self.client.get_channel(
             settings.config["channels"]["deleted-logs"]
         )
-        self.edit_logs = self.client.get_channel(
-            settings.config["channels"]["edited-logs"]
-        )
 
     @Cog.listener()
     async def on_message_delete(self, message):
