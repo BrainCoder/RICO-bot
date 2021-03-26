@@ -68,7 +68,7 @@ class welcome(commands.Cog):
             nos = message.reactions[1].count
 
             # Calc how many total votes it has
-            if yes - nos >= 15:
+            if yes - nos >= 20:
                 await self.passed_vote(message)
 
     async def passed_vote(self, message):
@@ -81,9 +81,8 @@ class welcome(commands.Cog):
 
         # Send message to poll board
         channel = self.client.get_channel(settings.config["channels"]["poll-board"])
-        mod_ping = message.guild.get_role(settings.config["staffRoles"]["mod-ping"])
         await self.send_message(
-            channel, f"__**Suggestion**__\n\n```{message.content}```{mod_ping.mention}"
+            channel, f"__**Suggestion**__\n\n```{message.content}```"
         )
 
 
