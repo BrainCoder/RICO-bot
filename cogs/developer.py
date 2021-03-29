@@ -100,6 +100,8 @@ class DeveloperTools(commands.Cog):
             await self.getchannel(ctx, id)
         if _type == "role":
             await self.getrole(ctx, id)
+        if _type == "user":
+            await self.getuser(ctx, id)
 
     async def getchannel(self, ctx, id):
         channel = ctx.guild.get_channel(int(id))
@@ -114,6 +116,13 @@ class DeveloperTools(commands.Cog):
             await ctx.send(f"{obj_role.mention}")
         except:
             await ctx.send("This role does not exist")
+
+    async def getuser(self, ctx, id):
+        user = ctx.guild.get_member(id)
+        try:
+            await ctx.send(user.name)
+        except:
+            await ctx.send("This user does not exist")
 
     @commands.command(name="verifyintegrity", aliases=["vi", "verify"])
     @commands.has_any_role(

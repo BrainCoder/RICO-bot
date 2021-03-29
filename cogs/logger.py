@@ -7,7 +7,7 @@ import settings
 import utils
 
 
-class welcome(commands.Cog):
+class logger(commands.Cog):
     def __init__(self, client):
         self.client = client
         self._last_member = None
@@ -18,7 +18,7 @@ class welcome(commands.Cog):
     @Cog.listener()
     async def on_message_delete(self, message):
         embed = discord.Embed(
-            color=0x00DCFF,
+            color=message.guild.get_role(settings.config["streakRoles"]["150"]),
             timestamp=datetime.utcnow(),
             description=f"Message deleted in <#{message.channel.id}>",
         )
