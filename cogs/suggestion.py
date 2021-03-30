@@ -68,8 +68,11 @@ class welcome(commands.Cog):
             nos = message.reactions[1].count
 
             # Calc how many total votes it has
-            if yes - nos >= 15:
+            if yes - nos >= 20:
                 await self.passed_vote(message)
+            if yes - nos >= -15:
+                await asyncio.sleep(5)
+                await message.delete()
 
     async def passed_vote(self, message):
 
