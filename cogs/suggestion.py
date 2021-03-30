@@ -71,7 +71,7 @@ class welcome(commands.Cog):
             # Calc how many total votes it has
             if yes - nos >= 20:
                 await self.passed_vote(message)
-            if yes - nos >= -15:
+            if -15 >= yes - nos:
                 await asyncio.sleep(5)
                 await message.delete()
 
