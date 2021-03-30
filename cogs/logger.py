@@ -14,13 +14,13 @@ class logger(commands.Cog):
             settings.config["channels"]["deleted-logs"]
         )
         self.edit_logs = self.client.get_channel(
-            settings.config["channel"]["edited-logs"]
+            settings.config["channels"]["edited-logs"]
         )
 
     @Cog.listener()
     async def on_message_delete(self, message):
         embed = discord.Embed(
-            color=message.guild.get_role(settings.config["streakRoles"]["150"]),
+            color=(message.guild.get_role(settings.config["streakRoles"]["150"])).color,
             timestamp=datetime.utcnow(),
             description=f"Message deleted in <#{message.channel.id}>",
         )
@@ -37,7 +37,7 @@ class logger(commands.Cog):
     @Cog.listener()
     async def on_message_edit(self, before, after):
         embed = discord.Embed(
-            color=message.guild.get_role(settings.config["streakRoles"]["150"]),
+            color=(after.guild.get_role(settings.config["streakRoles"]["150"])).color,
             timestamp=datetime.utcnow(),
             description=f"Message edited in <#{after.channel.id}>",
         )
@@ -54,4 +54,4 @@ class logger(commands.Cog):
 
 
 def setup(client):
-    client.add_cog(welcome(client))
+    client.add_cog(logger(client))
