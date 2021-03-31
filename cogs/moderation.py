@@ -299,11 +299,7 @@ class ModCommands(commands.Cog):
             await self.remove_member_role(ctx, user)
         if await utils.in_roles(user, settings.config["statusRoles"]["muted"]):
             if not vip:
-<<<<<<< HEAD
-                await user.add_roles(self.double_role)
-=======
                 await user.add_roles(self.double_mute_role)
->>>>>>> 2bdea9d (began bug fixing code pending realise)
                 await utils.doembed(
                     ctx,
                     "DoubleMute",
@@ -353,16 +349,9 @@ class ModCommands(commands.Cog):
         """
         if user is None:
             return
-<<<<<<< HEAD
-<<<<<<< HEAD
-        if not await utils.in_roles(user, self.mute_role) or not await utils.in_roles(
-            user, self.double_mute_role
-        ):
-=======
         if not await utils.in_roles(
             user, self.mute_role.id
         ) or not await utils.in_roles(user, self.double_mute_role.id):
->>>>>>> 2bdea9d (began bug fixing code pending realise)
             return
         if time:
             better_time = await utils.convert_from_seconds(time)
@@ -379,7 +368,6 @@ class ModCommands(commands.Cog):
             await self.undouble(ctx, user)
         else:
             await self.unmmute(ctx, user)
-=======
         if await utils.in_roles(user, self.mute_role.id) or await utils.in_roles(
             user, self.double_mute_role.id
         ):
@@ -398,19 +386,7 @@ class ModCommands(commands.Cog):
                 await self.undouble(ctx, user)
             else:
                 await self.unmmute(ctx, user)
->>>>>>> 21395b7 (various changes)
 
-<<<<<<< HEAD
-        await utils.doembed(
-            ctx,
-            "Unmute",
-            f"{user} has been Unmuted!",
-            f"Unmuted by: <@{ctx.author.id}>.",
-            user,
-        )
-
-=======
->>>>>>> 2bdea9d (began bug fixing code pending realise)
     async def unmmute(self, ctx, user):
         await user.remove_roles(self.mute_role)
         await utils.doembed(
