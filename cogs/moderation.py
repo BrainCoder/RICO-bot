@@ -8,6 +8,8 @@ import utils
 import settings
 import database
 from sqlalchemy import text
+import sy
+import traceback
 
 
 class ModCommands(commands.Cog):
@@ -84,6 +86,16 @@ class ModCommands(commands.Cog):
     async def dBumpChannel_handler(self, ctx, error):
         if isinstance(error, commands.CheckFailure):
             pass
+        else:
+            print("\n--------", file=sys.stderr)
+            print(f"Time      : {utils.timestr}", file=sys.stderr)
+            print(f"Command   : {ctx.command}", file=sys.stderr)
+            print(f"Message   : {ctx.message.content}", file=sys.stderr)
+            print(f"Author    : {ctx.author}", file=sys.stderr)
+            print(" ", file=sys.stderr)
+            traceback.print_exception(
+                type(error), error, error.__traceback__, file=sys.stderr
+            )
 
     @commands.command(name="kick")
     @commands.cooldown(15, 600, commands.BucketType.user)
@@ -586,6 +598,16 @@ class ModCommands(commands.Cog):
             await utils.emoji(ctx, "❌")
         if isinstance(error, commands.errors.MissingRequiredArgument):
             await ctx.send("You cant send an empty message")
+        else:
+            print("\n--------", file=sys.stderr)
+            print(f"Time      : {utils.timestr}", file=sys.stderr)
+            print(f"Command   : {ctx.command}", file=sys.stderr)
+            print(f"Message   : {ctx.message.content}", file=sys.stderr)
+            print(f"Author    : {ctx.author}", file=sys.stderr)
+            print(" ", file=sys.stderr)
+            traceback.print_exception(
+                type(error), error, error.__traceback__, file=sys.stderr
+            )
 
 
 def setup(client):
