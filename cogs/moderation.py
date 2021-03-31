@@ -490,7 +490,7 @@ class ModCommands(commands.Cog):
         settings.config["staffRoles"]["trial-mod"],
         settings.config["statusRoles"]["member"],
     )
-    async def nlynch(self, ctx, member: discord.Member = None):
+    async def lynch(self, ctx, member: discord.Member = None):
         """A command to be used if there is no staff present, where three members can type in `!lynch` in order to mute a user"""
         if member is None:
             return
@@ -499,7 +499,7 @@ class ModCommands(commands.Cog):
         if await utils.is_staff(member):
             return
 
-        result = database.userdata_select_query(member.id, False)
+        result = await database.userdata_select_query(member.id, False)
         if not result:
             return
 
@@ -520,6 +520,7 @@ class ModCommands(commands.Cog):
                     "lynch_count": 0,
                     "successful_lynch_count": successful_lynches + 1,
                     "lynch_expiration_time": 0,
+                    "mute": 1,
                 },
             )
             await member.add_roles(self.mute_role)
