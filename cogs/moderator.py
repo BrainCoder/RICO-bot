@@ -166,6 +166,44 @@ class ModeratorTools(commands.Cog):
         raw_output = await self.build_raw_output(raw_output, table, True)
         await self.output_to_channel(channel, ctx, output_format, raw_output, table_output)
 
+    @commands.command(name="removestrike", aliases=["rs", "rms"])
+    @commands.has_any_role(
+        settings.config["staffRoles"]["admin"],
+        settings.config["staffRoles"]["head-moderator"],
+        settings.config["staffRoles"]["moderator"]
+    )
+    async def removestrike(self, ctx, user: discord.User, strike_number):
+        """Removes strike of a user by number.
+        If the command invoker is an admin, the number can also be set to \"all\"
+        to remove all strikes for a particular user.
+        Note that this ONLY works for regular mutes, as this is the only thing currently displayed
+        when looking up strikes by default."""
+        if user is None:
+            await ctx.send("User is required.")
+        elif strike_number == "all":
+            admin_role = ctx.guild.get_role(settings.config["staffRoles"]["admin"])
+            if admin_role in ctx.author.roles:
+                query_to_remove_strikes = text(
+                    f'update mod_event me set me.historical = 2 where me.recipient_id = {user.id} '
+                    f'and me.event_type = 3 and historical = 1'
+                )
+                database.conn.execute(query_to_remove_strikes)
+                await ctx.send("All strikes for " + user.mention + " should be gone.")
+        else:
+            query_to_find_strike = text(f'select * from mod_event me where me.recipient_id = {user.id} '
+                                        f'and me.event_type = 3 and historical = 1 order by me.event_time asc')
+            results = database.conn.execute(query_to_find_strike).fetchall()
+            if (len(results) < int(strike_number)):
+                await ctx.send("User does not have that many strikes.")
+            else:
+                id_of_strike_to_remove = results[int(strike_number)-1][0]
+                query_to_remove_strikes = text(
+                    f'update mod_event me set me.historical = 2 where me.recipient_id = {user.id} '
+                    f'and me.event_type = 3 and event_id = {id_of_strike_to_remove}'
+                )
+                database.conn.execute(query_to_remove_strikes)
+                await ctx.send("Strike number " + strike_number + " should be removed from the database.")
+
 
     @commands.command(name="offline")
     @commands.has_any_role(

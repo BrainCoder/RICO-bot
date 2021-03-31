@@ -179,6 +179,12 @@ class DeveloperTools(commands.Cog):
             await utils.emoji(ctx, '✅')
             await self.devlogs.send(f'{utils.timestr}error logs flushed by {ctx.author.name}')
 
+    @commands.command(name='gitpull', aliases=['gp'])
+    @commands.has_any_role(
+        settings.config["staffRoles"]["head-dev"],
+        settings.config["staffRoles"]["developer"])
+    async def git_pull(self, ctx):
+        os.system("git pull origin master")
 
 def setup(client):
     client.add_cog(DeveloperTools(client))
