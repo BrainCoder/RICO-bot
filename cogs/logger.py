@@ -31,7 +31,6 @@ class logger(commands.Cog):
             value=f"```python\nUser = {message.author.id}\nMessage = {message.id}```",
             inline=False,
         )
-        embed.add_field(name="Date", value=message.created_at, inline=False)
         await self.del_logs.send(embed=embed)
 
     @Cog.listener()
@@ -49,8 +48,10 @@ class logger(commands.Cog):
             value=f"```python\nUser = {after.author.id}\nMessage = {after.id}```",
             inline=False,
         )
-        embed.add_field(name="Date", value=after.created_at, inline=False)
-        await self.edit_logs.send(embed=embed)
+        try:
+            await self.edit_logs.send(embed=embed)
+        except discord.errors.HTTPException:
+            pass
 
 
 def setup(client):
