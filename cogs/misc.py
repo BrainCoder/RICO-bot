@@ -125,7 +125,7 @@ class Extra(commands.Cog):
         settings.config["statusRoles"]["boost-vip"],
         settings.config["statusRoles"]["member"])
     async def remind(self, ctx, *, time: utils.TimeConverter = None):
-        """unmute the user"""
+        """Will ping the user after a specific amount of time in the channel the reminder was sent in."""
         if time is None:
             await ctx.send('Please specify the timer', delete_after=5)
         else:
@@ -148,7 +148,9 @@ class Extra(commands.Cog):
 
     async def build_username_list(self, member):
         with database.engine.connect() as connection:
-            username_query = text(f'select * from np_db.name_change_event where user_id = {member.id}')
+            username_query = text("select * from np_db.name_change_event where user_id = " + str(member.id) +
+                                  " and np_db.name_change_event.previous_name not like '[AFK]%' and "
+                                  "np_db.name_change_event.new_name not like '[AFK]%'")
             result = connection.execute(username_query).fetchall()
             if result:
                 # This is used to determine how many usernames are allowed to be in the list.
