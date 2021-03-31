@@ -8,7 +8,7 @@ import utils
 import settings
 import database
 from sqlalchemy import text
-import sy
+import sys
 import traceback
 
 
