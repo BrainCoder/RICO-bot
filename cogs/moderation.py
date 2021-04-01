@@ -349,29 +349,9 @@ class ModCommands(commands.Cog):
         """
         if user is None:
             return
-        if not await utils.in_roles(
-            user, self.mute_role.id
-        ) or not await utils.in_roles(user, self.double_mute_role.id):
-            return
-        if time:
-            better_time = await utils.convert_from_seconds(time)
-            await utils.doembed(
-                ctx,
-                "Unmute",
-                f"{user} will be unmuted in {better_time}",
-                f"Unmuted by: <@{ctx.author.id}>.",
-                user,
-            )
-            await asyncio.sleep(time)
-
-        if await utils.in_roles(user, self.double_mute_role.id):
-            await self.undouble(ctx, user)
-        else:
-            await self.unmmute(ctx, user)
-        if await utils.in_roles(user, self.mute_role.id) or await utils.in_roles(
+        if utils.in_roles(user, self.mute_role.id) or utils.in_roles(
             user, self.double_mute_role.id
         ):
-            await utils.emoji(ctx)
             if time:
                 better_time = await utils.convert_from_seconds(time)
                 await utils.doembed(
