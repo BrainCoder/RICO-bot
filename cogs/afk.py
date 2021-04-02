@@ -92,8 +92,6 @@ class Extra(commands.Cog):
                     if mention.id in self.afk_users:
                         row = await database.afk_event_select(mention.id, True)
                         afk_message = row[2]
-                        if "@everyone" in afk_message or "@here" in afk_message:
-                            return
                         if afk_message is None:
                             await message.channel.send(f"{mention} is currently AFK")
                         else:
