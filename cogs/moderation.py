@@ -349,9 +349,10 @@ class ModCommands(commands.Cog):
         """
         if user is None:
             return
-        if utils.in_roles(user, self.mute_role.id) or utils.in_roles(
+        if await utils.in_roles(user, self.mute_role.id) or await utils.in_roles(
             user, self.double_mute_role.id
         ):
+        await utils.emoji(ctx)
             if time:
                 better_time = await utils.convert_from_seconds(time)
                 await utils.doembed(
