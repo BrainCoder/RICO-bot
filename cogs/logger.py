@@ -31,7 +31,10 @@ class logger(commands.Cog):
             value=f"```python\nUser = {message.author.id}\nMessage = {message.id}```",
             inline=False,
         )
-        await self.del_logs.send(embed=embed)
+        try:
+            await self.edit_logs.send(embed=embed)
+        except discord.errors.HTTPException:
+            pass
 
     @Cog.listener()
     async def on_message_edit(self, before, after):
