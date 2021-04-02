@@ -54,7 +54,11 @@ class Extra(commands.Cog):
         conn.request("GET", f"/define?term={nquery}", headers=headers)
         res = conn.getresponse()
         data = json.loads(res.read().decode("utf-8"))
-        first_def = data["list"][0]
+        try:
+            first_def = data["list"][0]
+        except IndexError:
+            await ctx.send("Sorry, i couldnt find anything")
+            return
         message = f"**{first_def['word']}:**\n{first_def['definition']}\n\n*example:\n{first_def['example']}*\n(<{first_def['permalink']}>)"
         await ctx.send(message)
 
@@ -72,6 +76,11 @@ class Extra(commands.Cog):
     )
     async def translate(self, ctx, langauge, *, query):
         """standard translation command"""
+        if query is None:
+            await ctx.send(
+                "Please specify the langauge you want to translate to. For more information please do `!help translate"
+            )
+            return
         endpoint = None
         for entry in lang_dict:
             if langauge.lower() == entry:
