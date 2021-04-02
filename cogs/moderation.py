@@ -266,7 +266,7 @@ class ModCommands(commands.Cog):
         settings.config["staffRoles"]["semi-moderator"],
         settings.config["staffRoles"]["trial-mod"],
     )
-    async def gmute(self, ctx, user: discord.Member, *, reason=None):
+    async def gmute(self, ctx, user: discord.Member=None, *, reason=None):
         """Generic mute command, gives the user the muted role and adds details to the mod event table
 
         Args:
@@ -280,7 +280,7 @@ class ModCommands(commands.Cog):
     @commands.has_any_role(
         settings.config["statusRoles"]["vip"],
     )
-    async def vmute(self, ctx, user: discord.Member, *, reason=None):
+    async def vmute(self, ctx, user: discord.Member=None, *, reason=None):
         """A version of the mute command but for VIPs, has the same functionality of giving the user the mute role, and adding the event to the mod event table, but has a cooldown.
         Please be aware, abuse of this command will result in the VIP role being removed
 
