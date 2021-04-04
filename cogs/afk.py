@@ -61,9 +61,7 @@ class Extra(commands.Cog):
     @Cog.listener()
     async def on_message(self, message):
 
-        if await utils.in_roles(
-            message.author, settings.config["statusRoles"]["bot-role"]
-        ):
+        if message.author.bot:
             return
         if self.afk_users is None:
             return
