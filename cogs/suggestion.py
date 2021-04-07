@@ -15,6 +15,18 @@ class welcome(commands.Cog):
         self.suggestion_logs = self.client.get_channel(
             settings.config["channels"]["suggestion-logs"]
         )
+        self.blacklist = [
+            "ban",
+            "lemon",
+            "@everyone",
+            "@here",
+        ]
+
+    async def c_blacklist(self, query):
+        for word in self.blacklist:
+            if word in query:
+                return True
+        return False
 
     async def send_message(self, channel, suggestion):
         message = await channel.send(suggestion)
@@ -35,7 +47,7 @@ class welcome(commands.Cog):
     async def suggestion(self, ctx, *, suggestion=None):
         if suggestion is None:
             return
-        if "@everyone" in suggestion or "@here" in suggestion:
+        if await self.c_blacklist(suggestion):
             return
         await self.send_message(self.suggestions, suggestion)
         embed = discord.Embed(color=ctx.author.color, timestamp=ctx.message.created_at)
@@ -47,28 +59,15 @@ class welcome(commands.Cog):
 
     @Cog.listener()
     async def on_raw_reaction_add(self, payload):
-        # Check if it was a bot who added the reaction
         if payload.user_id == settings.config["botId"]:
             return
-
-        # Check that it is in the suggestions channel
         if payload.channel_id == settings.config["channels"]["suggestions"]:
-
-            # Isolates the message as a variable
             channel = self.client.get_channel(payload.channel_id)
             message = await channel.fetch_message(payload.message_id)
-
-            # Check if passed vote
             if message.reactions[0].emoji == "💬":
                 return
-
-            # Isolate how many yes's it has
             yes = message.reactions[0].count
-
-            # Isolate how many no's it has
             nos = message.reactions[1].count
-
-            # Calc how many total votes it has
             if yes - nos >= 20:
                 await self.passed_vote(message)
             if -15 >= yes - nos:
@@ -76,14 +75,8 @@ class welcome(commands.Cog):
                 await message.delete()
 
     async def passed_vote(self, message):
-
-        # Remove reactions from message
         await message.clear_reactions()
-
-        # Add reactions
         await message.add_reaction("💬")
-
-        # Send message to poll board
         channel = self.client.get_channel(settings.config["channels"]["poll-board"])
         await self.send_message(
             channel, f"__**Suggestion**__\n\n```{message.content}```"
