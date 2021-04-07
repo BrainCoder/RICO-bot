@@ -28,6 +28,27 @@ class Extra(commands.Cog):
         else:
             return query
 
+    @commands.command(name="selfmute")
+    @cooldown(1, 60, commands.BucketType.user)
+    @commands.has_any_role(
+        settings.config["staffRoles"]["admin"],
+        settings.config["staffRoles"]["head-moderator"],
+        settings.config["staffRoles"]["moderator"],
+        settings.config["staffRoles"]["semi-moderator"],
+        settings.config["staffRoles"]["trial-mod"],
+        settings.config["statusRoles"]["vip"],
+        settings.config["statusRoles"]["boost-vip"],
+        settings.config["statusRoles"]["member"],
+    )
+    async def selfmute(self, ctx):
+        """Command that stops the user from being able to talk in majority of channels"""
+        selfmute_role = ctx.guild.get_role(settings.config["statusRoles"]["self-mute"])
+        if await utils.in_roles(ctx.author, selfmute_role.id):
+            await ctx.author.remove_roles(selfmute_role)
+        else:
+            await ctx.author.add_roles(selfmute_role)
+        await utils.emoji(ctx)
+
     @commands.command(name="urban", aliases=["urb", "define", "def"])
     @cooldown(1, 60, commands.BucketType.user)
     @commands.has_any_role(
@@ -157,10 +178,10 @@ class Extra(commands.Cog):
         if member is None:
             member = ctx.author
         member_joined_at = member.joined_at.strftime("%A, %B %d %Y at %H:%M:%S %p")
-        result = await database.userdata_select_query(member.id, False)
-        if result and result[12] != 0:
+        df = await database.userdata_select_query(member.id, False)
+        if df and df["member_activation_date"] != 0:
             member_joined_at = (
-                datetime.fromtimestamp(result[12])
+                datetime.fromtimestamp(df["member_activation_date"])
                 - timedelta(hours=settings.config["memberUpdateInterval"])
             ).strftime("%A, %B %d %Y at %H:%M:%S %p")
         usernames = await self.build_username_list(member)
