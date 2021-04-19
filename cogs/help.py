@@ -57,12 +57,13 @@ class Help(commands.Cog):
         """Im not explaining this, if you do not know what this command does then I cannot help you"""
         if cmd is None:
             await ctx.message.delete()
-            menu = MenuPages(source=HelpMenu(ctx, list(self.bot.commands)),
+            menu = MenuPages(source=HelpMenu(ctx, list(self.client.commands)),
                     delete_message_after=True,
                     timeout=60.0)
             await menu.start(ctx)
         else:
-            if (command := get(self.client.commands, name=cmd)):
+            command = get(self.client.commands, name=cmd)
+            if command:
                 await self.cmd_help(ctx, command)
             else:
                 await ctx.send('That command does not exist.')
