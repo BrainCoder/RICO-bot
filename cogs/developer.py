@@ -201,7 +201,7 @@ class DeveloperTools(commands.Cog):
     )
     async def errorlog(self, ctx, action=None):
         if action is None:
-            path = "/root/.pm2/logs/npc-error.log"
+            path = "/home/developer/.pm2/logs/npc-error.log"
             if os.stat(path).st_size == 0:
                 await ctx.send("Error file is empty")
             else:
