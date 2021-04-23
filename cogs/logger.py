@@ -32,7 +32,7 @@ class logger(commands.Cog):
             inline=False,
         )
         try:
-            await self.edit_logs.send(embed=embed)
+            await self.del_logs.send(embed=embed)
         except discord.errors.HTTPException:
             pass
 
