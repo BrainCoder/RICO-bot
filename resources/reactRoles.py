@@ -18,7 +18,6 @@ r_dict = {
         "Urge Killer": ["🪳", settings.config["otherRoles"]["urge-killer"]],
         "Virgin": ["👑", settings.config["otherRoles"]["virgin"]],
         "Caveman": ["📵", settings.config["otherRoles"]["cavemanmode"]],
-        "Retention": ["⚓", settings.config["otherRoles"]["retention"]]
     },
     "Gender": {
         "Male": ["♂", settings.config["genderRoles"]["male"]],
@@ -40,18 +39,19 @@ r_dict = {
         "Asia": ["🇨🇳", settings.config["continentRoles"]["asia"]]
     },
     "Hobbies": {
-        "Hydrator": ["💧", settings.config["hobbies"]["hydrator"]],
         "Productivity": ["✍", settings.config["hobbies"]["productivity"]],
         "Book Club": ["📚", settings.config["hobbies"]["book-club"]],
         "Fitness": ["🏋️‍♂️", settings.config["hobbies"]["fitness"]],
         "Chess": ["♟", settings.config["hobbies"]["chess"]],
         "Discussions": ["🗣", settings.config["hobbies"]["discussions"]],
-        "Relationships": ["💑", settings.config["hobbies"]["relationships"]]
+        "Investing": ["📈", settings.config["hobbies"]["investing"]]
     },
     "Misc": {
         "Memes": ["🚽", settings.config["misc"]["memes"]],
         "Media": ["🗞", settings.config["misc"]["media"]],
         "Polls": ["🗳", settings.config["misc"]["polls"]],
-        "Asylum": ["🤯", settings.config["misc"]["asylum"]]
+        "Asylum": ["🤯", settings.config["misc"]["asylum"]],
+        "Relationships": ["💑", settings.config["misc"]["relationships"]],
+        "Counting": ["🔢", settings.config["misc"]["counting"]]
     }
 }
