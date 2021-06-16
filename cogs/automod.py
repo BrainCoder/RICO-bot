@@ -134,10 +134,10 @@ class ModCommands(commands.Cog):
             return (
                 m.author == message.author
                 and len(m.mentions)
-                and (datetime.utcnow() - m.created_at).seconds < 15
+                and (datetime.utcnow() - m.created_at).seconds < 60
             )
 
-        if len((list(filter(lambda m: _check(m), self.client.cached_messages)))) >= 5:
+        if len((list(filter(lambda m: _check(m), self.client.cached_messages)))) >= 1000:
             await message.author.add_roles(
                 message.guild.get_role(settings.config["statusRoles"]["muted"])
             )

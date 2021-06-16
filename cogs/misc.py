@@ -38,7 +38,6 @@ class Extra(commands.Cog):
         settings.config["staffRoles"]["trial-mod"],
         settings.config["statusRoles"]["vip"],
         settings.config["statusRoles"]["boost-vip"],
-        settings.config["statusRoles"]["member"],
     )
     async def selfmute(self, ctx):
         """Command that stops the user from being able to talk in majority of channels"""
@@ -59,7 +58,6 @@ class Extra(commands.Cog):
         settings.config["staffRoles"]["trial-mod"],
         settings.config["statusRoles"]["vip"],
         settings.config["statusRoles"]["boost-vip"],
-        settings.config["statusRoles"]["member"],
     )
     async def urban(self, ctx, *, query):
         """standard urban dictionary command"""
@@ -93,7 +91,6 @@ class Extra(commands.Cog):
         settings.config["staffRoles"]["trial-mod"],
         settings.config["statusRoles"]["vip"],
         settings.config["statusRoles"]["boost-vip"],
-        settings.config["statusRoles"]["member"],
     )
     async def translate(self, ctx, langauge, *, query):
         """standard translation command"""
@@ -127,6 +124,15 @@ class Extra(commands.Cog):
 
     @commands.command(name="8ball", aliases=["8b"])
     @cooldown(1, 60, commands.BucketType.user)
+    @commands.has_any_role(
+        settings.config["staffRoles"]["admin"],
+        settings.config["staffRoles"]["head-moderator"],
+        settings.config["staffRoles"]["moderator"],
+        settings.config["staffRoles"]["semi-moderator"],
+        settings.config["staffRoles"]["trial-mod"],
+        settings.config["statusRoles"]["vip"],
+        settings.config["statusRoles"]["boost-vip"],
+    )
     async def _8ball(self, ctx, *, question):
         """standard 8ball command"""
         responses = [
@@ -171,7 +177,6 @@ class Extra(commands.Cog):
         settings.config["staffRoles"]["trial-mod"],
         settings.config["statusRoles"]["vip"],
         settings.config["statusRoles"]["boost-vip"],
-        settings.config["statusRoles"]["member"],
     )
     async def ui(self, ctx, *, member: discord.Member = None):
         """gives basic info on the user tagged in the arg"""
@@ -203,7 +208,6 @@ class Extra(commands.Cog):
         settings.config["staffRoles"]["trial-mod"],
         settings.config["statusRoles"]["vip"],
         settings.config["statusRoles"]["boost-vip"],
-        settings.config["statusRoles"]["member"],
     )
     async def avatar(self, ctx, *, avamember: discord.Member = None):
         """sends a link of the users avatar"""
@@ -221,7 +225,7 @@ class Extra(commands.Cog):
             ctx.author, settings.config["staffRoles"]["head-dev"]
         )
         if not hound:
-            await ctx.send("Ur not my dad :c")
+            await ctx.send("Hound isn't even in this server anymore, wtf are you even doing this fucking command for. Honestly dude")
         else:
             await ctx.send(
                 "uwu what kinda of sandwich does daddy want =^.^=", delete_after=5

@@ -44,11 +44,15 @@ async def on_ready():
 
 async def cogs_load():
     devlogs = client.get_channel(settings.config["channels"]["devlog"])
+    cogs = ["background", "automod", "challenge", "developer", "errors", "help", "misc", "moderation", "moderator", "streak"]
+
     for filename in os.listdir("./cogs"):
         if filename.endswith(".py"):
-            client.load_extension(f"cogs.{filename[:-3]}")
-            await devlogs.send(f"{utils.timestr}`{filename}` loaded due to startup")
-            print(f"loaded {filename}")
+            if filename[:-3] in cogs:
+                client.load_extension(f"cogs.{filename[:-3]}")
+                await devlogs.send(f"{utils.timestr}`{filename}` loaded due to startup")
+                print(f"loaded {filename}")
+
     await devlogs.send(f"{utils.timestr}**all cogs loaded**")
     print("all cogs loaded")
 
