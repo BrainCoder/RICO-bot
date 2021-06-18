@@ -16,27 +16,15 @@ class welcome(commands.Cog):
     @Cog.listener()
     async def on_member_join(self, member):
         with database.engine.connect() as conn:
-            channel = self.client.get_channel(settings.config["channels"]["welcome"])
             verify_previous_query = database.userdata.select().where(database.userdata.c.id == member.id)
             result = conn.execute(verify_previous_query).fetchone()
             if not result:
-                await channel.send(
-                    f'{member.mention} Welcome! Please go to <#{settings.config["channels"]["rules"]}> to read'
-                    f' an overview of what this server is about. Go to <#{settings.config["channels"]["streak-guide"]}>'
-                    f' and <#{settings.config["channels"]["roles-and-access"]}>'
-                    f' to see the commands that you can use to assign yourself.')
                 query = database.userdata.insert(). \
                     values(id=member.id,
                            member_activation_date=int((datetime.utcnow() +
                                 timedelta(hours=settings.config["memberUpdateInterval"])).timestamp()))
-                database.conn.execute(query)
-            else:
-                await channel.send(
-                    f'{member.mention} Welcome back! In case you need a reminder, you can go to '
-                    f'<#{settings.config["channels"]["rules"]}> to read an overview of what this server is about. '
-                    f'You can go to <#{settings.config["channels"]["streak-guide"]}> '
-                    f'and <#{settings.config["channels"]["roles-and-access"]}>'
-                    f' to see the commands that you can use to assign yourself.')
+                conn.execute(query)
+
                 if result[5] == 1:
                     mute_role = member.guild.get_role(settings.config["statusRoles"]["muted"])
                     await member.add_roles(mute_role)

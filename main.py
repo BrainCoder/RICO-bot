@@ -44,7 +44,7 @@ async def on_ready():
 
 async def cogs_load():
     devlogs = client.get_channel(settings.config["channels"]["devlog"])
-    cogs = ["background", "automod", "challenge", "developer", "errors", "help", "misc", "moderation", "moderator", "streak"]
+    cogs = ["background", "automod", "challenge", "developer", "errors", "help", "misc", "moderation", "moderator", "streak", "suggestion", "welcome"]
 
     for filename in os.listdir("./cogs"):
         if filename.endswith(".py"):
