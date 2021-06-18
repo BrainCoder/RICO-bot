@@ -24,7 +24,7 @@ class welcome(commands.Cog):
                            member_activation_date=int((datetime.utcnow() +
                                 timedelta(hours=settings.config["memberUpdateInterval"])).timestamp()))
                 conn.execute(query)
-
+            else:
                 if result[5] == 1:
                     mute_role = member.guild.get_role(settings.config["statusRoles"]["muted"])
                     await member.add_roles(mute_role)
