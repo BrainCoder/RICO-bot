@@ -102,9 +102,6 @@ class Streak(commands.Cog):
             await self.challenge(ctx, settings.config["challenges"]["yearly-challenge-participant"])
         if await utils.in_roles(ctx.author, settings.config["challenges"]["deadpool-participant"]):
             await self.challenge(ctx, settings.config["challenges"]["deadpool-participant"])
-        if await utils.in_roles(ctx.author, settings.config["modeRoles"]["highest-streak"]):
-            role = ctx.guild.get_role(settings.config["modeRoles"]["highest-streak"])
-            await ctx.author.remove_roles(role)
 
         # Decode the args
 
@@ -192,8 +189,6 @@ class Streak(commands.Cog):
     async def update(self, ctx):
         """updates the users streak"""
 
-        highest = False
-        highest_role = ctx.guild.get_role(settings.config["modeRoles"]["highest-streak"])
         Anon = await utils.in_roles(ctx.author, settings.config["modeRoles"]["anon-streak"])
         if Anon:
             await ctx.message.delete()
@@ -209,15 +204,9 @@ class Streak(commands.Cog):
                 for row in past_streaks_rows:
                     days = row[2]
                     streaks.append(days)
-                if max(streaks) < total_streak_length:
-                    highest = True
-            else:
-                if not Anon:
-                    await ctx.author.add_roles(highest_role)
             if not Anon:
                 await self.updateStreakRole(ctx.author, last_starting_date)
-                if highest:
-                    await ctx.author.add_role(highest_role)
+
             message = await ctx.channel.send(f'Your streak is {daysStr}{middleStr}{hoursStr} long.')
             if Anon:
                 await self.delayed_delete(message)
