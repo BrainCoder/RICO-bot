@@ -457,7 +457,7 @@ class ModCommands(commands.Cog):
         settings.config["staffRoles"]["semi-moderator"],
         settings.config["staffRoles"]["trial-mod"],
     )
-    async def warn(self, ctx, user: discord.Member = None, reason = None):
+    async def warn(self, ctx, user: discord.Member = None, *, reason = None):
         """warns a user without applying an action to them."""
         if user is None:
             return
