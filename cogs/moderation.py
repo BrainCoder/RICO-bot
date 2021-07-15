@@ -449,6 +449,26 @@ class ModCommands(commands.Cog):
         database.conn.execute(make_historical_query)
         await database.userdata_update_query(user.id, {"cooldown": 0})
 
+    @commands.command(name="warn", aliases=["w"])
+    @commands.has_any_role(
+        settings.config["staffRoles"]["admin"],
+        settings.config["staffRoles"]["head-moderator"],
+        settings.config["staffRoles"]["moderator"],
+        settings.config["staffRoles"]["semi-moderator"],
+        settings.config["staffRoles"]["trial-mod"],
+    )
+    async def warn(self, ctx, user: discord.Member = None, reason = None):
+        """warns a user without applying an action to them."""
+        if user is None:
+            return
+        if reason is None:
+            await ctx.channel.send("Please give a reason for warning the user.", delete_after=5)
+            return
+        await database.mod_event_insert(
+            user.id, 13, datetime.utcnow(), reason, ctx.author.id, 0
+        )
+        await utils.emoji(ctx)
+
     @commands.command(name="purge", aliases=["clear"])
     @commands.has_any_role(
         settings.config["staffRoles"]["admin"],
