@@ -126,7 +126,7 @@ class ModeratorTools(commands.Cog):
     @commands.has_any_role(
         settings.config["staffRoles"]["admin"],
         settings.config["staffRoles"]["head-moderator"])
-    async def mod_report(self, ctx, user: discord.User = None, output_format="raw", action="mute"):
+    async def mod_report(self, ctx, user: discord.User = None, output_format="raw", action="all"):
         """View moderation actions by a certain user. The role of the user is not taken into account.
         Format will default to raw output, but table option is available
         You can also request that the format be table, but will require prior arguments to also be filled in.
@@ -141,6 +141,10 @@ class ModeratorTools(commands.Cog):
             mod_action_clause = "and me.event_type = 2"
         elif action == "ban":
             mod_action_clause = "and me.event_type = 1"
+        elif action == "warn":
+            mod_action_clause = "and me.event_type = 13"
+        else:
+            mod_action_clause = "and me.event_type in (1, 2, 3, 13)"
         if output_format.lower() != "raw" and output_format.lower() != "table":
             await ctx.send('Format option only takes options "raw" or "table".')
             return
@@ -152,7 +156,7 @@ class ModeratorTools(commands.Cog):
             f'select me.issuer_id, met.mod_action_type, me.event_time, me.recipient_id, me.reason '
             f'from mod_event me '
             f'inner join mod_event_type met on me.event_type = met.mod_type_id where me.event_time > '
-            f'(date_sub(curdate(), interval 7 day))'
+            f'(date_sub(curdate(), interval 14 day))'
             f' {user_clause} {mod_action_clause} order by me.event_time asc limit 20')
         results = database.conn.execute(prior_mute_queries)
         table = []
