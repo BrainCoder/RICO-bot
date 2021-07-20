@@ -47,6 +47,10 @@ class ModeratorTools(commands.Cog):
             mod_action_clause = " and me.event_type = 2"
         elif action == "ban":
             mod_action_clause = " and me.event_type = 1"
+        elif action == "cooldown":
+            mod_action_clause = " and me.event_type = 5"
+        elif action == "warn":
+            mod_action_clause = " and me.event_type = 13"
         if output_format.lower() != "raw" and output_format.lower() != "table":
             await ctx.send('Format option only takes options "raw" or "table".')
             return
