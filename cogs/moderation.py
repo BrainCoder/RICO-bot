@@ -457,13 +457,36 @@ class ModCommands(commands.Cog):
         settings.config["staffRoles"]["semi-moderator"],
         settings.config["staffRoles"]["trial-mod"],
     )
-    async def warn(self, ctx, user: discord.Member = None, *, reason = None):
+    async def warn(self, ctx, user: discord.Member = None, channel = None, *, reason = None):
         """warns a user without applying an action to them."""
         if user is None:
             return
         if reason is None:
             await ctx.channel.send("Please give a reason for warning the user.", delete_after=5)
             return
+        if len(ctx.message.raw_channel_mentions) > 0:
+            channel = self.client.get_channel(ctx.message.raw_channel_mentions[0])
+            if channel is None:
+                await ctx.channel.send("Channel not found. Please try again.")
+                return
+            else:
+                if channel == ctx.channel:
+                    pass
+                else:
+                    await channel.send(f'Warning has been issued to user {user.mention} for reason: {reason}')
+        else:
+            if channel.isdigit() == False:
+                reason = channel + " " + reason
+            else:
+                channel = self.client.get_channel(int(channel))
+                if channel is None:
+                    await ctx.channel.send("Channel not found. Please try again.")
+                    return
+                else:
+                    if channel == ctx.channel:
+                        pass
+                    else:
+                        await channel.send(f'Warning has been issued to user {user.mention} for reason: {reason}')
         await database.mod_event_insert(
             user.id, 13, datetime.utcnow(), reason, ctx.author.id, 0
         )
