@@ -433,6 +433,7 @@ class ModCommands(commands.Cog):
             user.id, 5, datetime.utcnow(), None, ctx.author.id, 0
         )
         await database.userdata_update_query(user.id, {"cooldown": 1})
+        await utils.emoji(ctx)
         await asyncio.sleep(time)
         await user.remove_roles(self.cooldown_role)
         await utils.doembed(
