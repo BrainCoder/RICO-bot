@@ -14,6 +14,7 @@ global name_change_type
 global name_change_event
 global past_streaks
 global afk_event
+global challenge_data
 
 
 def init():
@@ -27,6 +28,7 @@ def init():
     global name_change_event
     global past_streaks
     global afk_event
+    global challenge_data
     engine = create_engine(settings.config["databaseUrl"], echo=True)
     conn = engine.connect()
     meta = MetaData()
@@ -98,6 +100,14 @@ def init():
         Column('nickname', TINYINT, nullable=False),
         Column('event_time', DATETIME, nullable=False),
         Column('historical', TINYINT, nullable=False, default=0)
+    )
+    challenge_data = Table(
+        'challenge_data', meta,
+        Column('id', BIGINT, primary_key=True, nullable=False, autoincrement=True),
+        Column('challenge_name', TEXT, nullable=True, default=''),
+        Column('updated_at', DATETIME, nullable=False),
+        Column('participant_count', INTEGER, nullable=False, default=0),
+        Column("historical", TINYINT, nullable=False, default=0, server_default="0")
     )
     meta.create_all(engine)
 

@@ -1,11 +1,12 @@
 import utils
 import database
 
-from discord.ext import commands
+from discord.ext import commands, tasks
 import settings
 import sys
 import traceback
 from datetime import datetime, timedelta
+from sqlalchemy import text
 
 
 class MonthlyChallenge(commands.Cog):
@@ -13,6 +14,7 @@ class MonthlyChallenge(commands.Cog):
     def __init__(self, client):
         self.client = client
         self._last_member = None
+        self.update_challenge_data.start()
 
     async def chal_toggle(self, ctx, beforeRole, afterRole):
         await utils.emoji(ctx)
@@ -54,16 +56,20 @@ class MonthlyChallenge(commands.Cog):
                 await channel.send(f'{role.mention} the new monthly challenge has started! Please be sure to grab the role again to be signed up for the next one')
             if action == 'stop':
                 await self.chal_toggle(ctx, settings.config["challenges"]["monthly-challenge-participant"], settings.config["challenges"]["monthly-challenge-winner"])
+                database.conn.execute(text(f'update challenge_data set historical = 1 where challenge_name = \'monthly\''))
         if challenge == 'yearly':
             if action == 'start':
                 await self.chal_toggle(ctx, settings.config["challenges"]["yearly-challenge-signup"], settings.config["challenges"]["yearly-challenge-participant"])
             if action == 'stop':
                 await self.chal_toggle(ctx, settings.config["challenges"]["yearly-challenge-participant"], settings.config["challenges"]["2021-challenge-winner"])
+                database.conn.execute(text(f'update challenge_data set historical = 1 where challenge_name = \'yearly\''))
         if challenge == 'deadpool':
             if action == 'start':
                 await self.chal_toggle(ctx, settings.config["challenges"]["deadpool-signup"], settings.config["challenges"]["deadpool-participant"])
             if action == 'stop':
                 await self.chal_toggle(ctx, settings.config["challenges"]["deadpool-participant"], settings.config["challenges"]["deadpool-winner"])
+                database.conn.execute(text(f'update challenge_data set historical = 1 where challenge_name = \'deadpool\''))
+
     @challenge.error
     async def challeneHandler(self, ctx, error):
         if isinstance(error, commands.CheckFailure):
@@ -118,5 +124,37 @@ class MonthlyChallenge(commands.Cog):
         await utils.emoji(ctx)
 
 
+    @tasks.loop(hours=12)
+    async def update_challenge_data(self):
+        monthly_data_query = text(
+            f"select * from challenge_data where challenge_name = 'monthly' and CAST(updated_at as DATE) = UTC_DATE")
+        monthly_data = database.conn.execute(monthly_data_query).fetchall()
+        if len(monthly_data) == 0:
+            role = self.client.get_guild(settings.config["serverId"]).get_role(settings.config["challenges"]["monthly-challenge-participant"])
+            member_count = len(role.members)
+            insert_record_query = text(f'insert into challenge_data(challenge_name, updated_at, participant_count) values(\'monthly\', UTC_TIMESTAMP(), {member_count})')
+            database.conn.execute(insert_record_query)
+        yearly_data_query = text(f"select * from challenge_data where challenge_name = 'yearly' and CAST(updated_at as DATE) = UTC_DATE")
+        yearly_data = database.conn.execute(yearly_data_query).fetchall()
+        if len(yearly_data) == 0:
+            role = self.client.get_guild(settings.config["serverId"]).get_role(settings.config["challenges"]["yearly-challenge-participant"])
+            member_count = len(role.members)
+            insert_record_query = text(f'insert into challenge_data(challenge_name, updated_at, participant_count) values(\'yearly\', UTC_TIMESTAMP(), {member_count})')
+            database.conn.execute(insert_record_query)
+        deadpool_data_query = text(f"select * from challenge_data where challenge_name = 'deadpool' and CAST(updated_at as DATE) = UTC_DATE")
+        deadpool_data = database.conn.execute(deadpool_data_query).fetchall()
+        if len(deadpool_data) == 0:
+            role = self.client.get_guild(settings.config["serverId"]).get_role(settings.config["challenges"]["deadpool-participant"])
+            member_count = len(role.members)
+            insert_record_query = text(f'insert into challenge_data(challenge_name, updated_at, participant_count) values(\'deadpool\', UTC_TIMESTAMP(), {member_count})')
+            database.conn.execute(insert_record_query)
+
+    # Code is implemented in Rust.
+
+    @commands.command(name="produce_graph")
+    async def produce_graph(self, challenge):
+        """Create a graph of participants for a given challenge. Options are: monthly, yearly, or deadpool"""
+        pass
+    
 def setup(client):
     client.add_cog(MonthlyChallenge(client))
