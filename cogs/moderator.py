@@ -61,7 +61,7 @@ class ModeratorTools(commands.Cog):
             f'select me.recipient_id, met.mod_action_type, me.event_time, me.issuer_id, me.reason '
             f'from mod_event me '
             f'inner join mod_event_type met on me.event_type = met.mod_type_id where historical = {historical}'
-            f' {user_clause} {mod_action_clause} order by me.event_time asc limit 20')
+            f' {user_clause} {mod_action_clause} order by me.event_time desc limit 20')
         results = database.conn.execute(prior_mute_queries)
         table = []
 
@@ -161,7 +161,7 @@ class ModeratorTools(commands.Cog):
             f'from mod_event me '
             f'inner join mod_event_type met on me.event_type = met.mod_type_id where me.event_time > '
             f'(date_sub(curdate(), interval 14 day))'
-            f' {user_clause} {mod_action_clause} order by me.event_time asc limit 20')
+            f' {user_clause} {mod_action_clause} order by me.event_time desc limit 20')
         results = database.conn.execute(prior_mute_queries)
         table = []
 
@@ -199,7 +199,7 @@ class ModeratorTools(commands.Cog):
                 await ctx.send("All strikes for " + user.mention + " should be gone.")
         else:
             query_to_find_strike = text(f'select * from mod_event me where me.recipient_id = {user.id} '
-                                        f'and me.event_type = 3 and historical = 1 order by me.event_time asc')
+                                        f'and me.event_type = 3 and historical = 1 order by me.event_time desc')
             results = database.conn.execute(query_to_find_strike).fetchall()
             if (len(results) < int(strike_number)):
                 await ctx.send("User does not have that many strikes.")
