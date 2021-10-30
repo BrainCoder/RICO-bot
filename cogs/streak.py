@@ -8,6 +8,7 @@ import asyncio
 import traceback
 import sys
 from datetime import datetime, timedelta
+from sqlalchemy import text
 
 
 class Streak(commands.Cog):
@@ -264,31 +265,60 @@ class Streak(commands.Cog):
         streaks = []
 
         # Get current streak and place it in the streaks list
+        totalHours = 0
         userdata_rows = await database.userdata_select_query(ctx.author.id)
         if(userdata_rows[0]['last_relapse'] is not None):
             last_starting_date = utils.to_dt(userdata_rows[0]['last_relapse'])
             total_streak_length = (datetime.utcnow().today() - last_starting_date).total_seconds()
             totalHours, _ = divmod(total_streak_length, 60 * 60)
 
-        # Get the past streaks data from the databse
-        past_streaks_rows = await database.past_select_query(ctx.author.id)
+        # Get the past streaks data from the database
+        past_streaks_query = text( f"select * from past_streaks where user_id = {ctx.author.id} "
+                                   f"order by streak_length desc")
+
+        past_streaks_rows = database.conn.execute(past_streaks_query)
+        first = 0
+        second = 0
+        third = 0
         if past_streaks_rows is not None:
             for row in past_streaks_rows:
+                if first == 0:
+                    first = row[2] / 24
+                elif second == 0:
+                    second = row[2] / 24
+                elif third == 0:
+                    third = row[2] / 24
                 days = row[2] / 24
                 streaks.append(days)
-            streaks.append(totalHours / 24)
+            if totalHours != 0:
+                streaks.append(totalHours / 24)
         total_relapses = len(streaks)
 
         # If they have a previous streak
         if total_relapses != 0:
             avg = sum(streaks) / total_relapses
             highest = max(streaks)
-            await utils.doembed(ctx, 'Past Streaks', 'Stats', f'Total Relapses: {total_relapses - 1}\nHighest streak: {int(round(highest))}\nAverage Streak: {int(round(avg))}', ctx.author, True)
-
+            embed = discord.Embed(color=ctx.author.color, timestamp=ctx.message.created_at)
+            embed.set_author(name=ctx.author.name, icon_url=ctx.author.avatar_url)
+            embed_field = f"Stats\nTotal Relapses: {total_relapses - 1}\nHighest streak: {int(round(highest))}\nAverage " \
+                          f"Streak: {int(round(avg))}"
+            if third != 0:
+                totalHours = totalHours / 24
+                first = int(first)
+                second = int(second)
+                third = int(third)
+                if totalHours > first:
+                    first = str(int(totalHours)) + f" (this is your current streak!)"
+                elif totalHours > second:
+                    second = str(int(totalHours)) + f" (this is your current streak!)"
+                elif totalHours > third:
+                    third = str(int(totalHours)) + f" (this is your current streak!)"
+                embed_field = embed_field + f"\nTop 3 Highest Streaks:\n1) {first}\n2) {second}\n3) {third}"
+            embed.add_field(name="Past Streaks", value=embed_field)
+            await ctx.send(embed=embed)
         # If they dont have a previous streak
         else:
             await ctx.send('There current is no data on your past streaks to calculate statistics for.')
-
 
 def setup(client):
     client.add_cog(Streak(client))
