@@ -226,6 +226,8 @@ class Extra(commands.Cog):
         )
         if not hound:
             await ctx.send("Hound isn't even in this server anymore, wtf are you even doing this fucking command for. Honestly dude")
+        elif ctx.author.id == 103128485295316992:
+            await ctx.send("Thanks for helping Hound and I get together Squirrel. :D")
         else:
             await ctx.send(
                 "uwu what kinda of sandwich does daddy want =^.^=", delete_after=5
