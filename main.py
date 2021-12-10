@@ -8,7 +8,7 @@ import os
 import sys
 import settings
 
-if len(sys.argv) < 5:
+if len(sys.argv) < 4:
     print(
         "\nArgs entered incorrectly, please refer to the args wikipage:\n"
         "https://gitlab.com/HellHound0066/noporn-companion/-/wikis/Required-Arguments\n"
@@ -44,7 +44,7 @@ async def on_ready():
 
 async def cogs_load():
     devlogs = client.get_channel(settings.config["channels"]["devlog"])
-    cogs = ["background", "automod", "challenge", "developer", "errors", "help", "misc", "moderation", "moderator", "streak", "suggestion", "welcome"]
+    cogs = ["automod", "background", "challenge", "developer", "errors", "help", "misc", "moderation", "moderator", "streak", "suggestion", "welcome"]
 
     for filename in os.listdir("./cogs"):
         if filename.endswith(".py"):
@@ -78,4 +78,4 @@ async def creset(ctx):
     await devlogs.send(log)
 
 
-client.run(sys.argv[5])
+client.run(sys.argv[4])

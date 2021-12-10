@@ -458,7 +458,7 @@ class ModCommands(commands.Cog):
         settings.config["staffRoles"]["semi-moderator"],
         settings.config["staffRoles"]["trial-mod"],
     )
-    async def warn(self, ctx, user: discord.Member = None, channel = None, *, reason = None):
+    async def warn(self, ctx, user: discord.Member = None, channel=None, *, reason=None):
         """warns a user without applying an action to them."""
         if user is None:
             return
@@ -476,7 +476,7 @@ class ModCommands(commands.Cog):
                 else:
                     await channel.send(f'Warning has been issued to user {user.mention} for reason: {reason}')
         else:
-            if channel.isdigit() == False:
+            if channel.isdigit() is False:
                 reason = channel + " " + reason
             else:
                 channel = self.client.get_channel(int(channel))

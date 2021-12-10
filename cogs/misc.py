@@ -1,6 +1,5 @@
 import utils
 import database
-from resources.langauges import lang_dict
 
 import discord
 from discord.ext import commands
@@ -11,8 +10,6 @@ import random
 import settings
 import asyncio
 import sys
-import http.client
-import json
 
 from sqlalchemy import text
 
@@ -20,7 +17,7 @@ from sqlalchemy import text
 class Extra(commands.Cog):
     def __init__(self, client):
         self.client = client
-        self.authkey = sys.argv[4]
+        self.authkey = sys.argv[3]
 
     async def prepare_string(self, query):
         if len(query) > 1:
@@ -48,79 +45,6 @@ class Extra(commands.Cog):
             await ctx.author.add_roles(selfmute_role)
         await utils.emoji(ctx)
 
-    @commands.command(name="urban", aliases=["urb", "define", "def"])
-    @cooldown(1, 60, commands.BucketType.user)
-    @commands.has_any_role(
-        settings.config["staffRoles"]["admin"],
-        settings.config["staffRoles"]["head-moderator"],
-        settings.config["staffRoles"]["moderator"],
-        settings.config["staffRoles"]["semi-moderator"],
-        settings.config["staffRoles"]["trial-mod"],
-        settings.config["statusRoles"]["vip"],
-        settings.config["statusRoles"]["boost-vip"],
-    )
-    async def urban(self, ctx, *, query):
-        """standard urban dictionary command"""
-
-        nquery = await self.prepare_string(query)
-        conn = http.client.HTTPSConnection(
-            "mashape-community-urban-dictionary.p.rapidapi.com"
-        )
-        headers = {
-            "x-rapidapi-key": self.authkey,
-            "x-rapidapi-host": "mashape-community-urban-dictionary.p.rapidapi.com",
-        }
-        conn.request("GET", f"/define?term={nquery}", headers=headers)
-        res = conn.getresponse()
-        data = json.loads(res.read().decode("utf-8"))
-        try:
-            first_def = data["list"][0]
-        except IndexError:
-            await ctx.send("Sorry, i couldnt find anything")
-            return
-        message = f"**{first_def['word']}:**\n{first_def['definition']}\n\n*example:\n{first_def['example']}*\n(<{first_def['permalink']}>)"
-        await ctx.send(message)
-
-    @commands.command(name="translate", aliases=["tran"])
-    @cooldown(1, 60)
-    @commands.has_any_role(
-        settings.config["staffRoles"]["admin"],
-        settings.config["staffRoles"]["head-moderator"],
-        settings.config["staffRoles"]["moderator"],
-        settings.config["staffRoles"]["semi-moderator"],
-        settings.config["staffRoles"]["trial-mod"],
-        settings.config["statusRoles"]["vip"],
-        settings.config["statusRoles"]["boost-vip"],
-    )
-    async def translate(self, ctx, langauge, *, query):
-        """standard translation command"""
-        if query is None:
-            await ctx.send(
-                "Please specify the langauge you want to translate to. For more information please do `!help translate"
-            )
-            return
-        endpoint = None
-        for entry in lang_dict:
-            if langauge.lower() == entry:
-                endpoint = lang_dict[entry]
-                break
-        if endpoint is None:
-            await ctx.send("That is not a valid language")
-            return
-        nquery = await self.prepare_string(query)
-        conn = http.client.HTTPSConnection("google-translate1.p.rapidapi.com")
-        payload = f"q={nquery}&source=en&target={endpoint}"
-        headers = {
-            "content-type": "application/x-www-form-urlencoded",
-            "accept-encoding": "application/gzip",
-            "x-rapidapi-key": self.authkey,
-            "x-rapidapi-host": "google-translate1.p.rapidapi.com",
-        }
-        conn.request("POST", "/language/translate/v2", payload, headers)
-        res = conn.getresponse()
-        data = json.loads(res.read().decode("utf-8"))
-        translation = data["data"]["translations"][0]["translatedText"]
-        await ctx.send(translation)
 
     @commands.command(name="8ball", aliases=["8b"])
     @cooldown(1, 60, commands.BucketType.user)
@@ -218,20 +142,6 @@ class Extra(commands.Cog):
             userAvatarUrl = avamember.avatar_url
             await ctx.send(f"<@{avamember.id}>s avatar is:\n{userAvatarUrl}")
 
-    @commands.command(name="gfsandwich")
-    async def gfsandwich(self, ctx):
-        """Evidence that the bot is hounds gf"""
-        hound = await utils.in_roles(
-            ctx.author, settings.config["staffRoles"]["head-dev"]
-        )
-        if not hound:
-            await ctx.send("Hound isn't even in this server anymore, wtf are you even doing this fucking command for. Honestly dude")
-        elif ctx.author.id == 103128485295316992:
-            await ctx.send("Thanks for helping Hound and I get together Squirrel. :D")
-        else:
-            await ctx.send(
-                "uwu what kinda of sandwich does daddy want =^.^=", delete_after=5
-            )
 
     @commands.command(name="remind", aliases=["remindme"])
     @commands.has_any_role(

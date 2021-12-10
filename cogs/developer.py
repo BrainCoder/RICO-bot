@@ -1,28 +1,14 @@
 import utils
 import database
 
-import os
-import gitlab
-import re
 import settings
-import sys
 
-from discord import File
 from discord.ext import commands
-from re import search
 
 
 class DeveloperTools(commands.Cog):
     def __init__(self, client):
         self.client = client
-
-        self.url = "https://gitlab.com/"
-        self.authkey = sys.argv[3]
-        self.project_name = settings.config["gitlabName"]
-        self.project = None
-        server = gitlab.Gitlab(self.url, self.authkey, api_version=4, ssl_verify=True)
-        self.project = server.projects.get(self.project_name)
-
         self.devlogs = self.client.get_channel(settings.config["channels"]["devlog"])
 
     @commands.command(name="cog", aliases=["cogs"])
@@ -54,35 +40,6 @@ class DeveloperTools(commands.Cog):
                     )
         await utils.emoji(ctx)
 
-    @commands.command(name="checklist", aliases=["cl"])
-    @commands.has_any_role(
-        settings.config["staffRoles"]["admin"],
-        settings.config["staffRoles"]["head-moderator"],
-        settings.config["staffRoles"]["moderator"],
-        settings.config["staffRoles"]["semi-moderator"],
-        settings.config["staffRoles"]["head-dev"],
-        settings.config["staffRoles"]["developer"],
-    )
-    async def cl(self, ctx, *, raw):
-        """Add the message to the dev team job-board"""
-        rawregex = r"[a-zA-Z0-9] - [a-zA-Z0-9]"
-        if search(rawregex, raw):
-            pattern = re.compile(" - ")
-            broken = pattern.split(raw)
-            if "-" in broken[1]:
-                await ctx.send("Please do not include `-` in your job description")
-            else:
-                self.project.issues.create(
-                    {
-                        "title": f"{broken[0]}",
-                        "description": f"{ broken[1]}\n\nIssue created by: {ctx.message.author.name}",
-                    }
-                )
-                await utils.emoji(ctx, "✅")
-        else:
-            await ctx.send(
-                "Please enter your job in the following format\n```!cl {job title} - {job description}```"
-            )
 
     @commands.command(name="ping")
     async def ping(self, ctx):
@@ -193,33 +150,6 @@ class DeveloperTools(commands.Cog):
 
         if len(missing_members) > 0:
             await self.vi_db
-
-    @commands.command(name="error")
-    @commands.has_any_role(
-        settings.config["staffRoles"]["head-dev"],
-        settings.config["staffRoles"]["developer"],
-    )
-    async def errorlog(self, ctx, action=None):
-        if action is None:
-            path = "/home/developer/.pm2/logs/npc-error.log"
-            if os.stat(path).st_size == 0:
-                await ctx.send("Error file is empty")
-            else:
-                await ctx.send(file=File(path))
-        elif action == "flush":
-            os.system("/usr/local/bin/flush")
-            os.system("/usr/local/bin/del_bkup")
-            await utils.emoji(ctx, "✅")
-            await self.devlogs.send(
-                f"{utils.timestr}error logs flushed by {ctx.author.name}"
-            )
-
-    @commands.command(name='gitpull', aliases=['gp'])
-    @commands.has_any_role(
-        settings.config["staffRoles"]["head-dev"],
-        settings.config["staffRoles"]["developer"])
-    async def git_pull(self, ctx):
-        os.system("git pull origin master")
 
 def setup(client):
     client.add_cog(DeveloperTools(client))
