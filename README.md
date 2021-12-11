@@ -4,4 +4,4 @@ RICO bot, previously known as No Porn companion, is a discord bot designed to he
 
 The home of the bot was originally on the No Porn discord server, then the Recovery Hub server, however after long spats of leadership disagreements on both decisions the bot has been made open source to allow any server to run this, and allow the community to help add to this project.
 
-For information on how to set up your own instance of the bot please consult the wiki (_please note, the wiki is currently being migrated from the gitlab repo). This bot is not tied to any specific discord server, and any server is welcome to use this code.
+For information on how to set up your own instance of the bot please consult the wiki (_please note, the wiki is currently being migrated from the gitlab repo_). This bot is not tied to any specific discord server, and any server is welcome to use this code.
