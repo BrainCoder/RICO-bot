@@ -4,5 +4,6 @@ __pycache__/
 ecosystem.config.js
 cogs/__pycache__/*
 ids/donotcommit.json
+ids/bbt.json
 resources/*.txt
 venv/*

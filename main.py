@@ -78,4 +78,4 @@ async def creset(ctx):
     await devlogs.send(log)
 
 
-client.run(sys.argv[4])
+client.run(sys.argv[3])

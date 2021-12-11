@@ -9,7 +9,6 @@ from datetime import datetime, timedelta
 import random
 import settings
 import asyncio
-import sys
 
 from sqlalchemy import text
 
@@ -17,7 +16,6 @@ from sqlalchemy import text
 class Extra(commands.Cog):
     def __init__(self, client):
         self.client = client
-        self.authkey = sys.argv[3]
 
     async def prepare_string(self, query):
         if len(query) > 1:
